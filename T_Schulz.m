@@ -1,4 +1,5 @@
-function T_tphi = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, T0, Ti, alpha_deg, M, Q, a, delta_phi, N)
+function T_tphi = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
+                                T0, Ti, alpha_deg, M, Q, a, N, rw)
 %T_SCHULZ 
 % formula from Schulz paper 1987 eq, (19) page 17
 % Definitions
@@ -15,11 +16,12 @@ function T_tphi = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, T0, Ti, alpha_deg, 
 % t - time (s)
 % ro_a - density of aquifer material (water and solid) (kg/m^3)
 % ro_s - solid density (kg/m^3)
+% rw = m  radius of injection well. it is used in schult only to determin eif stream line is close to injection
+% and the location to calculate Temperature at abstraction well.
 
 % c_a ( specific heat capacity of saturated aquifer material (J/kg/K)
         % Note: (it is called cm in matlab code for phd project)
 % Ca ( volumetric heat capacity of saturated aquifer material (J/m^3/K)
-
 
 % Cw - volumetric heat capacity of water (J/m^3/K)
 
@@ -30,8 +32,14 @@ function T_tphi = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, T0, Ti, alpha_deg, 
 % I_phi -  time for water to reach the abstraction well (s)
 % n - porosity 
 % U - unit step function
+% N number of points x and y to calculate on the streamline 
+
+    modelBoundary = calc_modelBoundary( x, y );
+    %i = 0.001;
+    delta_phi = calc_delta_phi( N, v_u, K, modelBoundary, alpha_deg, M, Q, a, rw);
+    %delta_phi = 0.003; % m
     U = @(value) (value >= 0) * 1; % to convert logical output to number need to * 1. 
-    I_phi = schulz_Iphi( N, x, y, v_u, K, alpha_deg, M, Q, a, delta_phi );
+    I_phi = schulz_Iphi( N, x, y, v_u, K, alpha_deg, M, Q, a, modelBoundary, rw );
     z_bar = 0;
     % Ca is volumetric heat capacity of aquifer, Ca = ro_a * c_a;
     Ca = n * Cw + (1 - n) * Cs; % (J/m^3/K)
