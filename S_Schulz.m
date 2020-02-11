@@ -24,8 +24,10 @@ T0 = 40 + 273.15; % undisturbed temperature in aquifer (K)
 Ti = 25 + 273.15; % injection temperature (K)
 N = 600; % number of points x and y to calculate on the streamline 
 % prepare mesh
-x =  [-400:5:400]; %[1,2];
-y =  [-600:5:600]; %[3,4];
+x =  [-400:15:400]; %[1,2];
+y =  [-600:15:600]; %[3,4];
+% prepare model boundary limits to stop calculating streamline outside of model boundary
+modelBoundary = calc_modelBoundary( x, y );
 % x = [-210,-205, -100, -50];
 % y = [2,1,-1,-2];
 [Xmesh,Ymesh] = meshgrid(x,y);
@@ -35,9 +37,16 @@ x_0 =  [210];%[200, 210];  %[-400:5:400];
 y_0 =  [50]; %[-600:5:600];
 N = 600;
 
+%% TEST TEST TEST!!! T for extraction well and 1 random point  :)
+
+[T_tphi, t_b] = T_Schulz( [x_0, a], [y_0, 0], t, v_u, K, n, Cw, Cs, l_s, T0, Ti,...
+                        alpha_deg, M, Q, a, modelBoundary, N, rw );
+                            
+
 %% Temperature calc
 if PlotT
-    T_tphi = T_Schulz( Xmesh, Ymesh, t, v_u, K, n, Cw, Cs, l_s, T0, Ti, alpha_deg, M, Q, a, N, rw );
+    [T_tphi, t_b] = T_Schulz( Xmesh, Ymesh, t, v_u, K, n, Cw, Cs, l_s, T0, Ti, ...
+                        alpha_deg, M, Q, a, modelBoundary, N, rw );
 end
 %% calculate hydraulic potential phi
 %secondsToDays(I_phi);
@@ -59,9 +68,12 @@ contour( Xmesh, Ymesh, Kelvin2DegC(T_tphi), [26, 28, 33, 40], ...
                                     'ShowText','on', ...
                                     'LineWidth', 2, 'LineColor', 'black' )
 end
+if PlotT % plot break through time (s)
+contour( Xmesh, Ymesh, secondsToYears(t_b), [0.5, 1, 2, 5, 10, 25], ...
+                                    'ShowText','on', ...
+                                    'LineWidth', 2, 'LineColor', 'blue' )
+end
 % Streamline from initial point
-% prepare model boundary limits to stop calculating streamline outside of model boundary
-[ modelBoundary, maxModelDistance ] = calc_modelBoundary( Xmesh, Ymesh );
 for i = 1 : numel(x_0)
     [ x_list, y_list ] = schulz_xy_streamline( N, x_0(i), y_0(i), v_u, K, alpha_deg, M, Q, a, modelBoundary, rw );
     plot(x_list, y_list, 'Color', 'red', 'LineWidth', 2)   
