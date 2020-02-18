@@ -54,8 +54,8 @@ function [ x_list, y_list ] = schulz_xy_streamline( N, x_0, y_0, v_u, K, alpha_d
         % finish calculation if calculated streamline xy point is close to injection well
         % because at injection well is infinite hydraulic gradient and the point of stream line will be calculated to use all given n
         % but will be dancing on one spot at injection well, as delta-phi will change = by climbing on the infinite hydr gradient
-        closeToInjWell = isCloseToInjectionWell( x_m, y_m, a, rw);
-        if closeToInjWell
+        insideInjWell = isInsideInjectionWell( x_m, y_m, a, rw );
+        if insideInjWell
             % return only the calculated points of the streamline
             x_list = x_list(1 : i + 1);
             y_list = y_list(1 : i + 1);

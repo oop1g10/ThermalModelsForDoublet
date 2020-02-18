@@ -6,7 +6,7 @@ function [ delta_phi ] = calc_delta_phi( N, v_u, K, modelBoundary, alpha_deg, M,
     [Xmesh, Ymesh] = meshgrid(modelBoundary(:,1), modelBoundary(:,2));
     XYpoint_list = [Xmesh(:), Ymesh(:)]; % list of xy coordinate points for corners of the domain
     % add xy coordinates close to the injection and extraction wells which are the the wall of the wells
-    XYpoint_list = [XYpoint_list; [rw + -a, 0]; [-rw + a, 0]];    
+    XYpoint_list = [XYpoint_list; [rw*0.99 + -a, 0]; [-rw*0.99 + a, 0]]; % * 0.99 to be inside the wall well to have enough delta_phi    
     % calculate phi (hydraulic potential) at each point (at model cornes and at the injection & extraction well   
     phi_xy = schulz_phi_psi(XYpoint_list(:,1), XYpoint_list(:,2), v_u, K, alpha_deg, M, Q, a );
     phi_xy_maxdiff = max(phi_xy) - min(phi_xy);
