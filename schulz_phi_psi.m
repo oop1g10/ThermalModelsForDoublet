@@ -17,7 +17,14 @@ function [ phi_xy, psi_xy, signAtan ] = schulz_phi_psi( x, y, v_u, K, alpha_deg,
 % Tr = aquifer transmissivity (m^2/second)
 % psi = the stream function
 
-    Tr = K * M; % m^2 / s
+    % Since analytical solution of Schulz assumes non-zero groundwater velocity, even if groundwater flow is absent 
+    % hydraulic conductivity cannot be zero, so water can flow from injection well.
+    % any non zero number is good for K, since it does not effect the model result.
+    if v_u == 0
+        K = 1; % hydraulic conductivity which does not infleunce the results
+    end
+
+    Tr = K * M; % aquifer transmissivity m^2 / s
     alpha = deg2rad(alpha_deg); % radians
     % hydraulic potential at one x,y location
     p1 = - v_u / K * (x * cos(alpha) + y * sin(alpha)); % units m

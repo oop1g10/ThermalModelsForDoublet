@@ -1,5 +1,7 @@
 clear
 plotT = true;
+plottb = true; % plot break through time
+
 % v_u is taken from Schulz from scenario b or c
 v_u = 1 * 10^-6; % m/sec % scenario B in Schulz
 % v_u = 2.5*10^-6; % m/sec % scenario C in Schulz
@@ -18,11 +20,11 @@ n = 0.1; % porosity (-)
 % if stream line is close to injection and the location to calculate Temperature at abstraction well.
 rw = 0.1; % radius of injection well (m)
 Cw = 4.2 * 10^6; % Volumetric heat capacity of water J/m^3/K
-ro_s = 2600; % kg/m^3
-%ro_s = 2670; %2600; % kg/m^3
+rho_s = 2600; % kg/m^3
+%rho_s = 2670; %2600; % kg/m^3
 c_s = 1000; % J/kg/K
 %c_s = 850; %1000; % J/kg/K
-Cs = ro_s * c_s;
+Cs = rho_s * c_s; % Volumetric heat capacity of solid J/m^3/K
 l_s = 2.8; % W/m/K % thermal conductivity of solid rock in aquifer
 %l_s = 2.9; %2.8; % W/m/K % thermal conductivity of solid rock in aquifer
 T0 = 40 + 273.15; % undisturbed temperature in aquifer (K)
@@ -43,13 +45,15 @@ y_0 =  [50]; %[-600:5:600];
 %% TEST TEST TEST!!! T for extraction well and 1 random point  :)
 [T_tphi, t_b] = T_Schulz( [x_0, a], [y_0, 0], t, v_u, K, n, Cw, Cs, l_s, T0, Ti,...
                         alpha_deg, M, Q, a, modelBoundary, N, rw );    
-Kelvin2DegC(T_tphi)
+kelvin2DegC(T_tphi)
 secondsToYears(t_b)   
 (T_tphi(2) - T0) / (Ti - T0) 
 
 % calculate groundwater velocities in x and y direction (in 2D to plot streamlines
 [ v_x_test, v_y_test ] = schulz_velocity( 0, 0, v_u, alpha_deg, M, Q, a );
 v_test = sqrt(v_x_test.^2 + v_y_test.^2)
+
+
 
 %% Temperature calc
 if plotT
@@ -75,12 +79,12 @@ streamslice(Xmesh, Ymesh, v_x, v_y)
 
 % Temperature isotherms plot (degC)
 if plotT
-contour( Xmesh, Ymesh, Kelvin2DegC(T_tphi), [26, 28, 33, 40], ...
+    contour( Xmesh, Ymesh, kelvin2DegC(T_tphi), [26, 28, 33, 40], ...
                                     'ShowText','on', ...
                                     'LineWidth', 2, 'LineColor', 'black' )
 end
-if false % plot break through time (s)
-contour( Xmesh, Ymesh, secondsToYears(t_b), [0.5, 1, 2, 5, 10, 25], ...
+if plottb % plot break through time (s)
+    contour( Xmesh, Ymesh, secondsToYears(t_b), [0.5, 1, 2, 5, 10, 25], ...
                                     'ShowText','on', ...
                                     'LineWidth', 2, 'LineColor', 'blue' )
 end

@@ -1,6 +1,6 @@
-function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, elementsCountComsol, comsolResultsRow ] = ...
-    T_eval_model(modelMethod, x_range, y_range, z_range, ...
-                 Mt, params, t_list, comsolResultsTab)
+function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
+          elementsCountComsol, comsolResultsRow, t_b_mesh] = ...
+    T_eval_model(modelMethod, x_range, y_range, z_range, Mt, params, t_list, comsolResultsTab)
 % Model inputs
 % modelMethod - method of model "comsol" or MILS or MFLS
 % x_range - has to be range as from to (e.g. [2 3], if only signle x point needed to be computed range should be given as repeated value, e.g. [2 2] 
@@ -15,86 +15,12 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, elementsCountC
 % modelMethod - model to calculate, can be numerical Comsol model (named as 'nMFLSfr', 'nMFLS', 'nMILSfr', 'nMILS') 
 %                                                                   or analytical solution named as 'MFLS', 'MILS' 
 
-    aXYZ = [params.aX, params.aY, params.aZ]; % prepare aXYZ to model run
+    [ ~, ~, deltaH, ~, ~, N_Schulz_streamline] = standardParams( 'homo' );
     
-    % Take node coordinates from comsol results to determine possible x and y range
-    % in plots. Taken from first results rows as all result should have same
-    % geometry.
-    [ xRangeLimits, yRangeLimits, zRangeLimits, logRangeEnd ] = comsol_xyzRanges( comsolResultsTab );
-    
-    % Note +/- 1 meter at boundaries of domain are used below, because the interpolation at
-    % boundary edge gives error (for Comsol model), maybe no elements for interpolation at
-    % boundary, so 1 meter from edge is excluded from boundaries.
-    if ~isempty(xRangeLimits)
-        assert(x_range(1) >= xRangeLimits(1)+1, 'Required minimum x_range to plot is not present in given model data (is smaller than given for plot).')
-        assert(x_range(2) <= xRangeLimits(2)-1, 'Required maximum x_range to plot is not present in given model data (is larger than given for plot).')
-    end
-    if ~isempty(yRangeLimits)
-        assert(y_range(1) >= yRangeLimits(1)+1, 'Required minimum y_range to plot is not present in given model data (is smaller than given for plot).')
-        if numel(y_range) == 2
-            assert(y_range(2) <= yRangeLimits(2)-1, 'Required maximum y_range to plot is not present in given model data (is larger than given for plot).')
-        else
-            assert(y_range(1) <= yRangeLimits(2)-1, 'Required maximum y_range to plot is not present in given model data (is larger than given for plot).')
-        end
-    end
-    if ~isempty(zRangeLimits)
-        assert(z_range(1) >= zRangeLimits(1), 'Required minimum z_range to plot is not present in given model data (is smaller than given for plot).')
-        if numel(z_range) == 2 
-            assert(z_range(2) <= zRangeLimits(2), 'Required maximum z_range to plot is not present in given model data (is larger than given for plot).')        
-        else
-            assert(z_range(1) <= zRangeLimits(2), 'Required maximum z_range to plot is not present in given model data (is larger than given for plot).')        
-        end
-    end
-    
-    %% Space discretization
-    % List of x coordinates separated by borehole width to avoid calculation of
-    % T inside borehole which has infinite temperature in the center
-    % If Mt is not provided, x,y,z ranges already contain the positions of all points to be evaluable, rahter than only ranges.
-    if isempty(Mt)
-        x_list = x_range;
-    else
-        x_list = rangeToList( x_range, Mt, params.ro, logRangeEnd );   
-    end
-    % if z coordinate is fixed
-    if numel(z_range) == 1
-        % If Mt is not provided, x,y,z ranges already contain the positions of all points to be evaluable, rahter than only ranges.
-        if isempty(Mt)
-            y_list = y_range;
-        else
-            % If x is single value inside borehole, y list must exclude borehole radius
-            if min(abs(x_list)) < params.ro % actually function rangeToList already avoids inside borehole values if number of x points >1, but just to make sure.
-                y_list = rangeToList( y_range, Mt, params.ro, logRangeEnd );
-            else % If all x coordinates are outside of borehole radius
-                y_list = rangeToList( y_range, Mt, 0, logRangeEnd );
-            end
-        end
-        %prepare mesh for x and y to have distinct xy pairs for T calculation
-        [Xmesh, Ymesh] = meshgrid(x_list, y_list);
-        % Single value expected, not range for z
-        Zmesh = z_range; 
-        z_list = z_range;       
-    % if y coordinate is fixed
-    elseif numel(y_range) == 1 
-        % If Mt is not provided, x,y,z ranges already contain the positions of all points to be evaluable, rahter than only ranges.
-        if isempty(Mt)
-            z_list = z_range;
-        else
-            z_list = linspace(z_range(1), z_range(2), Mt); % [m] No need to skip borehole in z direction so use simple linspace.
-        end
-        %prepare mesh for x and z to have distinct xz pairs for T calculation
-        [Xmesh, Zmesh] = meshgrid(x_list, z_list);
-        % Single value expected, not range for y
-        Ymesh = y_range;
-        y_list = y_range;
-    else
-        error('Either y or z must be given as range, not both!')
-    end
-    
-    % Points where temperature will be analysed
-    points_Coords = nan(numel(x_list)*numel(y_list)*numel(z_list), 3);
-    points_Coords(:,1) = reshape(Xmesh, numel(Xmesh), 1);
-    points_Coords(:,2) = reshape(Ymesh, numel(Ymesh), 1);
-    points_Coords(:,3) = reshape(Zmesh, numel(Zmesh), 1);
+    % Space discretization for both wells accounting for log and lin spacing areas in model domain
+    [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
+           spaceDiscretisation(x_range, y_range, z_range, Mt, ...
+                               params.maxMeshSize, params.ro, params.a, comsolResultsTab);
 
     %% Temperature evaluation for models
     %% For COMSOL
@@ -110,8 +36,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, elementsCountC
         else
             error('Please provide only single value for either y range or z range (or for both)!')
         end
-        % Check if T results belong to inside pipe or only on/outside VBHE wall 
-        coordInsidePipe = isCoordInsidePipe( points_Coords, params.ro );
+        
         % prepare matrices for results        
         % Get comsol results rows
         comsolResultsRow = comsolResultsRowForParams( comsolResultsTab, params, fixedCoord, coordInsidePipe );
@@ -137,8 +62,8 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, elementsCountC
             T_mesh = nan(numel(y_list) * numel(z_list), numel(x_list));
         end    
     
-    %% For MFLS or MILS
-    elseif strcmp(modelMethod, 'MFLS') || strcmp(modelMethod, 'MILS')
+    %% For analytical solution
+    elseif strcmp(modelMethod, 'Schulz')
         % Element count in mesh and comsolResultsRow are not relevant for analytical models
         elementsCountComsol = NaN; 
         comsolResultsRow = [];
@@ -147,13 +72,11 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, elementsCountC
         % It is waste of time to calculate the same results again, so for larger calculations
         % of 10000 Temperatures or more the results are cached (remembered) here for next call
         % and if it is the same they are immediately returned.
-        % Caching in variable persistent between function calls
-        persistent params_Cache T_points_t_Cache T_mesh_Cache
+        % Caching is variable persistent between function calls
+        persistent params_Cache T_points_t_Cache t_b_mesh_Cache T_mesh_Cache
         persistent t_list_Cache x_range_Cache y_range_Cache z_range_Cache Mt_Cache
         % Ignore parameters which make no sense for analytical models
-        params.rSource = 0; %use 0 so it can be easily compared
         params.maxMeshSize = 0;
-        params.pipe_TinLimitDiff = 0;
         % Check if enough Temperatures (>10000) so caching will be allowed
         cacheAllowed = (size(points_Coords, 1) * numel(t_list)) >= 10000;
         % If cache allowed and current parameters the same as previously cached
@@ -166,25 +89,41 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, elementsCountC
                Mt == Mt_Cache
            % Return previously cached results
            T_points_t = T_points_t_Cache;
+           t_b_mesh = t_b_mesh_Cache;
            T_mesh = T_mesh_Cache;
 
         else %no caching, calculate
             T_points_t = nan(size(points_Coords, 1), numel(t_list));
             % Calculate temperatures for each time
+            
+            % Calculate parameters for 2D Schulz model
+
+            % deltaH is m/m hydraulic gradient Not input of this model
+            % K is hydraulic conductivity (m/s) it is not taken from Schulz paper,
+            % it does not influence the model results as Darcy groundwater flow is given
+            K = params.q / deltaH;  
+            modelBoundary = calc_modelBoundary( Xmesh, Ymesh, params.a );
+            
             for it = 1 : numel(t_list)
                 % Note that either Ymesh or Zmesh is required to be single number.
-                if strcmp(modelMethod, 'MFLS')
-                    T_mesh = T_MFLS_anisotropic(Xmesh,Ymesh,Zmesh, params.H, params.lm, params.q, ...
-                                                params.Cw, params.Cm, t_list(it), params.fe, aXYZ);
-                elseif strcmp(modelMethod, 'MILS')
-                    QL = params.fe / params.H;   %Heat flow rate per unit length of borehole [W/m]
-                    if numel(z_range) == 1 % if z coordinate is fixed i.e. plan view
-                        T_mesh = T_MILSd(Xmesh,Ymesh, params.lm, params.q, params.Cw, params.Cm, t_list(it),...
-                                         QL, params.aX, params.aY);
-                    else %for profile view 
-                        %y_list is one value (0), x_list is first line, as doesn't depend on depth (z)
-                        T_mesh = T_MILSd(x_list,y_list, params.lm, params.q, params.Cw, params.Cm, t_list(it),...
-                                         QL, params.aX, params.aY);
+                if strcmp(modelMethod, 'ansol_3D_doublet')
+                    % NO 3D model is yet implemented !!!!!!!!!!!!!!!                   
+%                     T_mesh = T_MFLS_anisotropic(Xmesh,Ymesh,Zmesh, params.H, params.lm, params.q, ...
+%                                                 params.Cw, params.Cm, t_list(it), params.fe, aXYZ);
+                elseif strcmp(modelMethod, 'Schulz')                    
+                    if numel(z_range) == 1 % PLAN view   if z coordinate is fixed                    
+                        [T_mesh, t_b_mesh] = T_Schulz( Xmesh, Ymesh, t_list(it), params.q, K, params.n, ...
+                            params.cW * params.rhoW, params.cS * params.rhoS, params.lS, ...
+                                params.T0, params.Ti, params.alpha_deg, params.M, params.Q, params.a,...
+                                modelBoundary, N_Schulz_streamline, params.ro);                        
+
+                    else % for PROFILE view 
+                        % y_list is one value (0), x_list is first line, as doesn't depend on depth (z)
+                        [T_mesh, t_b_mesh] = T_Schulz( x_list, y_list, t_list(it), params.q, K, params.n, ...
+                            params.cW * params.rhoW, params.cS * params.rhoS, params.lS, ...
+                                params.T0, params.Ti, params.alpha_deg, params.M, params.Q, params.a,...
+                                modelBoundary, N_Schulz_streamline, params.ro);                        
+                            
                         % Repeat the calculated row for profile with depth (z) as it does not change with depth
                         T_mesh = repmat(T_mesh, numel(z_list), 1);
                     end
@@ -203,6 +142,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, elementsCountC
             if cacheAllowed
                 params_Cache = params;
                 T_points_t_Cache = T_points_t;
+                t_b_mesh_Cache = t_b_mesh;
                 T_mesh_Cache = T_mesh;
                 t_list_Cache = t_list;
                 x_range_Cache = x_range;
@@ -213,21 +153,11 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, elementsCountC
         end
     else
         error('Model method name is not supported.')
-%             % Calculate temperature series for current q
-%             if strcmp(modelMethod, 'MFLS')
-%                 T_q(i,:) = T_MFLS_anisotropic(x_list(ix),y,z,H,lm,q_list(i),Cw,Cm,t_list,fe,aXYZ); %allocate T list row by row for different q
-%             elseif strcmp(modelMethod, 'MILS')
-%                 T_q(i,:) = T_MILSd(x_list(ix),y,lm,q_list(i),Cw,Cm,t_list,QL,aXYZ(1),aXYZ(2));
-%                 warning('T_MILSd used! Switch back to T_MFLS_anisotropic');
-%             elseif strcmp(modelMethod, 'MFLSc')
-%                 % T as mean around circle:
-%                 T_q(i,:) = T_MFLSc(ro,z,H,lm,q_list(i),Cw,Cm,t_list,fe); %allocate T list row by row for different q
-%                 warning('T_MFLSc used! Switch back to T_MFLS_anisotropic');
-%             elseif strcmp(modelMethod, 'FCS')
-%                 % CYLINDER
-%                 T_q(i,:) = T_FCS(x_list(ix),y,ro,z,H,lm,Cm,t_list,QL);
-%                 warning('T_FCS used! Switch back to T_MFLS_anisotropic');
-%             end
 
     end
+    % round result of temeprature in same way as numerical result.
+    % this is because result of analytical slightly not precise (on about 6 decimal points)
+    decimalPlaces = 5;
+    T_points_t = round(T_points_t, decimalPlaces);
+    T_mesh = round(T_mesh, decimalPlaces);
 end

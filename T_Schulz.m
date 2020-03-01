@@ -1,10 +1,11 @@
-function [T_tphi, t_b] = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
+function [T_diff, t_b] = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
                                 T0, Ti, alpha_deg, M, Q, a, modelBoundary, N, rw)
 %T_SCHULZ 
 % formula from Schulz paper 1987 eq, (19) page 17
 % Definitions
+% Q - water injection and production rate in m^3/second
 % t_b - break throgh time (s)
-% T_tphi - temperature in the aquifer depending on
+% T_diff - temperature difference from T0 in the aquifer depending on
 % time, hydraulic potential at the defined point (location) and depth of aquifer 
 % i.e. whether heat flux into cap rock is considered (z_bar)
 % T0 = undisturbed temeprature  (K)
@@ -15,16 +16,14 @@ function [T_tphi, t_b] = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
 % M = thickness of the aquifer (m)
 % t - time (s)
 % ro_a - density of aquifer material (water and solid) (kg/m^3)
-% ro_s - solid density (kg/m^3)
+% rho_s - solid density (kg/m^3)
 % rw = m  radius of injection well it is used in schult only to determin eif stream line is close to injection
 % and the location to calculate Temperature at abstraction well.
 
 % c_a ( specific heat capacity of saturated aquifer material (J/kg/K)
         % Note: (it is called cm in matlab code for phd project)
 % Ca ( volumetric heat capacity of saturated aquifer material (J/m^3/K)
-
 % Cw - volumetric heat capacity of water (J/m^3/K)
-
 % c_s - specific heat capacity of solid (J/kg/K)
 % Cs - volumetric heat capacity of solid (J/m^3/K)
 
@@ -34,8 +33,15 @@ function [T_tphi, t_b] = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
 % U - unit step function
 % N number of points x and y to calculate on the streamline 
 
+    % Since analytical solution of Schulz assumes non-zero groundwater velocity, even if groundwater flow is absent 
+    % hydraulic conductivity cannot be zero, so water can flow from injection well.
+    % any non zero number is good for K, since it does not effect the model result.
+    if v_u == 0
+        K = 1; % hydraulic conductivity which does not infleunce the results
+    end
+
     U = @(value) (value >= 0) * 1; % to convert logical output to number need to * 1. 
-    T_tphi = NaN(size(x,1), size(x,2));
+    T_diff = NaN(size(x,1), size(x,2));
     t_b = NaN(size(x,1), size(x,2));
     
     % z_bar = 0 (no untis) to define if the temperature is calculated inside the confined aquifer
@@ -70,7 +76,7 @@ function [T_tphi, t_b] = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
                 % for each point around the well        
                 % 1) calculate temperatures around the well (all points)
                 % Temperature and breakthrough times for points around the well
-                [T_tphi_aroundWell, t_b_aroundWell] = T_Schulz( xList_aroundWell, yList_aroundWell, ...
+                [T_diff_aroundWell, t_b_aroundWell] = T_Schulz( xList_aroundWell, yList_aroundWell, ...
                     t, v_u, K, n, Cw, Cs, l_s, ...
                                     T0, Ti, alpha_deg, M, Q, a, modelBoundary, N, rw);    
                 % calculate thermal break through at the abstraction well
@@ -86,7 +92,7 @@ function [T_tphi, t_b] = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
                 % find component of velocities towards the well.. (but it will work anyway) TODO
                 %to exclude T whcih flow from the well to exclude form averange calc
                 % weighted ave of T around the well using velocities
-                T_tphi(i,j) = sum(T_tphi_aroundWell .* v_aroundWell / sum(v_aroundWell));
+                T_diff(i,j) = sum(T_diff_aroundWell .* v_aroundWell / sum(v_aroundWell));                
                 % where for each point around the well a specific v_aroundWell (point) /sum(v_aroundWell) 
                 % is a weighting factor for T at each point around the well          
                 % weighted average of temperature at abstraction well                
@@ -130,7 +136,10 @@ function [T_tphi, t_b] = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
                 p4(p1 == 0) = 1;
                 p2(p1 == 0) = 1;
                 % units are K (units of erfc() are none (-))
-                T_tphi(i,j) = p1 .* erfc( p2 ./ (p3 * p4) ) * (Ti - T0) + T0; 
+                % to make T difference '+ T0' was removed from the end of equation,
+                % it was in original Schulz equation
+                T_diff(i,j) = p1 .* erfc( p2 ./ (p3 * p4) ) * (Ti - T0); % '+ T0'
+                
 
             end
         end
