@@ -1,5 +1,5 @@
 function [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
-           spaceDiscretisation(x_range, y_range, z_range, Mt, startStepSize, ro, a, comsolResultsTab)
+           spaceDiscretisation(x_range, y_range, z_range, Mt, ro, a, comsolResultsTab)
 % Model inputs
 % x_range - has to be range as from to (e.g. [2 3], if only signle x point needed to be computed range should be given as repeated value, e.g. [2 2] 
 % y_range, z_range - can be given as signle value or a range (from to), either y or z should be fixed point e.g. [2 2], 
@@ -10,8 +10,7 @@ function [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
 
     % Log range splitting support
     % (hybrid log and linear ranges)
-    [ ~, ~, ~, ~, growthRateOptim ] = standardParams( 'homo' );
-    
+    [ ~, ~, ~, ~, growthRateOptim, startStepSize ] = standardParams( 'homo' );
     %% Take node coordinates from comsol results to determine possible x and y range
     % in plots. Taken from first results rows as all result should have same
     % geometry.
@@ -53,12 +52,19 @@ function [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
     end
     % if z coordinate is fixed
     if numel(z_range) == 1
-        % If Mt is not provided, x,y,z ranges already contain the positions of all points to be evaluable, rahter than only ranges.
+        % If Mt is not provided, x,y,z ranges already contain the positions of all points to be evaluable, 
+        % rahter than only ranges.
         if isempty(Mt)
             y_list = y_range;
         else
-            % If x is single value inside borehole, y list must exclude borehole radius
-            if min(abs(x_list)) < ro % actually function rangeToList already avoids inside borehole values if number of x points >1, but just to make sure.
+            % get coordinates of wells
+            [xInjection, ~, xAbstraction, ~] = getWellCoords(a);
+            % If x is single value inside borehole (both injection and abstraction), 
+            % y list must exclude borehole radius
+            % Actually function rangeToList already avoids inside borehole values if number of x points >1, 
+            % but just to make sure.
+            % Rounding is made because small errors occur during calculations due to internal binary representation of numbers.
+            if round(min(abs(x_list - xInjection)), 5) < ro || round(min(abs(x_list - xAbstraction)), 5) < ro 
                 y_list = rangeToList( y_range, Mt, startStepSize, growthRateOptim, ro, logRangeEnd );
             else % If all x coordinates are outside of borehole radius
                 y_list = rangeToList( y_range, Mt, startStepSize, growthRateOptim, 0,  logRangeEnd );

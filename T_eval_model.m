@@ -15,12 +15,12 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
 % modelMethod - model to calculate, can be numerical Comsol model (named as 'nMFLSfr', 'nMFLS', 'nMILSfr', 'nMILS') 
 %                                                                   or analytical solution named as 'MFLS', 'MILS' 
 
-    [ ~, ~, deltaH, ~, ~, N_Schulz_streamline] = standardParams( 'homo' );
+    [ ~, ~, deltaH, ~, ~, ~, N_Schulz_streamline] = standardParams( 'homo' );
     
     % Space discretization for both wells accounting for log and lin spacing areas in model domain
     [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
            spaceDiscretisation(x_range, y_range, z_range, Mt, ...
-                               params.maxMeshSize, params.ro, params.a, comsolResultsTab);
+                               params.ro, params.a, comsolResultsTab);
 
     %% Temperature evaluation for models
     %% For COMSOL
@@ -39,7 +39,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
         
         % prepare matrices for results        
         % Get comsol results rows
-        comsolResultsRow = comsolResultsRowForParams( comsolResultsTab, params, fixedCoord, coordInsidePipe );
+        comsolResultsRow = comsolResultsRowForParams( comsolResultsTab, params, fixedCoord );
         % If result found
         if size(comsolResultsRow,1) == 1
             % Element count in mesh

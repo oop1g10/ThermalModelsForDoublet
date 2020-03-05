@@ -2,13 +2,12 @@ clear
 clear T_eval_model % clear persistent variables in function (used as cache)
 
 %% Decide which plots to generate
-plotT_q = false; %+ T change vs time at different GW flows
-plotTxy_stream_tb = true; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
+plotT_q = true; %+ T change vs time at different GW flows
+plotTxy_stream_tb = false; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
     plotTxy_stream_tb_Txy = true; % plot isotherms
     plotTxy_stream_tb_tb = true; % plot time to breakthrough
     plotTxy_stream_tb_stream = true; % plot streamlines
 plotTxy_q = false; %+ How groundwater velocity influences plume development in x&y direction (plan view)
-
 
 plotT_q_pipes = false; %   ****  Temperature change versus time at different GW flows with INFO on T inside pipes
     plotT_q_pipes_fracture = false; % if true = plot model with standard fracture paramters, if false = plot Homo model (i.e. without fracture)
@@ -24,15 +23,7 @@ plotXt_q_fe = false; % Plume extent longitudinal (X) after 30 years (t) vs groun
 % Save the plots
 plotSave = false;
 plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOL\figures\';
-% solution is returned by comsolDataFileInUse_Info
-% for example solution can be: 'sol1'
-results = 'doublet_2d';
-% methodMesh is set in comsolDataFileInUse_Info!,  name of method of meshing in comsol
 
-% NOTE selected plot support comparison of two models some only one model method
-% Model methods for which comparison plot should be generated
-% First method is full line for analytical model, 
-% Second method (numerical model) oo circles line
 [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsConvergence, variant,...
     solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
 fprintf('methodMesh: %s\n', methodMesh);
@@ -45,8 +36,12 @@ fprintf('methodMesh: %s\n', methodMesh);
     standardRangesToCompare( );
 q_max = max(q_list); %Specific flux (Darcy flux) [m s-1] % maximm required Darcy velocity
 
-modelMethodsPlot = [modelMethodsConvergence(1), modelMethods(1)];
+modelMethodsPlot = [modelMethods(1), modelMethods(2)];
 modelMethodPlot = modelMethods{1}; % Method of model calculation
+% NOTE selected plot support comparison of two models some only one model method
+% Model methods for which comparison plot should be generated
+% First method is full line for analytical model, 
+% Second method (numerical model) oo circles line
 plotTitle = modelMethodPlot; % plotTitle
 
 %% Load previously saved workspace variables with comsol data in comsolResultsTab
@@ -108,24 +103,33 @@ end
 if plotTxy_stream_tb
     plotNamePrefix = 'Txy_stream_tb'; % plot name to save the plot with relevant name
     t_list_plotTxy_q = [daysToSeconds(2*365), daysToSeconds(5*365)]; % time in seconds
+    % preassign 4 D matrices for T to save the results
+    Txy_stream_tb = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
+    % same for tb ( which is based on I phi)
+    t_b_mesh = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
+    % same for phi (hydraulic potential)
+    phi_xy_mesh = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
+    % same for groundwater velocities, parts of the vector [ v_x, v_y ],
+    % both v_x and v_y are calculated in all mesh points.
+    v_x = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
+    v_y = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
     for it = 1:numel(t_list_plotTxy_q)
         % prepare matrices for results
-        for i = 1:numel(q_list)
+        for iq = 1:numel(q_list)
             params = paramsStd;
-            params.q = q_list(i);
+            params.q = q_list(iq);
             
             %% calc Temperature to plot isotherms or plot time to breakthrough
             if plotTxy_stream_tb_Txy || plotTxy_stream_tb_tb  
                 % Calculate temperature series for current q
-                [~, ~, Txy_stream_tb, Xmesh, Ymesh, ~, ~, ~, t_b_mesh ] = ...          
+                [~, ~, Txy_stream_tb(:,:,it, iq ), Xmesh, Ymesh, ~, ~, ~, t_b_mesh(:,:,it, iq ) ] = ...          
                    T_eval_model(modelMethodPlot, x_range, y_range, z, ...
                                 Mt, params, t_list_plotTxy_q(it), comsolResultsTab);
             else
                 % Space discretization for both wells accounting for log and lin spacing areas in model domain
-                
                 [ ~, Xmesh, Ymesh ] = ...
                        spaceDiscretisation(x_range, y_range, z, Mt, ...
-                                           params.maxMeshSize, params.ro, params.a, comsolResultsTab);   
+                                           params.ro, params.a, comsolResultsTab);   
             end            
             % if NOT to plot tb
             if ~plotTxy_stream_tb_tb 
@@ -135,29 +139,37 @@ if plotTxy_stream_tb
             if ~plotTxy_stream_tb_Txy 
                 Txy_stream_tb = [];
             end
-            legendTexts_q{1} = sprintf('v_D = %.3f m/day', params.q * daysToSeconds(1)); % legend for list of gw velocity [m/day]
             
             %% calc streamlines and hydraulic potential for plot
             if plotTxy_stream_tb_stream 
                 % Hydraulic conductivity
                 K = params.q / deltaH;               
                 % calculate hydraulic potential phi
-                phi_xy_mesh = schulz_phi_psi( Xmesh, Ymesh, params.q, K, params.alpha_deg, ...
+                phi_xy_mesh(:,:,it, iq ) = schulz_phi_psi( Xmesh, Ymesh, params.q, K, params.alpha_deg, ...
                                               params.M, params.Q, params.a );
                 % calculate groundwater velocities in x and y direction (in 2D to plot streamlines
-                [ v_x, v_y ] = schulz_velocity( Xmesh, Ymesh, params.q, params.alpha_deg, ...
+                [ v_x(:,:,it, iq ), v_y(:,:,it, iq ) ] = schulz_velocity( Xmesh, Ymesh, params.q, params.alpha_deg, ...
                                                 params.M, params.Q, params.a );                                          
             else
                 phi_xy_mesh = [];
                 v_x = [];
                 v_y = [];
             end
+        end
+    end
 
-            %% Plot MFLS with physical units PLAN VIEW
-            T_isotherm = [-15, - 10, -5, 0]; % temperature for limit of plume on plot display (Kelvin)
-            plotTxy_stream_tb_fun( Txy_stream_tb, legendTexts_q, t_list_plotTxy_q(it), T_isotherm, ...
-                                phi_xy_mesh, v_x, v_y, t_b_mesh, ...
-                                Xmesh, Ymesh, plotTitle, i) 
+    %% Plot PLAN VIEW streamlines, hydraulic potential,  isotherms and times to thermal breakthrough
+    T_isotherm = [-15, - 10, -5, -1]; % temperature for limit of plume on plot display (Kelvin)
+    for iq = 1:numel(q_list)
+        for it = 1 : numel(t_list_plotTxy_q)
+            % prepare legend
+            legendTexts_q{1} = sprintf('v_D = %.3f m/day', q_list(iq) * daysToSeconds(1)); % legend for list of gw velocity [m/day]
+            % Create the plot streamlines, hydraulic potential,  isotherms and times to thermal breakthrough
+            plotTxy_stream_tb_fun( Txy_stream_tb(:,:,it, iq), legendTexts_q, t_list_plotTxy_q(it), T_isotherm, ...
+                            phi_xy_mesh(:,:,it, iq), v_x(:,:,it, iq), v_y(:,:,it, iq), ... 
+                            t_b_mesh(:,:,it, iq), ...
+                            Xmesh, Ymesh, plotTitle, iq) % last iq sets the colour of isotherms
+                                                         % to correspond to the colour of groundwater velocity
             if plotSave        
                 if secondsToYears(t_list_plotTxy_q(it)) >= 1
                     plotName = sprintf('%s_z%dm_a[%.1f %.1f %.1f]_t%.0fy_%s', ...
@@ -171,19 +183,22 @@ if plotTxy_stream_tb
 
                 saveFig([plotExportPath plotName])
             end
-        end     
+        end
     end
-end
+end     
 
 %% Extract data for plot 
 %% PLAN VIEW how groundwater velocity influences plume development in x&y direction
 if plotTxy_q
     plotNamePrefix = 'Txy_q'; % plot name to save the plot with relevant name
-    t_list_plotTxy_q = [daysToSeconds(2*365), daysToSeconds(5*365)]; % time in seconds
+    % t_list_plotTxy_q = [daysToSeconds(5*365)]; % time in seconds
+    t_list_plotTxy_q = t_list(26); % [seconds] about 5 years
     for it = 1:numel(t_list_plotTxy_q)
         % prepare matrices for results
         Txy_q = nan(Mt, Mt, numel(q_list)); % temperature series
-        legendTexts_q = cell(1, numel(q_list)); % allocate to legends empty cells 
+        % pre-allocate empty strings to legend text 
+        % in case not all q are filled it will be working.
+        legendTexts_q = repmat({''},1,numel(q_list)); % OLD version: legendTexts_q = cell(1, numel(q_list));        
         for i = 1:numel(q_list)
             params = paramsStd;
             params.q = q_list(i);
@@ -196,7 +211,7 @@ if plotTxy_q
         end
 
         %% Plot MFLS with physical units PLAN VIEW
-        T_isotherm = [-15 0]; % temperature for limit of plume on plot display (Kelvin)
+        T_isotherm = [-5, -1]; % temperature for limit of plume on plot display (Kelvin)
         plotTxy_q_fun( Txy_q, legendTexts_q, t_list_plotTxy_q(it), T_isotherm, Xmesh, Ymesh, plotTitle )
 
         if plotSave        
@@ -209,7 +224,6 @@ if plotTxy_q
                     plotNamePrefix, z, params.aX, params.aY, params.aZ, ...
                     secondsToDays(t_list_plotTxy_q(it)), modelMethodPlot);
             end
-
             saveFig([plotExportPath plotName])
         end        
     end

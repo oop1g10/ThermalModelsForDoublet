@@ -46,15 +46,7 @@ function [ pointValues_IndepVar, independentVarIndices ] = ...
         assert(fixedCoord(~usedDimensions) ==  pointXYZ(1,~usedDimensions) ...
                | isnan(fixedCoord(~usedDimensions)), 'Fixed dimension does not match');
     end
-    
-    % All negative y points turn to absolute values, if symmetry along Y axis is used in model
-    if comsolResultsRow.isYSymmetry{1}
-        yColumnIndex = find(dimensions == 'y'); % which column contains y coordinate, if any
-        % turn y column points to all positive values, if y column is not present in the selected
-        % data then just leave as it is (negative and positive)
-        pointCoords(:,yColumnIndex) = abs(pointCoords(:,yColumnIndex));
-    end
-    
+        
     % Find triangle element containing point
     % Barycentric coordinates used to weight node temperatures in element
     [nodeConnectivityIndex, baryCoord] = pointLocation(delaunayTriang, pointCoords);

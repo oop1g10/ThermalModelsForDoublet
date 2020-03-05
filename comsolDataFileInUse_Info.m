@@ -16,10 +16,10 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
         comsolDataFile = [folder 'comsolData_sol1_doublet_2d.mat']; 
         comsolDataFileConvergence = [folder  'comsolData_sol1_doublet_2d_meshConverge.mat'];
         variant = 'homo';
-        modelMethods = {'Schulz', 'Schulz'}; % 'nDoublet2D'
+        modelMethods = {'Schulz', 'nDoublet2D'}; % 'nDoublet2D'
         modelMethodsConvergence = {'Schulz', 'nDoublet2D'};
         % "max el size (m) at wel wall in comsol, optimal mesh size
-        maxMeshSize = 0.01; 
+        maxMeshSize = 0.01;
         methodMesh = '2d'; % name of method of meshing in comsol
     % 3D
     elseif model_3dComsol

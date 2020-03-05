@@ -55,7 +55,7 @@ function [T_diff, t_b] = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
     % when parfor (parallel computing to spead up process) is used 
     % = breakpoints are not working inside the loop
     for i = 1 : size(x,1)
-        for j = 1 : size(x,2)
+        parfor j = 1 : size(x,2)
             % Check if x y point is inside the abstraction well. DONE
             % If yes consider every streamline going into abstration well 
             % to calculate Temperature and time of breakthrough             
