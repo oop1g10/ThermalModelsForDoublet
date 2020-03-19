@@ -13,13 +13,17 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
     % Load results comsolResultsTab from Comsol calculations
     %% 2D
     if model_2dPlanComsol
-        comsolDataFile = [folder 'comsolData_sol1_doublet_2d.mat']; 
-        comsolDataFileConvergence = [folder  'comsolData_sol1_doublet_2d_meshConverge.mat'];
+        % comsolDataFile = [folder 'comsolData_sol1_doublet_2d.mat']; 
+        comsolDataFile = [folder 'comsolData_sol1_doubletStdplots4gw_2d.mat'];
+        comsolDataFileConvergence = [folder  'comsolData_sol1_doubletMeshConvergence_2d.mat'];
+        warning('filenamechanged')
+            comsolDataFileConvergence = [folder 'comsolData_sol1_doubletMeshConvergenceQ3HM3000_2d'];
+
         variant = 'homo';
         modelMethods = {'Schulz', 'nDoublet2D'}; % 'nDoublet2D'
         modelMethodsConvergence = {'Schulz', 'nDoublet2D'};
         % "max el size (m) at wel wall in comsol, optimal mesh size
-        maxMeshSize = 0.01;
+        maxMeshSize = 0.1;
         methodMesh = '2d'; % name of method of meshing in comsol
     % 3D
     elseif model_3dComsol
@@ -27,7 +31,7 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
         variant = 'homo'; %scenario with permeable matrix
         modelMethods = {'nDoublet3D', 'nDoublet3D'}; %original           
     
-        comsolDataFileConvergence = [folder  'comsolData_sol1_doublet_3d_meshConverge.mat'];           
+        comsolDataFileConvergence = [folder  'comsolData_sol1_doubletMeshConvergence_3d.mat'];           
         modelMethodsConvergence = {'Schulz', 'nDoublet3D'};
         maxMeshSize = 0.04; % optimesh 
         methodMesh = '3d'; % name of method of meshing in comsol

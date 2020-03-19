@@ -60,7 +60,7 @@ function [ pointValues_IndepVar, independentVarIndices ] = ...
     for i = 1:numel(independentVarValuesSelected) 
         % Put TRUE to column only when this independent variable is selected for analysis
         independentVarSelectedLogic = independentVarSelectedLogic | ...
-                                      (independentVarValues == independentVarValuesSelected(i));
+                                      (round(independentVarValues, 4) == round(independentVarValuesSelected(i), 4));
     end
     % List indices of selected independent variables
     independentVarIndices = find(independentVarSelectedLogic);

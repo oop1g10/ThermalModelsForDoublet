@@ -1,0 +1,29 @@
+function paramsCombinationsTab = paramsCombinationsPrep( paramsList )
+% Prepare table of parameter sets to sample from to conduct model comparison
+    
+    % Get names of parameters to combine
+    paramNames = fieldnames(paramsList);
+    
+    % Prepare array of cells, each cell with one parameter or parameter list
+    paramsInCells = cell(1, numel(paramNames));
+    for i = 1:numel(paramNames)
+        paramsInCells(i) = {paramsList.(paramNames{i})};
+    end
+    
+    % Create all combinations (systematic) of parameters as matrix, rows
+    % correspond to one parameter, columns for each combinations of
+    % parameters, but it is transposed so it is THE OTHER WAY AROUND.
+    % Dynamic input as varargin paramsInCells{:} turns array of cells into separate arguments, 
+    % values of cells (opened cells = matrices)
+    paramsCombinationsMatrix = combvec( paramsInCells{:} )';
+    
+    % Save combinations as table with columns corresponding to parameter
+    % names and rows to each combination set
+    paramsCombinationsTab = array2table(paramsCombinationsMatrix, 'VariableNames', paramNames);
+
+    % Specific case for dispersivities: add aY and aZ based on specified proportions to aX.
+    aXYZ_list = aXYZ_toTest( paramsCombinationsTab.aX' );
+    paramsCombinationsTab.aY = aXYZ_list(:,2);
+    paramsCombinationsTab.aZ = aXYZ_list(:,3);
+
+end

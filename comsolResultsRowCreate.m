@@ -27,8 +27,33 @@ function comsolResultsTabRow = comsolResultsRowCreate(comsolFilename, nodeXYZ, .
     fixedCoord(usedDimensions) = NaN; %used dimensions will be NaN because they change    
  
     % Create a 2D (plane or profile view) or 3D delaunayTriangulation (elements) for nodes with known temperatures
-    delaunayTriang = delaunayTriangulation(nodeXYZ(:,usedDimensions));
-     
+    PointsList = nodeXYZ(:,usedDimensions);
+    delaunayTriang = delaunayTriangulation(PointsList);
+    % TODO
+    % 1 from delaunayTriang take xy list and compare it with xy list from comsol import
+    % 2 from delaunayTriang the indices of points from the 3 points list should be matched with coored indices
+    % do it after delaunayTriang during import file.
+    
+    % Find xy points used in triangulation in the original list of xy points
+    indecesNodesXYZ = NaN(size(delaunayTriang.Points, 1), 1);
+    j = 0;
+    % get indices
+    for i = 1 : size(delaunayTriang.Points, 1) 
+        while j < size(PointsList, 1)
+            j = j + 1;
+            if all(delaunayTriang.Points(i, :) == PointsList(j,:))
+                indecesNodesXYZ(i) = j;
+                break
+            end
+        end
+    end  
+    % use only corresponding T and velocities for used points
+    nodeXYZ = nodeXYZ(indecesNodesXYZ,:);
+    T_nodeTime = T_nodeTime(indecesNodesXYZ,:);
+    v_x_nodeTime = v_x_nodeTime(indecesNodesXYZ,:);
+    v_y_nodeTime = v_y_nodeTime(indecesNodesXYZ,:);
+    Hp_nodeTime = Hp_nodeTime(indecesNodesXYZ,:);
+    
     % Prepare table for all comsol output data: range of gw velocities,
     % and dispersivities
     comsolResultsTabRow = table;

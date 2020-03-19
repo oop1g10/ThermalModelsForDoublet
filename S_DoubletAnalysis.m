@@ -2,12 +2,12 @@ clear
 clear T_eval_model % clear persistent variables in function (used as cache)
 
 %% Decide which plots to generate
-plotT_q = true; %+ T change vs time at different GW flows
-plotTxy_stream_tb = false; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
+plotT_q = false; %+ T change vs time at different GW flows
+plotTxy_stream_tb = true; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
     plotTxy_stream_tb_Txy = true; % plot isotherms
     plotTxy_stream_tb_tb = true; % plot time to breakthrough
     plotTxy_stream_tb_stream = true; % plot streamlines
-plotTxy_q = false; %+ How groundwater velocity influences plume development in x&y direction (plan view)
+plotTxy_q = true; %+ How groundwater velocity influences plume development in x&y direction (plan view)
 
 plotT_q_pipes = false; %   ****  Temperature change versus time at different GW flows with INFO on T inside pipes
     plotT_q_pipes_fracture = false; % if true = plot model with standard fracture paramters, if false = plot Homo model (i.e. without fracture)
@@ -21,8 +21,8 @@ plotXt_axy_q = false; %+ Plume extent longitudinal (X) after 30 years (t) vs dis
 plotXt_q_fe = false; % Plume extent longitudinal (X) after 30 years (t) vs groundwater flow (q) for different heat input (fe)
 
 % Save the plots
-plotSave = false;
-plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOL\figures\';
+plotSave = true;
+plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d\';
 
 [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsConvergence, variant,...
     solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
@@ -34,10 +34,20 @@ fprintf('methodMesh: %s\n', methodMesh);
 % Take coordinates for plots
 [ t_list, q_list, ~, x_range, y_range, z_range, Mt, y, z, ~, timeTbh, timeForT_max, ~, ~, x_Tlist ] = ...
     standardRangesToCompare( );
+    % Mt = 201;
+    % warning('Mt changed from 101')
 q_max = max(q_list); %Specific flux (Darcy flux) [m s-1] % maximm required Darcy velocity
-
-modelMethodsPlot = [modelMethods(1), modelMethods(2)];
-modelMethodPlot = modelMethods{1}; % Method of model calculation
+% warning('q list changed to only 1 value: q_list(4)')
+ %   q_list = q_list(4);
+ 
+%     paramsStd.Q = 0.03;
+%     paramsStd.H = 30;
+%     paramsStd.M = paramsStd.H;  
+%     z_range(2) = paramsStd.H;
+%     z = paramsStd.H / 2;
+    
+modelMethodsPlot = [modelMethods(1), modelMethods(2)]; % 1 = Schulz; 2 = Comsol 2D
+modelMethodPlot = modelMethods{2}; % Method of model calculation
 % NOTE selected plot support comparison of two models some only one model method
 % Model methods for which comparison plot should be generated
 % First method is full line for analytical model, 
@@ -103,6 +113,9 @@ end
 if plotTxy_stream_tb
     plotNamePrefix = 'Txy_stream_tb'; % plot name to save the plot with relevant name
     t_list_plotTxy_q = [daysToSeconds(2*365), daysToSeconds(5*365)]; % time in seconds
+    warning('special time for Comsol results    1.9481 years col 94 and 5.3348 yrs column 101 in time list from comsol')
+        t_list_plotTxy_q = [6.143644800000002e+07, 168238080]; % time in seconds    
+
     % preassign 4 D matrices for T to save the results
     Txy_stream_tb = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
     % same for tb ( which is based on I phi)
@@ -129,8 +142,8 @@ if plotTxy_stream_tb
                 % Space discretization for both wells accounting for log and lin spacing areas in model domain
                 [ ~, Xmesh, Ymesh ] = ...
                        spaceDiscretisation(x_range, y_range, z, Mt, ...
-                                           params.ro, params.a, comsolResultsTab);   
-            end            
+                                           params.ro, params.a, comsolResultsTab);  
+            end
             % if NOT to plot tb
             if ~plotTxy_stream_tb_tb 
                 t_b_mesh = [];
@@ -172,12 +185,14 @@ if plotTxy_stream_tb
                                                          % to correspond to the colour of groundwater velocity
             if plotSave        
                 if secondsToYears(t_list_plotTxy_q(it)) >= 1
-                    plotName = sprintf('%s_z%dm_a[%.1f %.1f %.1f]_t%.0fy_%s', ...
-                        plotNamePrefix, z, params.aX, params.aY, params.aZ, ...
+                    plotName = sprintf('%s_q%.3fmd-1_z%dm_a[%.1f %.1f %.1f]_t%.0fy_%s', ...
+                        plotNamePrefix, q_list(iq) * daysToSeconds(1), ...
+                        z, params.aX, params.aY, params.aZ, ...
                         secondsToYears(t_list_plotTxy_q(it)), modelMethodPlot);
                 else
-                    plotName = sprintf('%s_z%dm_a[%.1f %.1f %.1f]_t%.0fdays_%s', ...
-                        plotNamePrefix, z, params.aX, params.aY, params.aZ, ...
+                    plotName = sprintf('%s_q%.3fmd-1_z%dm_a[%.1f %.1f %.1f]_t%.0fdays_%s', ...
+                        plotNamePrefix, q_list(iq) * daysToSeconds(1), ...
+                        z, params.aX, params.aY, params.aZ, ...
                         secondsToDays(t_list_plotTxy_q(it)), modelMethodPlot);
                 end
 
@@ -192,7 +207,7 @@ end
 if plotTxy_q
     plotNamePrefix = 'Txy_q'; % plot name to save the plot with relevant name
     % t_list_plotTxy_q = [daysToSeconds(5*365)]; % time in seconds
-    t_list_plotTxy_q = t_list(26); % [seconds] about 5 years
+    t_list_plotTxy_q = t_list(25); % [seconds] here 25th time equals to 3 years
     for it = 1:numel(t_list_plotTxy_q)
         % prepare matrices for results
         Txy_q = nan(Mt, Mt, numel(q_list)); % temperature series
@@ -211,7 +226,7 @@ if plotTxy_q
         end
 
         %% Plot MFLS with physical units PLAN VIEW
-        T_isotherm = [-5, -1]; % temperature for limit of plume on plot display (Kelvin)
+        T_isotherm = [-1, -14]; % temperature for limit of plume on plot display (Kelvin)
         plotTxy_q_fun( Txy_q, legendTexts_q, t_list_plotTxy_q(it), T_isotherm, Xmesh, Ymesh, plotTitle )
 
         if plotSave        
@@ -740,73 +755,4 @@ if plotXt_q_fe
     end
 end
 
-%% Histogram of T differences between T in pipe and T on VBHE wall
-if plotHistogramTpipeDiffTb
-    plotNamePrefix = 'HistogramTpipeDiffTb'; % plot name to save the plot with relevant name
-    modelMethodPlot_HistogramTpipeDiffTb = 'nMFLSfrp';
-    % prepare list of all parameter names which need to be extracted from results table
-    paramsStd_fr_Tab = struct2table(paramsStd_fr);
-    param_names = paramsStd_fr_Tab.Properties.VariableNames';
-    % extract from results table only columns with parameters
-    param_combinations = comsolResultsTab(:, param_names);
-    % convert cell values in table to double
-    param_combinations_array = table2array(param_combinations); % make table into array of cells
-    param_combinations_array = cell2mat(param_combinations_array); % convert cells to double
-    param_combinations = array2table(param_combinations_array, 'VariableNames',param_names); % make array back to table (but without cells)
-    % keep unique parameter combinations only
-    param_combinations = unique(param_combinations);
-    param_combinations = param_combinations(~(param_combinations.frDip == 0 & param_combinations.frZ == 50), :);
-    param_combinations = param_combinations((param_combinations.rSource == 0 ),:);
-    
-    % additional params for key info
-    T_plume = 0.5; % temperature for plume extent in x direction [K] 
-    %TpipeDiffTb = nan(size(param_combinations,1),1);
-    %T_pipeIN_all = nan(size(param_combinations,1),1);
-    %T_pipeOUT_all = nan(size(param_combinations,1),1);
-    T_bh_all = nan(size(param_combinations,1),1);
-    T_pipe_average = nan(size(param_combinations,1),1);
-    TpipeAverageDiffTb = nan(size(param_combinations,1),1);   
-    
-    for i = 1: size(param_combinations,1)
-        % get parameter combination
-        params = paramsFromSample_COMSOL(param_combinations(i,:), paramsStd_fr);
-        % Get key info for params
-        keyModelInfoRow = keyModelInfo( timeTbh, timeForT_max, T_plume, x_Tlist, ...
-                                        modelMethodPlot_HistogramTpipeDiffTb, params, comsolResultsTab);
-        T_pipe_average(i) = mean([keyModelInfoRow.T_pipeIN, keyModelInfoRow.T_pipeOUT]);                            
-        %TpipeDiffTb(i) = keyModelInfoRow.T_pipeIN - keyModelInfoRow.T_bh; 
-        %T_pipeIN_all(i) = keyModelInfoRow.T_pipeIN;
-        T_bh_all(i) = keyModelInfoRow.T_bh;
-        
-        TpipeAverageDiffTb(i) = T_pipe_average(i) - T_bh_all(i); % difference between average T in pipe and T at VBHE wall
-    end
-    % plot as histogram
-    bins = 30;
-    plotHistogramMC_fun( TpipeAverageDiffTb, [], [0 45], 'Difference between T pipe average and Tbh (K)', bins ) 
-    
-%     % just to compare groundwater velocities influence on Temperature difference between TpipeIN and Tbh
-%     q1 = abs(param_combinations.q - q_list(2)) < 1e-10;
-%     q2 = abs(param_combinations.q - q_list(3)) < 1e-10;
-%     TpipeDiffTb_q1 = TpipeDiffTb(q1); 
-%     TpipeDiffTb_q2 = TpipeDiffTb(q2); 
-%     plotHistogramMC_fun( TpipeDiffTb_q1, [], [0 25], 'q1 Temperature difference between TpipeIN and Tbh (K)', bins ) 
-%     plotHistogramMC_fun( TpipeDiffTb_q2, [], [0 25], 'q2 Temperature difference between TpipeIN and Tbh (K)', bins ) 
-  
-    if plotSave
-        plotName = sprintf('%s_t%dy_%s', ...
-            plotNamePrefix, secondsToYears(timeTbh), modelMethodPlot);
-        saveFig([plotExportPath plotName])
-    end
-end
 
-
-%% Additional ideas
-% Save only nodes and temperatures for y >= 0 as the cylinder is symetric.
-% The T_nodeTime matrix half then save as sparce after rounding to 6
-% decimal places. Make function to replace columns with half data in table
-% with full ones for processing and add delaunayTriang only at this point.
-% Make a function to find/return row for q and aXYZ and return it (can
-% reference to table row be used?).
-% Not implemented because sparce matrix could save only about 10% of space
-% becasue of dense number of nodes near borehole and plans to build
-% fractures in homogenous medium --> no symmetry along y axis in future.

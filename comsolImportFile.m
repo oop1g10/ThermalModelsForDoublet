@@ -174,4 +174,13 @@ v_x_nodeTime = v_x_nodeTime(:, nonEmptyColumns);
 v_y_nodeTime = v_y_nodeTime(:, nonEmptyColumns);
 Hp_nodeTime = Hp_nodeTime(:, nonEmptyColumns);
 
+% Idea was to solve problem of duplicate points to match DelenauyTriangulation indices, but it does not solve it.
+% % Leave only rows with unique coordinates
+% [nodeXYZ, ia] = unique(nodeXYZ, 'rows');
+% % Save only results which correspond to unique coordinates in the same order as coordinates list
+% T_nodeTime = T_nodeTime(ia);
+% v_x_nodeTime = v_x_nodeTime(ia);
+% v_y_nodeTime = v_y_nodeTime(ia);
+% Hp_nodeTime = Hp_nodeTime(ia);
+
 end

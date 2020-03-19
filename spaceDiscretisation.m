@@ -77,7 +77,7 @@ function [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
         z_list = z_range;       
     % if y coordinate is fixed
     elseif numel(y_range) == 1 
-        % If Mt is not provided, x,y,z ranges already contain the positions of all points to be evaluable, rahter than only ranges.
+        % If Mt is not provided, x,y,z ranges already contain the positions of all points to be evaluable, rather than only ranges.
         if isempty(Mt)
             z_list = z_range;
         else

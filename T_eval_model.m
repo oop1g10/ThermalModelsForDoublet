@@ -3,10 +3,12 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
     T_eval_model(modelMethod, x_range, y_range, z_range, Mt, params, t_list, comsolResultsTab)
 % Model inputs
 % modelMethod - method of model "comsol" or MILS or MFLS
-% x_range - has to be range as from to (e.g. [2 3], if only signle x point needed to be computed range should be given as repeated value, e.g. [2 2] 
-% y_range, z_range - can be given as signle value or a range (from to), either y or z should be fixed point e.g. [2 2], 
-%       i.e. both cannot be given as a list e.g. [2 3]
+% x_range - has to be range as from to (e.g. [2 3], if only signle x point needed to be computed range should be
+%           given as a single value, e.g. 2, provided that y and z are also single values. 
+% y_range, z_range - can be given as signle value or a range (from to), either y or z should be fixed point 
+%                    e.g. [2 2], i.e. both cannot be given as a list e.g. [2 3]
 % Mt - number of steps to divide the range into
+%       If Mt is [] EMPTY than it means that no space discretisation is needed and the x-list is taken directly from x_range (to evaluate T at separate point)
 % params - structure with parameters
 % t_list - list of times (seconds)
 % comsolResultsTab - table with all COmsol results (Temperatures and times and positions and element triangulation)
@@ -16,6 +18,13 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
 %                                                                   or analytical solution named as 'MFLS', 'MILS' 
 
     [ ~, ~, deltaH, ~, ~, ~, N_Schulz_streamline] = standardParams( 'homo' );
+    
+    % If only single point should be evaluated, convert it to a "range" 
+    % as the function used expects a "range" even for single points
+    if numel(x_range) == 1 && numel(y_range) == 1 && numel(z_range) == 1
+        x_range = [x_range, x_range] ;
+        y_range = [y_range, y_range] ;        
+    end
     
     % Space discretization for both wells accounting for log and lin spacing areas in model domain
     [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
@@ -48,6 +57,9 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
             % Get temperatures for points of interest and selected times for current q
             [T_points_t, ~] = comsolInterpolatePointValues( comsolResultsRow, points_Coords, ...
                                                         'T_nodeTime', 'timeList', t_list);
+            % TODO calc tb mesh from Comsol results
+            t_b_mesh = nan(numel(y_list) * numel(z_list), numel(x_list));                                       
+                                                    
             % Make matrix from list, rows for y or z coordinate, columns for x coordinate
             % Reshape can be done only for 1 time
             if numel(t_list) == 1
@@ -58,8 +70,12 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
             end
         else % results not found
             elementsCountComsol = NaN; % element count cannot be determined
-            T_points_t = nan(size(points_Coords,1), numel(t_list));
+            T_points_t = nan(size(points_Coords,1), numel(t_list));          
             T_mesh = nan(numel(y_list) * numel(z_list), numel(x_list));
+            
+            % TODO calc tb mesh from Comsol results
+            t_b_mesh = nan(numel(y_list) * numel(z_list), numel(x_list));                                       
+
         end    
     
     %% For analytical solution
@@ -78,7 +94,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
         % Ignore parameters which make no sense for analytical models
         params.maxMeshSize = 0;
         % Check if enough Temperatures (>10000) so caching will be allowed
-        cacheAllowed = (size(points_Coords, 1) * numel(t_list)) >= 10000;
+        cacheAllowed = (size(points_Coords, 1) * numel(t_list)) >= 100; % 2000;
         % If cache allowed and current parameters the same as previously cached
         if cacheAllowed && ~isempty(params_Cache) && ...
                all(table2array(struct2table(params)) == table2array(struct2table(params_Cache))) && ...
@@ -159,5 +175,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
     % this is because result of analytical slightly not precise (on about 6 decimal points)
     decimalPlaces = 5;
     T_points_t = round(T_points_t, decimalPlaces);
-    T_mesh = round(T_mesh, decimalPlaces);
+    if ~isempty(T_mesh)
+        T_mesh = round(T_mesh, decimalPlaces);
+    end
 end

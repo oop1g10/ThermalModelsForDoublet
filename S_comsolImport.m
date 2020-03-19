@@ -1,8 +1,8 @@
 clear
 clc
 %
-folder = 'D:\COMSOL_INRS\export\';  
-results = 'doublet'; 
+folder = 'D:\COMSOL_INRS\export\';
+results = 'doubletStdplots4gw' ; %'doubletMeshConvergenceQ3HM3000'; %'doubletMeshConvergence' ; % ;'doublet'; % 
 [~, ~, ~, ~, ~, solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
 fprintf('methodMesh: %s \n', methodMesh);
 % Name of data file with comsol imported results

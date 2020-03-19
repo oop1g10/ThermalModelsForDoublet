@@ -15,7 +15,6 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     timeStep = 0.25; % 0.25
     t_list_days = 10.^[-3 : timeStep : 5] / 1e5 * t_max; % days
     t_list = daysToSeconds(round(t_list_days, 5, 'significant')); % seconds
-    
     % Calculate time series for different q (gw velocity)
     q_max = 1 / daysToSeconds(1); % Specific flux (Darcy flux) [m s-1] which equals to 1 m/day
     q_range = [q_max/1000 q_max];
@@ -48,14 +47,21 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     T_SS_low = 0.99; 
     
     % Times and isotherms for comparative statistics (key info comparison)
-    timeTbh = daysToSeconds(5 * 365); % time to calculate temperature at specified location (or well), [seconds]
+    timeTbh = daysToSeconds(3 * 365); % time to calculate temperature at specified location (or well), [seconds]
     timeTbh_max = daysToSeconds(300*365); % time to calc max temperature at specified location, [seconds]
     % Difference of temperature, deg C, to find plume (isotherm) extent
-    T_plume_list =   [1 2 5 10];
+    warning('T_plume_list = only 1 value')
+  %  T_plume_list = [-1 -2 -5 -10];
+    T_plume_list = [ -5 ];
     % Difference of temperature, deg C, to find plume (isotherm) extent for Monte Carlo analysis
     T_plume_listMC = T_plume_list; 
     % [m] X coordinates, distance from injection well for temperature evaluation, to plot
-    x_Tlist = xInjection + [paramsStd.ro, 1, 10, 50, 100, 150, 200]; 
+     x_Tlist_Inj = xInjection + [paramsStd.ro, 1, 50, 100, 200]; 
+     x_Tlist_Abs = xAbstraction - [paramsStd.ro, 1, 50, 100, 200];
+    warning('x_Tlist changed to only abstraction Well!')
+  %  x_Tlist = unique([x_Tlist_Inj, x_Tlist_Abs]);
+  %  x_Tlist = 0; % Position betwen injection and abstraction wells
+    x_Tlist = xAbstraction; 
     % [m] X coordinates, distance from heat source  for temperature evaluation for Monte Carlo analysis
     x_TlistMC = x_Tlist;
 
