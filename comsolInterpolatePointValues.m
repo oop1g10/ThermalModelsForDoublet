@@ -79,9 +79,12 @@ function [ pointValues_IndepVar, independentVarIndices ] = ...
         %Weighted average of node temperatures for each point
         pointValues_IndepVar(:,i) = sum(weightsElementNodes .* values_elementNodes, 2);
     end
-    % Round result to get rid of negative values close to zero
-    significantDigits = 4;
-    pointValues_IndepVar = round(pointValues_IndepVar, significantDigits, 'significant');
-    % Replace small values (close to zero) by zero
-    pointValues_IndepVar(abs(pointValues_IndepVar) <= 10^(-significantDigits)) = 0;
+    % Round results only for results of temperature differences 
+    if strcmp(nodeValuesVarName, 'T_nodeTime')
+        % Round result to get rid of negative values close to zero
+        significantDigits = 4;
+        pointValues_IndepVar = round(pointValues_IndepVar, significantDigits, 'significant');
+        % Replace small values (close to zero) by zero
+        pointValues_IndepVar(abs(pointValues_IndepVar) <= 10^(-significantDigits)) = 0;
+    end
 end

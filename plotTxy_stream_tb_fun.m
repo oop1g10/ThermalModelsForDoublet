@@ -18,7 +18,7 @@ function plotTxy_stream_tb_fun( Txy_q, legendTexts_q, time, T_isotherm, ...
     colors = setColorOrder( [1 2 3 4 5 6 7] ); %use first colors from default list
     hold on;
     % if temperature data is present in inputs then plot it
-    if ~isempty(Txy_q)
+    if any(any(~isnan(Txy_q)))
         T_line = [T_isotherm(1), T_isotherm]; % to draw on plot single line for plume extent        
         contour(Xmesh, Ymesh, Txy_q, T_line, ... %lineSpec{i}); % draw contour plot
                 'LineStyle', '-', 'LineColor', colors(iColor,:), 'LineWidth', defaultLineWidth * 2, ...
@@ -26,18 +26,18 @@ function plotTxy_stream_tb_fun( Txy_q, legendTexts_q, time, T_isotherm, ...
     end
     
     % if Hydraulic potential data is present in inputs then plot it
-    if ~isempty(phi_xy)
+    if any(any(~isnan(phi_xy)))
         % Hydraulic potential (phi)
         contour( Xmesh, Ymesh, phi_xy, 30 ) % 'ShowText','on'
     end
     % if groundwater velocity data is present in inputs then plot it
-    if ~isempty(v_x)   
+    if any(any(~isnan(v_x))) 
         % plot streamlines
         streamslice(Xmesh, Ymesh, v_x, v_y)
     end
     
     % plot break through time (s)
-    if ~isempty(t_b)
+    if any(any(~isnan(t_b))) 
         yearList = [0.5, 1, 2, 5, 10, 25];
         contour( Xmesh, Ymesh, secondsToYears(t_b), yearList, ...
                                         'ShowText','on', ...

@@ -16,8 +16,6 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
         % comsolDataFile = [folder 'comsolData_sol1_doublet_2d.mat']; 
         comsolDataFile = [folder 'comsolData_sol1_doubletStdplots4gw_2d.mat'];
         comsolDataFileConvergence = [folder  'comsolData_sol1_doubletMeshConvergence_2d.mat'];
-        warning('filenamechanged')
-            comsolDataFileConvergence = [folder 'comsolData_sol1_doubletMeshConvergenceQ3HM3000_2d'];
 
         variant = 'homo';
         modelMethods = {'Schulz', 'nDoublet2D'}; % 'nDoublet2D'

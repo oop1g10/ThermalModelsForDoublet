@@ -2,12 +2,12 @@ clear
 clear T_eval_model % clear persistent variables in function (used as cache)
 
 %% Decide which plots to generate
-plotT_q = false; %+ T change vs time at different GW flows
-plotTxy_stream_tb = true; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
+plotT_q = true; %+ T change vs time at different GW flows
+plotTxy_stream_tb = false; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
     plotTxy_stream_tb_Txy = true; % plot isotherms
     plotTxy_stream_tb_tb = true; % plot time to breakthrough
     plotTxy_stream_tb_stream = true; % plot streamlines
-plotTxy_q = true; %+ How groundwater velocity influences plume development in x&y direction (plan view)
+plotTxy_q = false; %+ How groundwater velocity influences plume development in x&y direction (plan view)
 
 plotT_q_pipes = false; %   ****  Temperature change versus time at different GW flows with INFO on T inside pipes
     plotT_q_pipes_fracture = false; % if true = plot model with standard fracture paramters, if false = plot Homo model (i.e. without fracture)
@@ -83,7 +83,7 @@ if plotT_q
                 T_q(i,:) = ...
                    T_eval_model(modelMethodsPlot{im}, [point_MidDepth(1), point_MidDepth(1)], ...
                                                 point_MidDepth(2), point_MidDepth(3), ...
-                                                Mt_T_q, params, t_list, comsolResultsTab);
+                                                Mt_T_q, params, t_list, comsolResultsTab, 'T');
 
                 legendTexts_q{i} = sprintf('%s: v_D = %.3f m/day', ...
                     modelMethodsPlot{im}, q_list(iq)*daysToSeconds(1)); % darcy velocity in m/days from m/sec
@@ -112,9 +112,8 @@ end
 %% Plot streamlines, hydraulic potential,  isotherms and times to thermal breakthrough
 if plotTxy_stream_tb
     plotNamePrefix = 'Txy_stream_tb'; % plot name to save the plot with relevant name
-    t_list_plotTxy_q = [daysToSeconds(2*365), daysToSeconds(5*365)]; % time in seconds
-    warning('special time for Comsol results    1.9481 years col 94 and 5.3348 yrs column 101 in time list from comsol')
-        t_list_plotTxy_q = [6.143644800000002e+07, 168238080]; % time in seconds    
+    % times for results    1.9481 years col 94 and 5.3348 yrs column 101 in time list from comsol
+    t_list_plotTxy_q = 168238080; % [6.143644800000002e+07, 168238080]; % time in seconds    
 
     % preassign 4 D matrices for T to save the results
     Txy_stream_tb = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
@@ -132,47 +131,32 @@ if plotTxy_stream_tb
             params = paramsStd;
             params.q = q_list(iq);
             
-            %% calc Temperature to plot isotherms or plot time to breakthrough
-            if plotTxy_stream_tb_Txy || plotTxy_stream_tb_tb  
-                % Calculate temperature series for current q
-                [~, ~, Txy_stream_tb(:,:,it, iq ), Xmesh, Ymesh, ~, ~, ~, t_b_mesh(:,:,it, iq ) ] = ...          
-                   T_eval_model(modelMethodPlot, x_range, y_range, z, ...
-                                Mt, params, t_list_plotTxy_q(it), comsolResultsTab);
-            else
-                % Space discretization for both wells accounting for log and lin spacing areas in model domain
-                [ ~, Xmesh, Ymesh ] = ...
-                       spaceDiscretisation(x_range, y_range, z, Mt, ...
-                                           params.ro, params.a, comsolResultsTab);  
+            %% Temperature, time to breakthrough, streamlines and hydraulic potential for plot
+            % create string with variable names requested for plot
+            evalTask = '';
+            if plotTxy_stream_tb_Txy
+                evalTask = [evalTask, 'T, '];
             end
-            % if NOT to plot tb
-            if ~plotTxy_stream_tb_tb 
-                t_b_mesh = [];
+            if plotTxy_stream_tb_tb
+                evalTask = [evalTask, 't_b, '];
             end
-            % if NOT to plot Txy
-            if ~plotTxy_stream_tb_Txy 
-                Txy_stream_tb = [];
+            % calc streamlines and hydraulic potential for plot
+            if plotTxy_stream_tb_stream
+            % calculate hydraulic potential phi
+            % calculate groundwater velocities in x and y direction (in 2D to plot streamlines)
+                evalTask = [evalTask, 'v, H'];
             end
             
-            %% calc streamlines and hydraulic potential for plot
-            if plotTxy_stream_tb_stream 
-                % Hydraulic conductivity
-                K = params.q / deltaH;               
-                % calculate hydraulic potential phi
-                phi_xy_mesh(:,:,it, iq ) = schulz_phi_psi( Xmesh, Ymesh, params.q, K, params.alpha_deg, ...
-                                              params.M, params.Q, params.a );
-                % calculate groundwater velocities in x and y direction (in 2D to plot streamlines
-                [ v_x(:,:,it, iq ), v_y(:,:,it, iq ) ] = schulz_velocity( Xmesh, Ymesh, params.q, params.alpha_deg, ...
-                                                params.M, params.Q, params.a );                                          
-            else
-                phi_xy_mesh = [];
-                v_x = [];
-                v_y = [];
-            end
+            % Calculate required variable for current q
+            [~, ~, Txy_stream_tb(:,:,it, iq ), Xmesh, Ymesh, ~, ~, ~, t_b_mesh(:,:,it, iq ), ...
+                v_x(:,:,it, iq ), v_y(:,:,it, iq ), phi_xy_mesh(:,:,it, iq )] = ...          
+               T_eval_model(modelMethodPlot, x_range, y_range, z, ...
+                            Mt, params, t_list_plotTxy_q(it), comsolResultsTab, evalTask);
         end
     end
 
     %% Plot PLAN VIEW streamlines, hydraulic potential,  isotherms and times to thermal breakthrough
-    T_isotherm = [-15, - 10, -5, -1]; % temperature for limit of plume on plot display (Kelvin)
+    T_isotherm = [-14, - 10, -5, -1]; % temperature for limit of plume on plot display (Kelvin)
     for iq = 1:numel(q_list)
         for it = 1 : numel(t_list_plotTxy_q)
             % prepare legend
@@ -220,7 +204,7 @@ if plotTxy_q
             % Calculate temperature series for current q
             [~, ~, Txy_q(:, :, i), Xmesh, Ymesh, ~ ] = ...          
                T_eval_model(modelMethodPlot, x_range, y_range, z, ...
-                            Mt, params, t_list_plotTxy_q(it), comsolResultsTab);
+                            Mt, params, t_list_plotTxy_q(it), comsolResultsTab, 'T');
 
             legendTexts_q{i} = sprintf('v_D = %.3f m/day', q_list(i)*daysToSeconds(1)); % legend for list of gw velocity [m/day]
         end
@@ -296,7 +280,7 @@ if plotT_q_pipes
         % Model without pipe Tbh, Calculate temperature series for current q
         i = i+1;
         T_q(i,:) = T_eval_model(modelMethodsPlot_T_q_pipes{1}, [point_bh(1), point_bh(1)], point_bh(2), point_bh(3), ...
-                                Mt, params, t_list, comsolResultsTab);
+                                Mt, params, t_list, comsolResultsTab, 'T');
         legendTexts_q{i} = sprintf('%s: T_b, v_D = %.3f m/day', ...
             modelMethodsPlot_T_q_pipes{1}, q_list(iq)*daysToSeconds(1)); % darcy velocity in m/days from m/sec
         lineStyles = [lineStyles {'-'}];
@@ -305,7 +289,7 @@ if plotT_q_pipes
         % Model with pipe Tbh, Calculate temperature series for current q
         i = i+1;
         T_q(i,:) = T_eval_model(modelMethodsPlot_T_q_pipes{2}, [point_bh(1), point_bh(1)], point_bh(2), point_bh(3), ...
-                                Mt, params, t_list, comsolResultsTab);
+                                Mt, params, t_list, comsolResultsTab, 'T');
         legendTexts_q{i} = sprintf('%s: T_b, v_D = %.3f m/day', ...
             modelMethodsPlot_T_q_pipes{2}, q_list(iq)*daysToSeconds(1)); % darcy velocity in m/days from m/sec
         lineStyles = [lineStyles {'none'}];
@@ -313,11 +297,11 @@ if plotT_q_pipes
         
         % Model with pipe TpipeIN, Calculate temperature series for current q
         result_pipe(1,:) = T_eval_model(modelMethodsPlot_T_q_pipes{2}, [point_pipeIN(1), point_pipeIN(1)], point_pipeIN(2), point_pipeIN(3), ...
-                                Mt, params, t_list, comsolResultsTab);
+                                Mt, params, t_list, comsolResultsTab, 'T');
 
         % Model with pipe TpipeOUT, Calculate temperature series for current q
         result_pipe(2,:) = T_eval_model(modelMethodsPlot_T_q_pipes{2}, [point_pipeOUT(1), point_pipeOUT(1)], point_pipeOUT(2), point_pipeOUT(3), ...
-                                Mt, params, t_list, comsolResultsTab);
+                                Mt, params, t_list, comsolResultsTab, 'T');
 %         legendTexts_q{i} = sprintf('%s: T_{pipeOUT}, v_D = %.3f m/day', ...
 %             modelMethodsPlot_T_q_pipes{2}, q_list(iq)*daysToSeconds(1)); % darcy velocity in m/days from m/sec
 %         lineStyles = [lineStyles {'-.'}];
@@ -378,14 +362,14 @@ if plotTz_q_x
                 % Calculate temperature series for negative x (left side of borehole)
                 i = i+1;
                 [Tz_q_x(i,:),~,~,~,~,z_list]  = T_eval_model(modelMethodsPlot{im}, [-x_list(ix) -x_list(ix)], y, z_range, ...
-                                                Mt, params, time, comsolResultsTab);
+                                                Mt, params, time, comsolResultsTab, 'T');
                 legendTexts_q{i} = sprintf('%s: v_D = %.3f m/day, left', ...
                     modelMethodsPlot{im}, q_list(iq)*daysToSeconds(1)); % darcy velocity in m/days from m/sec
                 modelNames_Tz_q_x(i) = modelMethodsPlot(im);
                 % Calculate temperature series for positive x (right side of borehole)
                 i = i+1;
                 [Tz_q_x(i,:),~,~,~,~,z_list] = T_eval_model(modelMethodsPlot{im}, [x_list(ix) x_list(ix)], y, z_range, ...
-                                                Mt, params, time, comsolResultsTab);
+                                                Mt, params, time, comsolResultsTab, 'T');
                 legendTexts_q{i} = sprintf('%s: v_D = %.3f m/day, right', ...
                     modelMethodsPlot{im}, q_list(iq)*daysToSeconds(1)); % darcy velocity in m/days from m/sec
                 modelNames_Tz_q_x(i) = modelMethodsPlot(im);
@@ -474,7 +458,7 @@ if plotT_t_axy
                         % Get temperatures for points of interest and selected times for current q
                         % Temparatures are extrated for all requested times, loop through the times
                     [T_points_t, ~, ~, Xmesh] = T_eval_model(model_choice{im}, x_range, y, z, ...
-                                       Mt, params, t_list(it), comsolResultsTab);
+                                       Mt, params, t_list(it), comsolResultsTab, 'T');
                     T_t_axy(i,:) = T_points_t(:, 1)'; %rows for each point transposed to columns
                     % write time units in legend either in days or in years, depending on requested time
                     if t_list(it) >= daysToSeconds(30*365)
@@ -558,7 +542,7 @@ if plotTxz_q
                  il = il+1;
                 [T_points_t, points_XZ_grid, Txz_q(:, :, il), Xmesh, ~, Zmesh] = ...
                    T_eval_model(modelMethodsPlot(im), x_range, y, z_range, ...
-                                Mt, params, t_list(it), comsolResultsTab);
+                                Mt, params, t_list(it), comsolResultsTab, 'T');
                 legendTexts_q{il} = sprintf('v_D = %.3f m/day model: %s', q_list(i)*daysToSeconds(1), modelMethodsPlot{im}); % legend for list of gw velocity [m/day]
             end
         end
@@ -620,7 +604,7 @@ if plotTb_axy_q
             Tb_axy_q(iq,ia) = ...
                T_eval_model(modelMethodPlot, [point_BhWallMidDepth(1), point_BhWallMidDepth(1)], ...
                                             point_BhWallMidDepth(2), point_BhWallMidDepth(3), ...
-                                            Mt, params, t, comsolResultsTab);
+                                            Mt, params, t, comsolResultsTab, 'T');
         end
 
         % Legend texts
