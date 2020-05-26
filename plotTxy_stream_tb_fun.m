@@ -1,6 +1,6 @@
-function plotTxy_stream_tb_fun( Txy_q, legendTexts_q, time, T_isotherm, ...
+function plotTxy_stream_tb_fun( Txy_q, legendTexts_q, time, T_isotherm, tb_list, ...
                                 phi_xy, v_x, v_y, t_b, ...
-                                Xmesh, Ymesh, titleStr, iColor)
+                                Xmesh, Ymesh, titleStr, iColor, coord_list_ObsWells)
 % PLOTS plot isotherms and hydraulic potential phi and groundwater streamlines in plan view
 
 % Input parameters:
@@ -28,7 +28,7 @@ function plotTxy_stream_tb_fun( Txy_q, legendTexts_q, time, T_isotherm, ...
     % if Hydraulic potential data is present in inputs then plot it
     if any(any(~isnan(phi_xy)))
         % Hydraulic potential (phi)
-        contour( Xmesh, Ymesh, phi_xy, 30 ) % 'ShowText','on'
+        contour( Xmesh, Ymesh, phi_xy, 30, 'ShowText','on' ) % 'ShowText','on'
     end
     % if groundwater velocity data is present in inputs then plot it
     if any(any(~isnan(v_x))) 
@@ -38,12 +38,14 @@ function plotTxy_stream_tb_fun( Txy_q, legendTexts_q, time, T_isotherm, ...
     
     % plot break through time (s)
     if any(any(~isnan(t_b))) 
-        yearList = [0.5, 1, 2, 5, 10, 25];
-        contour( Xmesh, Ymesh, secondsToYears(t_b), yearList, ...
+        contour( Xmesh, Ymesh, secondsToDays(t_b), secondsToDays(tb_list), ...
                                         'ShowText','on', ...
                                         'LineWidth', defaultLineWidth * 2, 'LineColor', 'black' )
     end    
     
+        
+    % Crosses for locations of observation wells
+    scatter(coord_list_ObsWells(:,1), coord_list_ObsWells(:,2), 'filled', 'r'); 
     
     axis equal xy; % resize x and y to have the same scaled lengths
     xlabel('X distance (m)');
@@ -63,9 +65,9 @@ function plotTxy_stream_tb_fun( Txy_q, legendTexts_q, time, T_isotherm, ...
              axisObj.YLim(2) * 0.85, ...
              sprintf('time = %.0f years\n%s', secondsToYears(time), titleStr) );
     else
-        text(axisObj.XLim(2)/2, ...
-             axisObj.YLim(2)* 0.85, ... 
-             sprintf('time = %d days\n%s', secondsToDays(time), titleStr) );
+        text(axisObj.XLim(2) / 2, ...
+             axisObj.YLim(2) * 0.85, ... 
+             sprintf('time = %.0f days\n%s', secondsToDays(time), titleStr) );
     end
 
     grid on;

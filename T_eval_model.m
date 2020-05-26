@@ -1,6 +1,6 @@
 function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
           elementsCountComsol, comsolResultsRow, t_b_mesh, v_x_mesh, v_y_mesh, H_mesh] = ...
-    T_eval_model(modelMethod, x_range, y_range, z_range, Mt, params, t_list, comsolResultsTab, evalTask)
+    T_eval_model(modelMethod, x_range, y_range, z_range, Mt, params, t_list, comsolResultsTab, evalTask, variant)
 % Model inputs
 % modelMethod - method of model "comsol" or MILS or MFLS
 % x_range - has to be range as from to (e.g. [2 3], if only signle x point needed to be computed range should be
@@ -22,7 +22,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
 % modelMethod - model to calculate, can be numerical Comsol model (named as 'nMFLSfr', 'nMFLS', 'nMILSfr', 'nMILS') 
 %                                                                   or analytical solution named as 'MFLS', 'MILS' 
 
-    [ ~, ~, deltaH, ~, ~, ~, N_Schulz_streamline] = standardParams( 'homo' );
+    [ ~, ~, deltaH, ~, ~, ~, N_Schulz_streamline] = standardParams( variant );
     
     % If only single point should be evaluated, convert it to a "range" 
     % as the function used expects a "range" even for single points
@@ -34,7 +34,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
     % Space discretization for both wells accounting for log and lin spacing areas in model domain
     [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
            spaceDiscretisation(x_range, y_range, z_range, Mt, ...
-                               params.ro, params.a, comsolResultsTab);
+                               params.ro, params.a, comsolResultsTab, variant);
     % Preallocate results if not requested
     T_points_t = nan(size(points_Coords,1), numel(t_list));
     T_mesh = nan(numel(y_list) * numel(z_list), numel(x_list)); 
@@ -61,7 +61,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
         
         % prepare matrices for results        
         % Get comsol results rows
-        comsolResultsRow = comsolResultsRowForParams( comsolResultsTab, params, fixedCoord );
+        comsolResultsRow = comsolResultsRowForParams( comsolResultsTab, params, fixedCoord, variant );
         % If result found
         if size(comsolResultsRow,1) == 1
             % Element count in mesh
@@ -90,7 +90,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
                 % Temperatures at selected locations for all available times
                 t_list_all = comsolResultsTab.timeList{1};
                 T_points_tb_t = T_eval_model(modelMethod, x_range, y_range, z_range, ...
-                                             Mt, params, t_list_all, comsolResultsTab, 'T');                
+                                             Mt, params, t_list_all, comsolResultsTab, 'T', variant);                
                 % Find interpolated time for breakthrough temperature at selected points
                 time_points_tb = nan(size(T_points_tb_t, 1), 1); % preallocate for fast calc
                 for ip = 1 : size(T_points_tb_t, 1) % for each row i.e. point                   
@@ -193,7 +193,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
 %                     T_mesh = T_MFLS_anisotropic(Xmesh,Ymesh,Zmesh, params.H, params.lm, params.q, ...
 %                                                 params.Cw, params.Cm, t_list(it), params.fe, aXYZ);
                 elseif strcmp(modelMethod, 'Schulz')                    
-                    if numel(z_range) == 1 % PLAN view   if z coordinate is fixed     
+                    if true % numel(z_range) == 1 % PLAN view   if z coordinate is fixed     
                         % If requested Temperature or time to breakthrough then return it
                         if contains(evalTask, 'T') || contains(evalTask, 't_b') 
                             [T_mesh_tmp, t_b_mesh_tmp] = T_Schulz( Xmesh, Ymesh, t_list(it), params.q, K, params.n, ...

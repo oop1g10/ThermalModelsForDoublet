@@ -1,4 +1,4 @@
-function comsolResultsTab = comsolResultsTabAdd(comsolResultsTab, comsolResultsTabRow)
+function comsolResultsTab = comsolResultsTabAdd(comsolResultsTab, comsolResultsTabRow, variant)
 % Add new results to the results table
 
     % Check if Results table is empty
@@ -11,7 +11,7 @@ function comsolResultsTab = comsolResultsTabAdd(comsolResultsTab, comsolResultsT
         
         % Check if value of all parameters already exist in the results table 
         % Use standard params to get list of all params
-        [ params ] = standardParams('homo');    
+        [ params ] = standardParams(variant);    
         paramNames = fieldnames(params);
         rowFound_params = false(size(comsolResultsTab, 1), numel(paramNames));
         for i = 1:numel(paramNames)

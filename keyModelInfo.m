@@ -1,5 +1,5 @@
 function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x_Tlist, ...
-                                         modelMethod, params, comsolResultsTab)
+                                         modelMethod, params, comsolResultsTab, variant)
 % Extract key information from model output
 % Borehole wall temperature change (maximum downstream side on borehole)
 % after 30 years and after 300 years
@@ -17,39 +17,41 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     [~, ~, xAbstraction, yAbstraction] = getWellCoords(params.a);
     [T_bh, ~, ~, ~, ~, ~, elementsCountComsol, comsolResultsRow ] = ...
         T_eval_model(modelMethod, xAbstraction, yAbstraction, z, ...
-                     Mt_single, params, timeForT, comsolResultsTab, 'T');
+                     Mt_single, params, timeForT, comsolResultsTab, 'T', variant);
                  
     % Temperature at abstraction well at time timeTbh_max
     [T_bh_max, ~, ~, ~, ~, ~ ] = ...
         T_eval_model(modelMethod, xAbstraction, yAbstraction, z, ...
-                     Mt_single, params, timeForT_max, comsolResultsTab, 'T');
+                     Mt_single, params, timeForT_max, comsolResultsTab, 'T', variant);
                  
     % Time to reach steady state temperature at borehole wall
     % 0.99 is used to lower the max temperature at borehole by 1 %
-    [ ~, ~, ~, ~, ~, ~, ~, ~, ~, T_SS_low ] = standardRangesToCompare( );   
+    [ ~, ~, ~, ~, ~, ~, ~, ~, ~, T_SS_low ] = standardRangesToCompare( variant );   
     T_bh_SS = T_bh_max * T_SS_low;
     % Temperatures at borehole wall for all available times
     [T_bh_t, ~, ~, ~, ~, ~ ] = ...
         T_eval_model(modelMethod, ro, y, z, ...
-                     Mt_single, params, t_list, comsolResultsTab, 'T');
+                     Mt_single, params, t_list, comsolResultsTab, 'T', variant);
     % Find interpolated time for almost steady state temperature at bh wall
     timeSS_Tbh = interpolateXforY(T_bh_t, T_bh_SS, t_list, '+up');
     
     %% Temperature at other positions at time timeForT
-    T_x = T_eval_model(modelMethod, x_Tlist, y, z, [], params, timeForT, comsolResultsTab, 'T')';
+    T_x = T_eval_model(modelMethod, x_Tlist, y, z, [], params, timeForT, comsolResultsTab, 'T', variant)';
     
     %% Find plume extent for timeforT (30 years) for given isotherm T_plume_list (for example 0.5 or 2 deg C)
     % Temperatures measured on the right hand side (downstream) of borehole (2D xy surface) 
     % isotherm length (plume extent) for specific time timeforT (30 years)
-    [xPlume, yPlume, zPlume] = plumesForTimes( modelMethod, timeForT, T_plume_list, params, comsolResultsTab, [] );
+    [xPlume, yPlume, zPlume] = plumesForTimes( modelMethod, timeForT, T_plume_list, params, ...
+                                                comsolResultsTab, [], variant );
     % isotherm length (plume extent) and for timeForT_max (300 years)
-    [xPlumeSS, yPlumeSS, zPlumeSS] = plumesForTimes( modelMethod, timeForT_max, T_plume_list, params, comsolResultsTab, [] );
+    [xPlumeSS, yPlumeSS, zPlumeSS] = plumesForTimes( modelMethod, timeForT_max, T_plume_list,...
+                                                    params, comsolResultsTab, [], variant );
     
     %% Find time to reach steady state for given isotherm
     % lower isotherm extent by 1%   to find when it reached steady state
     % NEW SLOW SLOW METHOD, historical
 %     xPlumeSS_lower = xPlumeSS * T_SS_low;
-%     [xPlume_times, ~, ~] = plumesForTimes( modelMethod, t_list, T_plume_list, params, comsolResultsTab, xPlumeSS_lower );
+%     [xPlume_times, ~, ~] = plumesForTimes( modelMethod, t_list, T_plume_list, params, comsolResultsTab, xPlumeSS_lower, variant );
 %     % replace NaNs for zeros as interpolateXforY can only work with real numbers, NaN means plume did not reach anything (given T did not occur yet)
 %     xPlume_times(isnan(xPlume_times)) = 0;
 %     % Find interpolated time for almost steady state temperature at x plume    
@@ -73,7 +75,7 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
         else
             [T_xPlume_t, ~, ~, ~, ~, ~ ] = ...
                 T_eval_model(modelMethod, xPlumeSS(i), yPlumeSS(i), zPlumeSS(i), ...
-                             Mt_single, params, t_list, comsolResultsTab, 'T');
+                             Mt_single, params, t_list, comsolResultsTab, 'T', variant);
             % Find interpolated time for almost steady state temperature at x plume
             timeSS_xPlumeOld(i) = interpolateXforY(T_xPlume_t, T_plume_list_SS(i), t_list, '+up');
 %             if timeSS_xPlume(i) > 9e9

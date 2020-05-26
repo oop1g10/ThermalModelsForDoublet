@@ -1,4 +1,4 @@
-function [ params ] = comsolFilename_Info( comsolFilename )
+function [ params ] = comsolFilename_Info( comsolFilename, variant )
 % Returns info from filename.
 % Input - comsolFilename, for example:
 % profile sol1 0001 q[1e-06] aXYZ[0 0 0] ro[0.1] H[100] adeg[90] T0[40] Ti[25] a[200] Q[30] rhoW[1000] cW[4200] rhoS[2600] cS[1000] lS[2.8] n[0.1] mesh[0.01].txt
@@ -8,7 +8,7 @@ function [ params ] = comsolFilename_Info( comsolFilename )
 
     %If some parameter is NOT set in file name - return standard parameter value in params 
     % Get standard model parameters
-    paramsStd = standardParams('homo');
+    paramsStd = standardParams(variant);
     params = paramsStd;
     
     % Substitute values from file name instead of standard params values

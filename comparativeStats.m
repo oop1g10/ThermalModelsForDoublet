@@ -1,7 +1,7 @@
 function [ comparativeStatsTab, Xmesh, Ymesh ] = ...
     comparativeStats( modelMethods, x_range_forRmseMae, y_range_forRmseMae, z_range_forRmseMae, Mt, ...
                       timeTbh, timeTbh_max, T_plume_list, x_Tlist, ...
-                      params, t_list, comsolResultsTab)
+                      params, t_list, comsolResultsTab, variant)
 % Calculate RMSE and MAE for matrix outputs (2d space) of two models, and
 % also total stats for the whole model performances
 % Note about model input:
@@ -26,7 +26,7 @@ function [ comparativeStatsTab, Xmesh, Ymesh ] = ...
     keyModelInfoTab = table;
     for im = 1:numel(modelMethods)
         keyModelInfoRow = keyModelInfo( timeTbh, timeTbh_max, T_plume_list, x_Tlist, ...
-                                         modelMethods{im}, params, comsolResultsTab);
+                                         modelMethods{im}, params, comsolResultsTab, variant);
         % Elements count is present only for comsol model (numerical model), for ansol it is empty []
         if ~isempty(keyModelInfoRow.elementsCountComsol)
             elementsCountComsol = keyModelInfoRow.elementsCountComsol;

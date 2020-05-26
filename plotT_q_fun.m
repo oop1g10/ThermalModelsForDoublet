@@ -90,8 +90,8 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
     axisObj = gca;
     % Allow to change time range while keeping the same Xlim for both MILS and Comsol
     % use round of log. Set x axis minimum/maximum on whole exponent numbers as 10^-3 or 10^-4. 
-    axisObj.XLim(1) = 10^round( log10(min(secondsToDays(t_list))) ); 
-    axisObj.XLim(2) = 10^round( log10(max(secondsToDays(t_list))) );
+    axisObj.XLim(1) = 10^floor( log10(min(secondsToDays(t_list))) ); 
+    axisObj.XLim(2) = 10^ceil( log10(max(secondsToDays(t_list))) );
     % Start minimum y axis from zero
     % axisObj.YLim(1) = 0;
     % axisObj.YLim(2) = 25;

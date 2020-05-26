@@ -1,4 +1,5 @@
-function [xPlume_times, yPlume_times, zPlume_times] = plumesForTimes( modelMethod, t_list, T_plume_list, params, comsolResultsTab, xPlumeSS )
+function [xPlume_times, yPlume_times, zPlume_times] = ...
+          plumesForTimes( modelMethod, t_list, T_plume_list, params, comsolResultsTab, xPlumeSS, variant )
     %% Find plume extent for timeforT (30 years) for given isotherm T_plume_list (for example 0.5 or 2 deg C)
     % Temperatures on the right hand side (downstream) of borehole (2D xy surface) 
     % for specific time timeforT (30 years) and for timeForT_max (300 years)
@@ -33,12 +34,12 @@ function [xPlume_times, yPlume_times, zPlume_times] = plumesForTimes( modelMetho
         % prepare T values to find plume extent for plan view (x y)
         [~, ~, T_mesh_plan, Xmesh_plan, Ymesh_plan, ~ ] = ...
             T_eval_model(modelMethod, xRangeLimitsForXPlumeSearch, yRangeLimitsForXPlumeSearch, z, ...
-                         Mt, params, t_list(it), comsolResultsTab, 'T');
+                         Mt, params, t_list(it), comsolResultsTab, 'T', variant);
         % prepare T values to find plume extent for profile view (x z)
         if isModel3D(modelMethod)
             [~, ~, T_mesh_profile, Xmesh_profile, ~, Zmesh_profile ] = ...
                 T_eval_model(modelMethod, xRangeLimitsForXPlumeSearch, y, zRangeLimitsForXPlumeSearch, ...
-                             Mt, params, t_list(it), comsolResultsTab, 'T');
+                             Mt, params, t_list(it), comsolResultsTab, 'T', variant);
         end
         % Find interpolated length along x axis for given isotherms in T_plume_list
         for ip = 1:numel(T_plume_list)

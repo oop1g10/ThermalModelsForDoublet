@@ -10,7 +10,7 @@ function [T_diff, t_b] = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
 % i.e. whether heat flux into cap rock is considered (z_bar)
 % T0 = undisturbed temeprature  (K)
 % Ti = injection temperature (K)
-% x, y, z = coordinates (m)
+% x, y = coordinates (m)
 % or also in the cap rocks. 0 means - inside aquifer.
 % v = Darcy velocity (m/s)
 % M = thickness of the aquifer (m)

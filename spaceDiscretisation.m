@@ -1,5 +1,5 @@
 function [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
-           spaceDiscretisation(x_range, y_range, z_range, Mt, ro, a, comsolResultsTab)
+           spaceDiscretisation(x_range, y_range, z_range, Mt, ro, a, comsolResultsTab, variant)
 % Model inputs
 % x_range - has to be range as from to (e.g. [2 3], if only signle x point needed to be computed range should be given as repeated value, e.g. [2 2] 
 % y_range, z_range - can be given as signle value or a range (from to), either y or z should be fixed point e.g. [2 2], 
@@ -10,7 +10,7 @@ function [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
 
     % Log range splitting support
     % (hybrid log and linear ranges)
-    [ ~, ~, ~, ~, growthRateOptim, startStepSize ] = standardParams( 'homo' );
+    [ ~, ~, ~, ~, growthRateOptim, startStepSize ] = standardParams( variant );
     %% Take node coordinates from comsol results to determine possible x and y range
     % in plots. Taken from first results rows as all result should have same
     % geometry.

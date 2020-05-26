@@ -1,4 +1,4 @@
-function comsolResultsRow = comsolResultsRowForParams( resultsTab, params, fixedCoord )
+function comsolResultsRow = comsolResultsRowForParams( resultsTab, params, fixedCoord, variant )
 % Identify which lines in results table match the requested parameters         
 % fixedCoord is to identify which cut (plan/profile) is needed.
 
@@ -30,7 +30,7 @@ function comsolResultsRow = comsolResultsRowForParams( resultsTab, params, fixed
     % Turn params into string with general rounding
     paramsString = comsolParams2String( params );
     % Convert params string back to params structure
-    paramsRounded = comsolFilename_Info( [paramsString '.txt'] ); % txt has to be added in function input for it to work
+    paramsRounded = comsolFilename_Info( [paramsString '.txt'] , variant); % txt has to be added in function input for it to work
     
     % Check if value of all parameters already exist in the results table 
     % Use params structure to get list of all param names

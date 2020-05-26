@@ -3,6 +3,8 @@ function comsolResultsTabRow = comsolResultsRowCreate(comsolFilename, nodeXYZ, .
                                              
 % Prepare results for one file with unique parameter set
 
+[~, ~, ~, ~, variant, solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
+
     % Round all data number to 8 decimal places, to remove tiny
     % insignificant numbers which have to be zero or 273.15 in results
     % Note that if only 6 decimals used some points appear to be duplicated and triangulation removes them
@@ -67,7 +69,7 @@ function comsolResultsTabRow = comsolResultsRowCreate(comsolFilename, nodeXYZ, .
     comsolResultsTabRow.timeList = {timeList}; % list of times used in Comsol simulation (columns) in 1 row
     comsolResultsTabRow.delaunayTriang = {delaunayTriang}; %triangulated elements
     % Get the info from comsol filename
-    [ params ] = comsolFilename_Info( comsolFilename );
+    [ params ] = comsolFilename_Info( comsolFilename, variant );
     paramNames = fieldnames(params);
     for i = 1:numel(paramNames)
         % create column in table with name as the parameter. variable{i} = extract

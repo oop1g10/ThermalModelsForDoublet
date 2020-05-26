@@ -26,7 +26,7 @@ plotSave = true;
 plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doubletMeshConvergence_2d_H3000\'; % Folder to export plots
 
 % Load results comsolResultsTab from Comsol calculations
-[~, comsolDataFileConvergence, ~, modelMethodsConvergence, ~,~,~,~,~ ] = ...
+[~, comsolDataFileConvergence, ~, modelMethodsConvergence, variant,~,~,~,~ ] = ...
             comsolDataFileInUse_Info( );
 load(comsolDataFileConvergence)
 % Add missing columns to loaded result   
@@ -37,10 +37,10 @@ modelMethods = modelMethodsConvergence;
 
 %% Calculations for RMSE / MAE 
 % Standard model parameters
-paramsStd = standardParams('homo');
+paramsStd = standardParams(variant);
 % Ranges for models mesh convergence comparison
 [ t_list, q_list, ~, x_range, y_range, ~, Mt, ~, z, ~, timeTbh, timeTbh_max, T_plume_list, ~, x_Tlist ] = ...
-    standardRangesToCompare( );
+    standardRangesToCompare( variant );
 warning('results after 5 years are incorrect as only interpolated, run was until 5 years.')
 
 if true %temporary lower steps for quicker execution for testing
@@ -71,7 +71,7 @@ for i = 1:size(paramsCombinationsTab,1)
     [ comparativeStatsRow, Xmesh, Ymesh ] = ...
         comparativeStats( modelMethods, x_range, y_range, z, Mt, ...
                           timeTbh, timeTbh_max, T_plume_list, x_Tlist, ...
-                          params, t_list, comsolResultsTab);
+                          params, t_list, comsolResultsTab, variant);
     comparativeStatsTab(i,:) = comparativeStatsRow;
 end
 close(hWait); %close progress window

@@ -2,8 +2,8 @@ clear
 clc
 %
 folder = 'D:\COMSOL_INRS\export\';
-results = 'doubletStdplots4gw' ; %'doubletMeshConvergenceQ3HM3000'; %'doubletMeshConvergence' ; % ;'doublet'; % 
-[~, ~, ~, ~, ~, solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
+results = 'doublet'; %'doubletsmallQpump' ; %'doubletStdplots4gw' ; %'doubletMeshConvergenceQ3HM3000'; %'doubletMeshConvergence' ; % ;'doublet'; % 
+[~, ~, ~, ~, variant, solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
 fprintf('methodMesh: %s \n', methodMesh);
 % Name of data file with comsol imported results
 comsolDataFileName = sprintf('comsolData_%s_%s_%s.mat', solution, results, methodMesh);
@@ -39,7 +39,7 @@ for i = 1:numel(fileList)
     comsolResultsTabRow = comsolResultsRowImportFile( comsolImportPath, filename );
 
     % Add new results to the results table
-    comsolResultsTab = comsolResultsTabAdd(comsolResultsTab, comsolResultsTabRow);  
+    comsolResultsTab = comsolResultsTabAdd(comsolResultsTab, comsolResultsTabRow, variant);  
 end
 close(hWait); %close progress window
 

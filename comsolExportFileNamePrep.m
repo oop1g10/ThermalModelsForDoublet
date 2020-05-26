@@ -1,5 +1,5 @@
-function [ planViewData, profileViewData, profilePipeData, planView_filename, profileView_filename, paramsIndexTxt, paramsString ] = ...
-    comsolExportFileNamePrep(model, solution, modelDimension, params, paramsIndex, exportFolder)
+function [ planViewData, profileViewData, planView_filename, profileView_filename, paramsIndexTxt, paramsString ] = ...
+    comsolExportFileNamePrep(model, solution, methodMesh, params, paramsIndex, exportFolder)
 % Prepare column names to go in the results table and file name to be then exported from comsol
 % Input params:
 % model - COMSOL model object, contains connection to comsol server with
@@ -14,23 +14,14 @@ function [ planViewData, profileViewData, profilePipeData, planView_filename, pr
     
     %% Prepare file names for export
     % Determine which Export data choice to use depending on computed solution
-    profilePipeData = []; % By default no pipes in model are expected
                     
     if strcmp(solution, 'sol1') == true
-        if strcmp(modelDimension, '3D')
+        if strcmp(methodMesh, '3d')
             planViewData = 'data2'; % identification names recorder by comsol, 'data2, and similar names below are not descriptions but identifications
-            profileViewData = 'data3';
-            % If model contains pipe export T profile for pipes
-            if isModelWithPipe( params )
-                profilePipeData = 'data4'; %Data 4 VBHE temperature Pipe Profile 
-            end
-            
-        elseif strcmp(modelDimension, '2Dplan') % 2Dplan
+            profileViewData = 'data3';            
+        elseif strcmp(methodMesh, '2d') % 2Dplan
             planViewData = 'data1';
             profileViewData = [];
-        else % 2Dprofile
-            planViewData = [];
-            profileViewData = 'data1';
         end
     else
         assert(false, ['Unsupported solution name: ' solution]) 
@@ -65,18 +56,10 @@ function [ planViewData, profileViewData, profilePipeData, planView_filename, pr
        profileView_filename = [];  % empty by default if not required
     end
     
-    if ~isempty(profilePipeData)
-        % Construct full string (name of txt file) for pipe
-        profilePipe_filename = ['pipeT ' solution ' ' paramsIndexTxt ' ' paramsString '.txt'];
-        profilePipe_filename_WithPath = [exportFolder, profilePipe_filename];
-        % Use the constructed file name for export
-        model.result().export(profilePipeData).set('filename', profilePipe_filename_WithPath);
-    end
-
-    % Construct full file name of txt file for 'q info' export
-    qInfo_filename = [exportFolder 'qInfo ' solution ' ' paramsIndexTxt ' ' paramsString '.txt'];
-    % Use the constructed file name for export
-    model.result().export('tbl1').set('filename', qInfo_filename);
+%     % Construct full file name of txt file for 'q info' export
+%     qInfo_filename = [exportFolder 'qInfo ' solution ' ' paramsIndexTxt ' ' paramsString '.txt'];
+%     % Use the constructed file name for export
+%     model.result().export('tbl1').set('filename', qInfo_filename);
 
 end
 
