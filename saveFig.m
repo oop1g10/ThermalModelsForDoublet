@@ -31,8 +31,8 @@ function saveFig( figName )
         print(figNameNoDots,'-dpng','-r300')
 %         fprintf('Saving 600 DPI for poster!\n')
 %         print(figNameNoDots,'-dpng','-r600')
-        fprintf('Saving 1000 DPI for article!\n')
-        print([figNameNoDots '_1000dpi'],'-dpng','-r1000')
+%         fprintf('Saving 1000 DPI for article!\n')
+%         print([figNameNoDots '_1000dpi'],'-dpng','-r1000')
         % Save again as .fig for possible editing
         savefig(figNameNoDots)
     end

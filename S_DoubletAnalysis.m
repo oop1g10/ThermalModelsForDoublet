@@ -2,7 +2,7 @@ clear
 clear T_eval_model % clear persistent variables in function (used as cache)
 
 %% Decide which plots to generate
-plotT_q = false; %+ T change vs time at different GW flows
+plotT_q = true; %+ T change vs time at different GW flows
 plotTxy_stream_tb = true; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
     plotTxy_stream_tb_Txy = true; % plot isotherms
     plotTxy_stream_tb_tb = true; % plot time to breakthrough
@@ -14,7 +14,7 @@ plotTz_q_x = false; %+ Temperature at different x versus depth (z dimention) for
 plotT_t_axy = false; %* How dispersivity influences plume development with time in x direction
     plotT_model_axy = false; % same but for one time and for two models
     
-plottb_a_Q_q = false; % time to break through vs distance between wells for various flow in inj well and gw flows
+plottb_a_Q_q = true; % time to break through vs distance between wells for various flow in inj well and gw flows
 
 plotTxz_q = false; % TODO %%%%%%%%%%%%%%%  PROFILE
 %+ How groundwater velocity influences isotherm development in x&z direction (profile view)
@@ -24,7 +24,7 @@ plotTb_axy_q = false; %+ Temperature at borehole wall after 30 years vs dispersi
 plotXt_q_fe = false; % TODO Plume extent longitudinal (X) after 30 years (t) vs groundwater flow (q) for different heat input (fe)
 
 % Save the plots
-plotSave = true;
+plotSave = false;
 plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_fieldtest\';
 
 [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsConvergence, variant,...
@@ -41,7 +41,7 @@ fprintf('methodMesh: %s\n', methodMesh);
 
 q_max = max(q_list); %Specific flux (Darcy flux) [m s-1] % maximm required Darcy velocity
 modelMethodsPlot = [modelMethods(1), modelMethods(2)]; % 1 = Schulz/Homo; 2 = Comsol 2D
-modelMethodPlot = modelMethods{2}; % Method of model calculation
+modelMethodPlot = modelMethods{1}; % Method of model calculation
 % NOTE selected plot support comparison of two models some only one model method
 % Model methods for which comparison plot should be generated
 % First method is full line for analytical model, 
@@ -120,7 +120,7 @@ if plotTxy_stream_tb
     plotNamePrefix = 'Txy_stream_tb'; % plot name to save the plot with relevant name
     % times for results    1.9481 years col 94 and 5.3348 yrs column 101 in time list from comsol
     % t_list_plotTxy_q = 168238080; % [6.143644800000002e+07, 168238080]; % time in seconds    
-    t_list_plotTxy_q = t_list(15); % = 9.5 days %    10 / secondsToDays(1); % seconds from days
+    t_list_plotTxy_q = daysToSeconds(14); %t_list(16) ; % t_list(15); % = 9.5 days %    10 / secondsToDays(1); % seconds from days
     % preassign 4 D matrices for T to save the results
     Txy_stream_tb = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
     % same for tb ( which is based on I phi)

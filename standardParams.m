@@ -20,14 +20,14 @@ function [ params, mu_w, deltaH, g_const, growthRateOptim, startStepSize, N_Schu
          %   params.fe = fe; % "Heat input (W) per whole cylinder source"
         params.ro = 0.025; % borehole well radius [m]
     %    params.H = 30 * 3; %borehole length [m]    
-        params.H = 30 ; %borehole length [m]
+        params.H = 6; % 30 ; %borehole length [m]
         params.M = params.H; % [m] thickness of aquifer, even the model is in 2D it is accounted for and influences model results
         params.alpha_deg = 180; %90; % [deg] % angle of gw flow, if = 0 it is parallel to x axis, if 90 = parallel to y axis
         params.T0 = degC2kelvin(10); % [K]  %   = 313.15 K	% undisturbed temperature in aquifer 
-        params.Ti = degC2kelvin(20); % [K]  % injection temperature
-        params.a = 3; % [m] half of distance between two wells
+        params.Ti = degC2kelvin(25); % [K]  % injection temperature
+        params.a = 5; % [m] half of distance between two wells
       % params.Q = 0.0005; % 3 / 1000; % [m^3/second],  water injection and production rate
-        params.Q = 0.5 / 1000; % [m^3/second] (converted from litres per sec) approx 8 gallons per minute
+        params.Q = 0.75 / 1000; % [m^3/second] (converted from litres per sec) approx 8 gallons per minute
         
         %% Aquifer properties      
         % aXYZ  %longitudinal (x) and transverse (y,z) thermal dispersivities [m] 
