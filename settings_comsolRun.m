@@ -12,7 +12,7 @@ else % if computation is on Windows
     %comsolPath = 'D:\COMSOL\cylinder mesh\';
     comsolPath = 'D:\COMSOL_INRS\models\';
     exportPath = [comsolPath 'export\'];
-    comsolLibrary = 'C:\Program Files\COMSOL\COMSOL55\Multiphysics_copy1\mli';
+    comsolLibrary = 'C:\Program Files\COMSOL\COMSOL56\Multiphysics\mli';
     showComsolProgress = true; % progress info
 end
 

@@ -2,7 +2,7 @@ clear
 clc
 %
 folder = 'D:\COMSOL_INRS\export\';
-results = 'doublet'; %'doubletsmallQpump' ; %'doubletStdplots4gw' ; %'doubletMeshConvergenceQ3HM3000'; %'doubletMeshConvergence' ; % ;'doublet'; % 
+results = 'doubletTry'; %'doublet'; %'doubletsmallQpump' ; %'doubletStdplots4gw' ; %'doubletMeshConvergenceQ3HM3000'; %'doubletMeshConvergence' ; % ;'doublet'; % 
 [~, ~, ~, ~, variant, solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
 fprintf('methodMesh: %s \n', methodMesh);
 % Name of data file with comsol imported results
@@ -42,7 +42,6 @@ for i = 1:numel(fileList)
     comsolResultsTab = comsolResultsTabAdd(comsolResultsTab, comsolResultsTabRow, variant);  
 end
 close(hWait); %close progress window
-
 
 % Save comsol results workspace variable
 % Version 7.3 is needed to support files >= 2GB, but older matlab versions cannot read

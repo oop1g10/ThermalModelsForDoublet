@@ -3,7 +3,7 @@ clear T_eval_model % clear persistent variables in function (used as cache)
 
 %% Decide which plots to generate
 plotT_q = true; %+ T change vs time at different GW flows
-plotTxy_stream_tb = true; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
+plotTxy_stream_tb = false; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
     plotTxy_stream_tb_Txy = true; % plot isotherms
     plotTxy_stream_tb_tb = true; % plot time to breakthrough
     plotTxy_stream_tb_stream = true; % plot streamlines
@@ -14,7 +14,7 @@ plotTz_q_x = false; %+ Temperature at different x versus depth (z dimention) for
 plotT_t_axy = false; %* How dispersivity influences plume development with time in x direction
     plotT_model_axy = false; % same but for one time and for two models
     
-plottb_a_Q_q = true; % time to break through vs distance between wells for various flow in inj well and gw flows
+plottb_a_Q_q = false; % time to break through vs distance between wells for various flow in inj well and gw flows
 
 plotTxz_q = false; % TODO %%%%%%%%%%%%%%%  PROFILE
 %+ How groundwater velocity influences isotherm development in x&z direction (profile view)

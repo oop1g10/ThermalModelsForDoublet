@@ -13,12 +13,16 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
     % Load results comsolResultsTab from Comsol calculations
     %% 2D
     if model_2dPlanComsol
-        comsolDataFile = [folder 'comsolData_sol1_doublet_2d.mat']; 
-        % comsolDataFile = [folder 'comsolData_sol1_doubletStdplots4gw_2d.mat'];
         comsolDataFileConvergence = [folder  'comsolData_sol1_doubletMeshConvergence_2d.mat'];
 
-        % variant =  'paper_Schulz'; % 
-        variant = 'Homo';  %
+        % variant =  'paper_Schulz';%
+        % variant = 'Homo'; %
+        % comsolDataFile = [folder 'comsolData_sol1_doublet_2d.mat']; 
+        % comsolDataFile = [folder 'comsolData_sol1_doubletStdplots4gw_2d.mat'];
+        
+        variant = 'FieldExp1'; %  
+        comsolDataFile = [folder 'comsolData_sol1_doubletTry_2d.mat']; 
+        
         modelMethods = {'Schulz', 'nDoublet2D'}; % 'nDoublet2D'
         modelMethodsConvergence = {'Schulz', 'nDoublet2D'};
         % "max el size (m) at wel wall in comsol, optimal mesh size

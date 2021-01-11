@@ -12,12 +12,18 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     % Time step of 0.25 is used for comparison, smaller time step of 0.125
     % is used in COMSOL for better fitted models however slow.. and for
     % comparison 0.25 time step is good enough.
-    if  strcmp(variant, 'Homo')
+    if  strcmp(variant, 'Homo') || strcmp(variant, 'FieldExp1')
         % build time list full from comsol
         t_max = 300 * 365; % maximum simulation time [days]
-        timeStep = 0.25; % 0.25
+        % For field experiment use full list of all calculated times in comsol
+        if strcmp(variant, 'FieldExp1')
+            timeStep = 0.25/4;
+        else
+            timeStep = 0.25; % 0.25
+        end
         t_list_days = 10.^[-3 : timeStep : 5] / 1e5 * t_max; % days
         t_list_all = daysToSeconds(round(t_list_days, 5, 'significant')); % seconds
+        % Use only times from cca 4 minutes to 40 days
         t_list = t_list_all(t_list_all > 259 & t_list_all < daysToSeconds(40) );
         % Times and isotherms for comparative statistics (key info comparison)
         timeTbh = daysToSeconds(15); % time to calculate temperature at specified location (or well), [seconds]
@@ -56,7 +62,11 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
         x_TlistMC = x_Tlist;
     end
     % Calculate time series for different q (gw velocity)
-    q_max = 1 / daysToSeconds(1); % Specific flux (Darcy flux) [m s-1] which equals to 1 m/day
+    if strcmp(variant, 'FieldExp1')
+        q_max = paramsStd.q * 10; % Specific flux (Darcy flux) [m s-1] 
+    else
+        q_max = 1 / daysToSeconds(1); % Specific flux (Darcy flux) [m s-1] which equals to 1 m/day        
+    end
     q_range = [q_max / 1000, q_max];
     q_list = logspace(log10(q_range(1)), log10(q_range(2)),4); %Specific flux (Darcy flux) [m s-1]
     q_list = [0, q_list]; % add zero groundwater velocity as first in list

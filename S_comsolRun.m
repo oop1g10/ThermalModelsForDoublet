@@ -4,11 +4,12 @@ clear
 %% Computation Options
 runOnIridisLinux = isunix(); % Automatically puts true if computed on Iridis Linux (unix) system
 saveComsolResultMPH = false; % Save model file after computation
-noCalcOnlyParamsSaveMPH = false; % In case of batch runs to use only single Comsol-Matlab LiveLink licence, 
+noCalcOnlyParamsSaveMPH = true; % In case of batch runs to use only single Comsol-Matlab LiveLink licence, 
                                 % to set params on mph and save it, do not run Comsol through Matlab
 % Parameters to calculate
-paramsFor_standardPlots = true;
-paramsFor_plottb_a_Q_q = true;
+paramsFor_FieldTest = true; % minimum number of params for test model runs
+paramsFor_standardPlots = false;
+paramsFor_plottb_a_Q_q = false;
 paramsFor_meshConvergence = false;
 
 [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsConvergence, variant,...
@@ -58,6 +59,11 @@ paramsStd = standardParams(variant);
 %% Prepare list of parameters to loop the calculation
 % Parameters for standard plots
 paramsCombinationsTab = table;
+if paramsFor_FieldTest
+    paramsList = paramsStd;
+    % Prepare combinations of all parameters to run model through
+    paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];    
+end
 if paramsFor_standardPlots
     paramsList = paramsStd;
     % List of q (gw velocity)
@@ -116,7 +122,8 @@ addpath(genpath(comsolLibrary));
 % If COMSOL server is already connected, then do nothing
 try
     mphstart;
-catch
+catch exception
+    a = 1;
     % Already connected, do nothing
 end
 % Switch on the progress bar if requested

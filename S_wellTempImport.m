@@ -5,6 +5,10 @@ folder = 'C:\Users\Asus\OneDrive\INRS\WellTProfiles\';
 % Name of data file with comsol imported results
 wellTempDataFileName = 'wellTempData.mat';
 wellTempDataFileImport = [folder, wellTempDataFileName]; % place and name where to save results in matfile 
+wellTempDataFileImportCompare = [folder, 'wellTempDataTest1.mat']; % place and name where to save results in matfile 
+
+% extact variant
+[~, ~, ~, ~, variant] = comsolDataFileInUse_Info( );
 
 %% Import
 wellTempTabAll = table; % to empty the table
@@ -43,78 +47,7 @@ close(hWait); %close progress window
 
 % Delete unnessesary measurements based on dates and times
 % prepare list of relevant periods to keep
-wellRelevantPeriodsTab = table;
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro2', '2020-09-14 14:15:00', '2020-09-21 14:42:00');
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro3', '2020-09-14 18:00:00', '2020-09-21 14:47:00');
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro5', '2020-09-14 13:58:00', '2020-09-22 17:29:00');
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro6', '2020-09-14 15:10:00', '2020-09-21 14:47:00'); % these dates are under question
-% Second test periods
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro2', '2020-10-01 11:46:00', '2020-10-08 14:00:00');
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro3', '2020-10-01 10:00:00', '2020-10-08 14:00:00');
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro4', '2020-10-01 12:12:00', '2020-10-08 08:20:00');                        
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro5', '2020-10-01 12:27:00', '2020-10-08 13:18:00');
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro6', '2020-10-01 15:07:30', '2020-10-08 13:55:00');
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro7', '2020-10-01 14:30:00', '2020-10-08 13:26:00');   
-
-% Monitorig period well 2
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro2', '2020-10-09 12:00:30', '2020-11-23 11:50:30');                       
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro2', '2020-11-23 16:56:00', '2020-11-27 14:49:30');
-% Monitorig period well 3                       
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro3', '2020-10-09 12:09:30', '2020-11-23 11:55:00');                                                
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro3', '2020-11-23 23:00:00', '2020-11-27 14:14:00');
-% monitoring times are segmented due to occational temporal removal of sensors 
-% to take hand measurements.                                               
-% Monitorig period well 4
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro4', '2020-10-09 11:47:30', '2020-10-13 09:14:00' );
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro4', '2020-10-13 11:40:30', '2020-10-30 09:27:00'); 
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ...
-                            'aquifro4', '2020-10-30 12:39:30', '2020-11-13 11:15:30'); 
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ...
-                            'aquifro4', '2020-11-13 13:03:30', '2020-11-24 10:29:30');     
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ...
-                            'aquifro4', '2020-11-24 13:41:00', '2020-11-27 14:16:30');       
-                        
-% Monitorig period well 5                        
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro5', '2020-10-09 11:59:30', ' 2020-11-23 11:43:30');
-                        
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro5', '2020-11-23 16:35:00', ' 2020-11-24 11:16:00');
-
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro5', '2020-11-24 15:27:30', ' 2020-11-27 14:54:30');
-                       
-%  Monitorig period well 6                          
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro6', '2020-10-09 14:15:30', '2020-11-23 11:51:30');
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro6', '2020-11-23 16:27:30', '2020-11-27 14:41:30');                        
-
-% Monitorig period well 7                          
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro7', '2020-10-09 13:10:00', '2020-10-13 10:50:00'); 
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro7', '2020-10-13 18:50:00', '2020-11-13 10:16:00');                         
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro7', '2020-11-13 20:26:30', '2020-11-24 11:09:30'); 
-wellRelevantPeriodsTab = wellRelevantPeriodAdd(wellRelevantPeriodsTab, ... 
-                            'aquifro7', ' 2020-11-25 10:21:00  ', '2020-11-27 14:46:30');           
+wellRelevantPeriodsTab = wellRelevantPeriodsPrep();  
                         
 % for each well period
 wellTempTab = table;
@@ -125,15 +58,83 @@ for i = 1 : height(wellRelevantPeriodsTab)
         & wellTempTabAll.dateTime <= wellRelevantPeriodsTab.dateTimeTo(i);
     wellTempTab = [wellTempTab; wellTempTabAll(relevantRows, :)];
 end
-% wellTempTab_clean = wellTempTab(wellTempTab.);
 
-% Save workspace variable table with temperatures as matfile
+%% Save workspace variable table with temperatures as matfile
 % Version 7.3 is needed to support files >= 2GB, but older matlab versions cannot read
 % this format of table saving. 
 % Note minus '-v...' before version name = it means read it as Version to save file, not as string only.
-save(wellTempDataFileImport, 'wellTempTab', '-v7.3');
+
+% save(wellTempDataFileImport, 'wellTempTab', '-v7.3');
+warning('mph saving skipped')
+
 fprintf('Data is saved with name %s \n ', wellTempDataFileImport)
 % save data in excel
 writetable(wellTempTabAll, [wellTempDataFileImport, '.csv'], 'Delimiter', ',')
+% free memory. this variable is not needed anymore
+clear wellTempTabAll
 
+%% Extract only relevant Temperatures to compare with model results, 
+% that is Test 1 time period, observation wells adn inj and abs wells used
+% in Test 1 and at depth 28 m (filter is about 6 m high. From 25m to 31 m depth)
+
+% Prepare times that belong to test 1 test period and are also calculated
+% by numerical model.
+% t = [1, 2, 4, 8]; % (sec)
+% Period for test 1
+timeTest1Start = datetime('2020-09-14 15:07:30','InputFormat','yyyy-MM-dd HH:mm:ss');
+timeTest1Finish = datetime('2020-09-18 11:53:00','InputFormat','yyyy-MM-dd HH:mm:ss');
+% Filter temperatures for relevant test period only
+relevantRows = wellTempTab.dateTime >= timeTest1Start ...
+    & wellTempTab.dateTime <= timeTest1Finish ;
+wellTempTabTest1 = wellTempTab(relevantRows, :);
+
+% Necessary depth (28 m)
+% depthTest1Start = 27.4; 
+% depthTest1Finish = 28.6;
+  depthTest1Start = 20; 
+  depthTest1Finish = 31;
+% Filter temperatures for relevant depth
+relevantRows = wellTempTabTest1.wellDepth >= depthTest1Start ...
+    & wellTempTabTest1.wellDepth <= depthTest1Finish ;
+wellTempTabTest1 = wellTempTabTest1(relevantRows, :);
+
+% Necessary wells for test 1 
+% Do not need to filter by wells because filtering by period leaves only
+% relevant wells.
+
+% Time list for numerical model                        
+t_listNum = standardRangesToCompare( variant )';
+% Measured times (during field test)
+durationTest1 = wellTempTabTest1.dateTime - timeTest1Start;
+t_listMeasuredAll = seconds(durationTest1);
+t_listMeasured = unique(t_listMeasuredAll);
+
+% Intersection between measured and modelled times
+% Measured times are every 30 seconds
+% Rounding of modelled times by 30 seconds allows to to intersection with
+% unequal values
+tRound = 30; %seconds
+% Round to nearest 30
+t_listNumRound = round(t_listNum / tRound, 0) * tRound;
+t_listMeasuredRound = round(t_listMeasured / tRound, 0) * tRound;
+% Intersection
+[t_listIntersectRound, indexListNumRound] = intersect(t_listNumRound, t_listMeasuredRound);
+% Select times from numerical time list which intersect with measured times
+t_listTest1 = t_listNum(indexListNumRound);
+
+% Select results based on relevant times t_listTest1 to 
+% extract only relevant Temperatures to compare with model results
+t_listMeasuredAllRound = round(t_listMeasuredAll / tRound, 0) * tRound;
+% Find which measurements rows contain relevant times for comparison
+[~, indexListMeasured] = ismember(t_listMeasuredAllRound, t_listIntersectRound);
+wellTempTabTest1 = wellTempTabTest1(indexListMeasured~=0, :);
+
+%% Save relevant temperature and time list as matfile
+% Version 7.3 is needed to support files >= 2GB, but older matlab versions cannot read
+% this format of table saving. 
+% Note minus '-v...' before version name = it means read it as Version to save file, not as string only.
+save(wellTempDataFileImportCompare, 'wellTempTabTest1', 't_listTest1', '-v7.3');
+fprintf('Data is saved with name %s \n ', wellTempDataFileImportCompare)
+% save data in excel
+writetable(wellTempTabTest1, [wellTempDataFileImportCompare, '.csv'], 'Delimiter', ',')
 
