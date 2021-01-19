@@ -2,13 +2,10 @@ clear
 clc
 %
 folder = 'C:\Users\Asus\OneDrive\INRS\WellTProfiles\';
-% Name of data file with comsol imported results
-wellTempDataFileName = 'wellTempData.mat';
-wellTempDataFileImport = [folder, wellTempDataFileName]; % place and name where to save results in matfile 
-wellTempDataFileImportCompare = [folder, 'wellTempDataTest1.mat']; % place and name where to save results in matfile 
 
-% extact variant
-[~, ~, ~, ~, variant] = comsolDataFileInUse_Info( );
+% Extract name of data file with measured temperatures and Variant
+[~, ~, ~, ~, variant, ~, ~, ~, ~, wellTempDataFileImport, wellTempDataFileImportCompare ] = ...
+            comsolDataFileInUse_Info( );
 
 %% Import
 wellTempTabAll = table; % to empty the table
@@ -107,16 +104,15 @@ t_listNum = standardRangesToCompare( variant )';
 % Measured times (during field test)
 durationTest1 = wellTempTabTest1.dateTime - timeTest1Start;
 t_listMeasuredAll = seconds(durationTest1);
+wellTempTabTest1.t = t_listMeasuredAll;
 t_listMeasured = unique(t_listMeasuredAll);
 
 % Intersection between measured and modelled times
 % Measured times are every 30 seconds
 % Rounding of modelled times by 30 seconds allows to to intersection with
 % unequal values
-tRound = 30; %seconds
-% Round to nearest 30
-t_listNumRound = round(t_listNum / tRound, 0) * tRound;
-t_listMeasuredRound = round(t_listMeasured / tRound, 0) * tRound;
+t_listNumRound = timeRoundToMeasured(t_listNum);
+t_listMeasuredRound = timeRoundToMeasured(t_listMeasured);
 % Intersection
 [t_listIntersectRound, indexListNumRound] = intersect(t_listNumRound, t_listMeasuredRound);
 % Select times from numerical time list which intersect with measured times
@@ -124,7 +120,7 @@ t_listTest1 = t_listNum(indexListNumRound);
 
 % Select results based on relevant times t_listTest1 to 
 % extract only relevant Temperatures to compare with model results
-t_listMeasuredAllRound = round(t_listMeasuredAll / tRound, 0) * tRound;
+t_listMeasuredAllRound = timeRoundToMeasured(t_listMeasuredAll);
 % Find which measurements rows contain relevant times for comparison
 [~, indexListMeasured] = ismember(t_listMeasuredAllRound, t_listIntersectRound);
 wellTempTabTest1 = wellTempTabTest1(indexListMeasured~=0, :);

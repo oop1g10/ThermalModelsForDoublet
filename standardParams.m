@@ -77,7 +77,7 @@ function [ params, mu_w, deltaH, g_const, growthRateOptim, startStepSize, N_Schu
         params.aZ = aXYZ(3); % "Dispersivity in Z direction (m)"
 
         params.rhoW = 1000; % kg/m^3 density of water
-        params.cW = 4200; % J/kg/K specific heat capacity of solid
+        params.cW = 4200; % J/kg/K specific heat capacity of water
         params.rhoS = 2600; % kg/m^3 density of solid
         params.cS = 1000; % J/kg/K specific heat capacity of solid
         params.lS = 2.8; % [W/m/K ] thermal conductivity of solid in aquifer matrix [W m-1 K-1]

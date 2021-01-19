@@ -1,5 +1,6 @@
 function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsConvergence, variant, ...
-            solution, methodMesh, rSource_notUsed, maxMeshSize ] = ...
+            solution, methodMesh, rSource_notUsed, maxMeshSize, ...
+            wellTempDataFileImport, wellTempDataFileImportCompare ] = ...
             comsolDataFileInUse_Info( )
         
     rSource_notUsed = NaN; % historical not used value
@@ -39,5 +40,11 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
         maxMeshSize = 0.04; % optimesh 
         methodMesh = '3d'; % name of method of meshing in comsol
     end
+    
+    % Name of data file with measured temperatures
+    wellTempDataFileName = 'wellTempData.mat';
+    wellTempDataFileImport = [folder, wellTempDataFileName]; % place and name where to save results in matfile 
+    wellTempDataFileImportCompare = [folder, 'wellTempDataTest1.mat']; % place and name where to save results in matfile 
+    
 end
 
