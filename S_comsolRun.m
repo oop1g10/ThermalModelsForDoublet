@@ -61,6 +61,7 @@ paramsStd = standardParams(variant);
 paramsCombinationsTab = table;
 if paramsFor_FieldTest
     paramsList = paramsStd;
+    % paramsList.alpha_deg = [90, 0]; % direction of groundwater flow
     % Prepare combinations of all parameters to run model through
     paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];    
 end

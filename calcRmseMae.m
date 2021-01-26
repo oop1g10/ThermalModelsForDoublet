@@ -6,12 +6,12 @@ function [rmse, mae] = calcRmseMae(target, model, dim)
 % dim - to calculate rmse/mae across dimension dim (1 rows or 2 columns)
 % Note: data and estimates have to be of same size
 
-%     % Delete records with NaNs in both datasets first
-%     valuesListWithoutNaNs = ~isnan(target) & ~isnan(model); 
-%     targetWithoutNaN = target(valuesListWithoutNaNs);
-%     modelWithoutNaN = model(valuesListWithoutNaNs);
+    % Delete records with NaNs in both datasets first
+    valuesListWithoutNaNs = ~isnan(target) & ~isnan(model); 
+    targetWithoutNaN = target(valuesListWithoutNaNs);
+    modelWithoutNaN = model(valuesListWithoutNaNs);
     
-    diff = target - model;
+    diff = targetWithoutNaN - modelWithoutNaN;
     mae = mean(abs(diff), dim);
-    rmse = sqrt( sum(diff .^ 2, dim) / size(target, dim) );
+    rmse = sqrt( sum(diff .^ 2, dim) / size(targetWithoutNaN, dim) );
 end

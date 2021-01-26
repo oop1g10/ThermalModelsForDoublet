@@ -4,9 +4,9 @@ clear T_eval_model % clear persistent variables in function (used as cache)
 %% Decide which plots to generate
 plotT_q = true; %+ T change vs time at different GW flows
 plotTxy_stream_tb = false; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
-    plotTxy_stream_tb_Txy = true; % plot isotherms
-    plotTxy_stream_tb_tb = true; % plot time to breakthrough
-    plotTxy_stream_tb_stream = true; % plot streamlines
+    plotTxy_stream_tb_Txy = false; % plot isotherms
+    plotTxy_stream_tb_tb = false; % plot time to breakthrough
+    plotTxy_stream_tb_stream = false; % plot streamlines
 plotTxy_q = false; %+ How groundwater velocity influences plume development in x&y direction (plan view)
 % for 3D  only
 plotTz_q_x = false; %+ Temperature at different x versus depth (z dimention) for different GW flows
@@ -21,7 +21,7 @@ plotTxz_q = false; % TODO %%%%%%%%%%%%%%%  PROFILE
 
 plotTb_axy_q = false; %+ Temperature at borehole wall after 30 years vs dispersivities at different GW flows
 
-plotXt_q_fe = false; % TODO Plume extent longitudinal (X) after 30 years (t) vs groundwater flow (q) for different heat input (fe)
+plotXt_q_fe = false; % TODO Plume extent longitudinal (X) after set time (t) vs groundwater flow (q) for different heat input (fe)
 
 % Save the plots
 plotSave = false;
@@ -33,8 +33,7 @@ fprintf('methodMesh: %s\n', methodMesh);
 
 % Set standard model parameters
 [paramsStd, ~, deltaH] = standardParams(variant);
-% Get list of different q (gw velocity)
-% Take coordinates for plots
+% Get list of different parameter ranges for plots
 [ t_list, q_list, ~, x_range, y_range, z_range, Mt, y, z, ~, timeTbh, timeForT_max,...
     T_plume_list, ~, x_Tlist, ~, Q_list, a_list, coord_list_ObsWells ] = ...
     standardRangesToCompare( variant );

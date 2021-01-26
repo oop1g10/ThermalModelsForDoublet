@@ -86,19 +86,19 @@ function [ params, mu_w, deltaH, g_const, growthRateOptim, startStepSize, N_Schu
  end
         
 if strcmp(variant, 'FieldExp1') % FieldExp 1 = first field experiment, FieldExp2 = second experiment. 
-        deltaH = 0.001; % [m/m] Hydraulic  gradient, = 1 mm/m
+        deltaH = 0.0028; %0.001; % [m/m] Hydraulic  gradient, = 1 mm/m
     %   params.fe = fe; % "Heat input (W) per whole cylinder source"
-        params.ro = 0.07; % borehole well radius [m]
+        params.ro = 0.0762; %0.07; % borehole well radius [m]
     %    params.H = 30 * 3; %borehole length [m]    
-        params.H = 30; %borehole length [m]
+        params.H = 6; %borehole length [m]
         params.M = params.H; % [m] thickness of aquifer, even the model is in 2D it is accounted for and influences model results
 
-        params.alpha_deg = 0; % [deg] % angle of gw flow, if = 0 it is parallel to x axis (flows from left to right) if 90 = parallel to y axis
-        params.T0 = degC2kelvin(12); % 12 [deg C] % undisturbed temperature in aquifer 
-        params.Ti = degC2kelvin(30); % 30 [deg C] % injection temperature
-        params.a = 5; % [m] half of distance between two wells
+        params.alpha_deg = 280; % [deg] % angle of gw flow, if = 0 it is parallel to x axis (flows from left to right) if 90 = parallel to y axis
+        params.T0 = degC2kelvin(10); % 12 [deg C] % undisturbed temperature in aquifer 
+        params.Ti = degC2kelvin(37.4); % 30 [deg C] % injection temperature
+        params.a = 4.97; % [m] half of distance between two wells
     %   params.Q = 0.03 * 3; % [m^3/second] water injection and production rate
-        params.Q = 0.00042; % (~25 litre/minute translated in m^3/second)
+        params.Q = 0.00041; % (cca 25 litre/minute translated in m^3/second)
 
         %% Aquifer properties      
         % aXYZ  %longitudinal (x) and transverse (y,z) thermal dispersivities [m] 
@@ -107,13 +107,14 @@ if strcmp(variant, 'FieldExp1') % FieldExp 1 = first field experiment, FieldExp2
         params.aY = aXYZ(2); % "Dispersivity in Y direction (m)"
         params.aZ = aXYZ(3); % "Dispersivity in Z direction (m)"
 
-        params.rhoW = 1000; % kg/m^3 density of water
-        params.cW = 4200; % J/kg/K specific heat capacity of solid
+        params.rhoW = 999.75; % kg/m^3 density of water
+        params.cW = 4192; % J/kg/K specific heat capacity of solid
         params.rhoS = 2600; % kg/m^3 density of solid
         params.cS = 1000; % J/kg/K specific heat capacity of solid
         params.lS = 2.8; % [W/m/K ] thermal conductivity of solid in aquifer matrix [W m-1 K-1]
-        params.q = 1E-6;% "Darcy gw velocity (m/s)"
-        params.n = 0.1; % porosity of material in aquifer        
+        params.q = 1E-5;% "Darcy gw velocity (m/s)"
+        % natural undisturbed sand porosity taken from https://www.tandfonline.com/doi/abs/10.1080/10641190490900844
+        params.n = 0.42; % porosity of material in aquifer  
  end
 
     %% Mesh and time step properties

@@ -120,5 +120,49 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
 %         keyModelInfoRow.volume_5K30y = NaN;
 %         keyModelInfoRow.area_5K30y = NaN;
     end
+    
+    %% Add comparison between measured and modelled temperatures
+    % Comparison is done for times which are both measured and modelled
+    t_listComparison = timesForComparison(variant);
+    keyModelInfoRow.t_listComparison = {t_listComparison};
+    
+    % Get list of wells with coordinates to compare, columns with Temperatures and RMSE comparisons will be added
+    well_T_comparison = wellCoordinates(variant);
+
+    % Add columns with modelled and measured Temperature and RMSE for each well for comparison times
+    well_T_comparison.T_model = cell(size(well_T_comparison, 1), 1);
+    well_T_comparison.T_measured = cell(size(well_T_comparison, 1), 1);
+    well_T_comparison.RMSE = nan(size(well_T_comparison, 1), 1);
+    well_T_comparison.RMSEadj = nan(size(well_T_comparison, 1), 1); % adjusted RMSE
+    % Depths from which to take measured temperatures
+    [ ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ... 
+        measuredWellDepth_range] = standardRangesToCompare( variant );
+    % For each well
+    for i = 1 : size(well_T_comparison, 1)
+        % Add column with MODELLED T for each well for comparison times
+        well_T_comparison.T_model{i} = ...
+            T_eval_model(modelMethod, well_T_comparison.x(i), well_T_comparison.y(i), z, ...
+                     Mt_single, params, t_listComparison, comsolResultsTab, 'T', variant);
+        % Add column with MEASURED T for each well for comparison times
+        well_T_comparison.T_measured{i} = ...
+            T_wellMeasured(well_T_comparison.x(i), well_T_comparison.y(i), measuredWellDepth_range, t_listComparison, variant);
+        % Calculate RMSE for each well between model and measurement
+        well_T_comparison.RMSE(i) = calcRmseMae(well_T_comparison.T_measured{i}, well_T_comparison.T_model{i}, 2);
+        % Calculate adjusted RMSE (see excel) so difference for each well have similar importance in resulting objective value which is their sum
+        T_MaxMinDiff = max(well_T_comparison.T_measured{i}) - min(well_T_comparison.T_measured{i});
+        % If all measured temepratures are the same (e.g. initial) then T_MaxMinDiff is zero
+        % Division by zero is not possible. Use a small value instead
+        if T_MaxMinDiff < 0.1
+            T_MaxMinDiff = 0.1;
+        end
+        well_T_comparison.RMSEadj(i) =  well_T_comparison.RMSE(i) / T_MaxMinDiff;
+    end     
+
+    % Add table with comparisons to keyInfo as a cell
+    keyModelInfoRow.well_T_comparison = {well_T_comparison};
+
+    % Add sum of adjusted RMSE to keyInfo (objective value to be used for parameters fitting)
+    keyModelInfoRow.RMSEadj = sum(well_T_comparison.RMSEadj(~isnan(well_T_comparison.RMSEadj)));
+    
 end
 

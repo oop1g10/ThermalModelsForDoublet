@@ -1,6 +1,7 @@
 function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
            T_SS_low, timeTbh, timeTbh_max, ...
-           T_plume_list, T_plume_listMC, x_Tlist, x_TlistMC, Q_list, a_list, coord_list_ObsWells]...
+           T_plume_list, T_plume_listMC, x_Tlist, x_TlistMC, Q_list, a_list, ...
+           coord_list_ObsWells, measuredWellDepth_range]...
            = standardRangesToCompare( variant )
 % Ranges used to compare analytical and numerical models
 
@@ -26,7 +27,8 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
         % Use only times from cca 4 minutes to 40 days
         t_list = t_list_all(t_list_all > 259 & t_list_all < daysToSeconds(40) );
         % Times and isotherms for comparative statistics (key info comparison)
-        timeTbh = daysToSeconds(15); % time to calculate temperature at specified location (or well), [seconds]
+        % timeTbh = daysToSeconds(15); % time to calculate temperature at specified location (or well), [seconds]
+        timeTbh =  1261612.8; % seconds, equals to 14.6 days
         timeTbh_max = daysToSeconds(t_max); % time to calc max temperature at specified location, [seconds]
         % Difference of temperature, deg C, to find plume (isotherm) extent
         % warning('T_plume_list = only 1 value')
@@ -103,9 +105,20 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
                 paramsStd.Q / 5 * 6 ];
     a_list = [1:1:6]; % HALF distance between wells 
     % xy coordinates for observation wells
-    coord_list_ObsWells = [xInjection - paramsStd.a, yInjection ; ... % left
-                           xInjection, yInjection + paramsStd.a ; ... % up
-                           xInjection + paramsStd.a, yInjection ; ...  % right
-                           xInjection, yInjection - paramsStd.a ] ; % down
+    % For Field test variant set coordinates of real observation wells
+    if strcmp(variant, 'FieldExp1')
+        % Well coordinates
+        wellCoords = wellCoordinates(variant); 
+        coord_list_ObsWells = [wellCoords.x, wellCoords.y];
+
+    else     
+        coord_list_ObsWells = [xInjection - paramsStd.a, yInjection ; ... % left
+                               xInjection, yInjection + paramsStd.a ; ... % up
+                               xInjection + paramsStd.a, yInjection ; ...  % right
+                               xInjection, yInjection - paramsStd.a ] ; % down
+    end
+    
+    % Depth range for measured well temperature
+    measuredWellDepth_range = [27.5, 28.5];
 end
 

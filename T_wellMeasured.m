@@ -3,10 +3,12 @@ function [T_t, wellName] = ...
 % Return measured temperatures for specified depth and well
 % x and y must be coordinates of well
 
+    paramsStd = standardParams( variant );
+
     % Load measured data that was imported and saved as mat file
     % Extract name of data file with measured temperatures and Variant
     [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, wellTempDataFileImportCompare ] = ...
-                comsolDataFileInUse_Info( );
+                comsolDataFileInUse_Info( );        
     % Load table with results wellTempTabTest1
     persistent wellTempTabTest1
     if isempty(wellTempTabTest1)
@@ -15,10 +17,7 @@ function [T_t, wellName] = ...
     
     % Determine well based on x y coordinate
     % Well coordinates
-    wellCoords = table;
-    wellCoords.wellName = {'aquifro2'; 'aquifro3'; 'aquifro4'; 'aquifro6'; 'aquifro5'; 'aquifro7'};
-    wellCoords.x = [-2.62; -0.27; 2.59; -2.59; 6.90; 2.60];
-    wellCoords.y = [-5.24; 4.37; 0.00; 0.00; -3.01; 1.57];
+    wellCoords = wellCoordinates(variant);
     % Find x y among well cordinates
     wellName = {};
     for i = 1 : numel(wellCoords.x)
@@ -46,6 +45,7 @@ function [T_t, wellName] = ...
 %     end    
     % Faster method to do the same but using intersect function
     [~,ia,ib] = intersect(wellTempTabFiltered.tRound, t_listRound);
-    T_t(ib) = wellTempTabFiltered.tempC(ia);
+    % Temperature difference from initial values
+    T_t(ib) = wellTempTabFiltered.tempC(ia) - kelvin2DegC(paramsStd.T0);
 end
 
