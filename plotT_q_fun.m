@@ -12,10 +12,14 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
         setFigSize( 1, 2 ); %size for single column figure %2.1
     else
         setFigSize( 1, 1 ); %size for single column figure
-    end 
+    end
     figure;
     colors = setColorOrder( q_colorOrder );
-
+    
+    % By how many steps to skip the data during plotting, if = 1 means no
+    % skipping
+    skipCount = 1;
+    
     for i = 1 : size(T_q,1)
         % if marker size is not specified do not use it
          if isempty(markerStyles)
@@ -29,14 +33,14 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
             if isempty(lineStyles) 
                 lineStyle = 'none'; %'-';
             else
-               lineStyle = lineStyles{i};
+                lineStyle = lineStyles{mod(i-1,numel(lineStyles))+1}; %repeat usage of line styles if not enough specified               
             end
             
            % markerStyle = 'none'; %'*';
             lineWidthfactor = 1;
             % Sparse (every third point) for numerical model otherwise there are too many circles!
-            %T_q_line = T_q(i,1:3:end);
-            %t_list_line = t_list(1:3:end);
+            %T_q_line = T_q(i,1:skipCount:end);
+            %t_list_line = t_list(1:skipCount:end);
           %  T_q_line = T_q(i,:);
           %  t_list_line = t_list;
             
@@ -44,8 +48,8 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
                 T_q_line = T_q(i,1:6:end);
                 t_list_line = t_list(1:6:end);
             else %in case of 2D model fewer times are calculated, so every 3rd value is ploted
-                T_q_line = T_q(i,1:3:end);
-                t_list_line = t_list(1:3:end);
+                T_q_line = T_q(i,1:skipCount:end);
+                t_list_line = t_list(1:skipCount:end);
             end
                       
             
@@ -53,7 +57,7 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
             if isempty(lineStyles)
                 lineStyle = 'none'; %'--'
             else
-               lineStyle = lineStyles{i};
+                lineStyle = lineStyles{mod(i-1,numel(lineStyles))+1}; %repeat usage of line styles if not enough specified
             end
                         
             lineWidthfactor = 1;
@@ -62,8 +66,8 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
                 T_q_line = T_q(i,1:6:end);
                 t_list_line = t_list(1:6:end);
             else %in case of 2D model fewer times are calculated, so every 3rd value is ploted
-                T_q_line = T_q(i,1:3:end);
-                t_list_line = t_list(1:3:end);
+                T_q_line = T_q(i,1:skipCount:end);
+                t_list_line = t_list(1:skipCount:end);
             end
             
             
@@ -73,7 +77,7 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
             if isempty(lineStyles)
                 lineStyle = '-';     %':';
             else
-                lineStyle = lineStyles{i};
+                lineStyle = lineStyles{mod(i-1,numel(lineStyles))+1}; %repeat usage of line styles if not enough specified
             end
 
             lineWidthfactor = 1;         %2;

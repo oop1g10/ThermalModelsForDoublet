@@ -30,7 +30,14 @@ function comsolResultsTabRow = comsolResultsRowCreate(comsolFilename, nodeXYZ, .
  
     % Create a 2D (plane or profile view) or 3D delaunayTriangulation (elements) for nodes with known temperatures
     PointsList = nodeXYZ(:,usedDimensions);
+    
+    % Turn off warning about: Duplicate data points have been detected and removed.
+    warningId = 'MATLAB:delaunayTriangulation:DupPtsWarnId';
+    warning('off', warningId) 
     delaunayTriang = delaunayTriangulation(PointsList);
+    % Turn on warnings back
+    warning('on', warningId) 
+    
     % TODO
     % 1 from delaunayTriang take xy list and compare it with xy list from comsol import
     % 2 from delaunayTriang the indices of points from the 3 points list should be matched with coored indices

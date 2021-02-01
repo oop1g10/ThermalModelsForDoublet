@@ -2,7 +2,7 @@ clear
 clear T_eval_model % clear persistent variables in function (used as cache)
 
 %% Decide which plots to generate
-plotT_q = true; %+ T change vs time at different GW flows
+plotT_q = false; %+ T change vs time at different GW flows
 plotTxy_stream_tb = false; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
     plotTxy_stream_tb_Txy = false; % plot isotherms
     plotTxy_stream_tb_tb = false; % plot time to breakthrough
@@ -23,7 +23,11 @@ plotTb_axy_q = false; %+ Temperature at borehole wall after 30 years vs dispersi
 
 plotXt_q_fe = false; % TODO Plume extent longitudinal (X) after set time (t) vs groundwater flow (q) for different heat input (fe)
 
-% Save the plots
+% Model calibration plots %%%%%%%%%%%%%%%%%%%%%%%%
+plotT_t_well = true; %+ T change vs time at different wells of field site for modelled and measured results
+
+
+%% Save the plots
 plotSave = false;
 plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_fieldtest\';
 
@@ -35,12 +39,12 @@ fprintf('methodMesh: %s\n', methodMesh);
 [paramsStd, ~, deltaH] = standardParams(variant);
 % Get list of different parameter ranges for plots
 [ t_list, q_list, ~, x_range, y_range, z_range, Mt, y, z, ~, timeTbh, timeForT_max,...
-    T_plume_list, ~, x_Tlist, ~, Q_list, a_list, coord_list_ObsWells ] = ...
+    T_plume_list, ~, x_Tlist, ~, Q_list, a_list, coord_list_ObsWells, measuredWellDepth_range ] = ...
     standardRangesToCompare( variant );
 
 q_max = max(q_list); %Specific flux (Darcy flux) [m s-1] % maximm required Darcy velocity
 modelMethodsPlot = [modelMethods(1), modelMethods(2)]; % 1 = Schulz/Homo; 2 = Comsol 2D
-modelMethodPlot = modelMethods{1}; % Method of model calculation
+modelMethodPlot = modelMethods{2}; % Method of model calculation
 % NOTE selected plot support comparison of two models some only one model method
 % Model methods for which comparison plot should be generated
 % First method is full line for analytical model, 
@@ -71,6 +75,12 @@ if plotT_q
     plotNamePrefix = 'T_q'; % plot name to save the plot with relevant name
     x_list = x_Tlist; % [m] X coordinates, distance from heat source, to plot
     Mt_T_q = 1; % calculation only in one point
+    
+    % bestFitParams = 'q[2.8128e-05] aXYZ[1.97503 1.97503 1.97503] ro[0.0762] H[6] M[6] adeg[278.74] T0[283.15] Ti[310.55] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[800.026] lS[1.90001] n[0.599998] mesh[0.1]';
+    % trial params set with lower inj temeprature
+    % bestFitParams = 'q[2.8128e-05] aXYZ[1.97503 1.97503 1.97503] ro[0.0762] H[6] M[6] adeg[278.74] T0[283.15] Ti[287.6] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[800.026] lS[1.90001] n[0.599998] mesh[0.1]';
+    % paramsBestFit = comsolFilename_Info( ['plan sol1 0001 ', bestFitParams, '.txt'], variant );
+
     % One plot for each point location along x axis from list
     for ix = 1:numel(x_list)
         point_MidDepth = [x_list(ix), y, z];
@@ -79,8 +89,11 @@ if plotT_q
         i = 0;
         for iq = 1:numel(q_list)
             % Parameters from comsol result
-            params = paramsStd;          
+           % warning('best fit pars are used')
+            params = paramsStd;   
             params.q = q_list(iq);
+            % params = paramsBestFit;             
+            
             % For each model method
             for im = 1:numel(modelMethodsPlot)
                 i = i + 1;
@@ -584,4 +597,52 @@ if plotXt_q_fe
     end
 end
 
-
+%% Calibration plots
+% T change vs time at different wells of field site for modelled and measured results
+if plotT_t_well
+    plotNamePrefix = 'T_t_well'; % plot name to save the plot with relevant name
+    wellCoords = wellCoordinates(variant);
+    % Delete injection well 6, injection well should not be plotted
+    wellCoordsPlot = wellCoords(~strcmp(wellCoords.wellName, 'aquifro6'), :);
+    t_listComparison = timesForComparison(variant);  
+    % Get best calibrated parameters    
+     paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
+    % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:384', variant);    
+    % paramsCalib = paramsStd;
+    
+    Mt_T_t_well = 1; % calculation only in one point
+    T_t_well = nan(size(wellCoordsPlot,1) * 2, length(t_listComparison));
+    legendTexts_well_method = cell(size(T_t_well, 1), 1); % text for legends on plot
+    i = 0;
+    for iwell = 1 : size(wellCoordsPlot,1)
+        point_MidDepth = [wellCoordsPlot.x(iwell), wellCoordsPlot.y(iwell), z];
+        % For model
+        i = i + 1;
+        % Calculate temperature series for current well
+        T_t_well(i,:) = ...
+           T_eval_model(modelMethodPlot, [point_MidDepth(1), point_MidDepth(1)], ...
+                                        point_MidDepth(2), point_MidDepth(3), ...
+                                        Mt_T_t_well, paramsCalib, t_listComparison, comsolResultsTab, 'T', variant);
+        legendTexts_well_method{i} = sprintf('%s: %s', ...
+            wellCoordsPlot.wellName{iwell}, modelMethodPlot); 
+        % For measurements
+        i = i + 1;
+        % Get measured temperature series for current well
+        T_t_well(i,:) = ...
+            T_wellMeasured(point_MidDepth(1), point_MidDepth(2), measuredWellDepth_range, t_listComparison, variant);       
+        legendTexts_well_method{i} = sprintf('%s: %s', ...
+            wellCoordsPlot.wellName{iwell}, 'Measured'); 
+    end
+    well_colorOrder = [1 2 3 4 5 6];
+    % Duplicate colour number to be the same for each well
+    well_colorOrder = sort(repmat(well_colorOrder, 1, 2));        
+    plotName = sprintf('%s_%s', plotNamePrefix, cell2mat(modelMethodsPlot));
+    plotTitleT_t_well = plotName;
+    plotTitleT_t_well(plotTitleT_t_well == '_') = '-'; %replace _ with - in plot title not to print as subscript    
+    plotT_q_fun( t_listComparison, T_t_well, [], [], ...
+        legendTexts_well_method, well_colorOrder, plotTitleT_t_well, {'-', ':'}, {'none','o'})   
+    % Save figure
+    if plotSave
+        saveFig([plotExportPath plotName])
+    end    
+end

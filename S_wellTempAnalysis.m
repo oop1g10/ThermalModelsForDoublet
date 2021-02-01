@@ -1,15 +1,16 @@
 %clear
 %% Decide which plots to generate
 plotT_time_wellDepth = true; % T vs time at different depths in well
-    plotTestNumber = 3; % 2 % 0 % 1 = (test 1) 2 = test 2, if 3 means monitoring period only. % 0 means all plots % 
+    plotTestNumber = 1; % 2 % 0 % 1 = (test 1) 2 = test 2, if 3 means monitoring period only. % 0 means all plots % 
     
 %% Save the plots
 plotSave = true;
 plotExportPath = 'C:\Users\Asus\OneDrive\INRS\WellTProfiles\figs\';
 
 %% Load previously saved mat file with all data wellTempTab
-%load('C:\Users\Asus\OneDrive\INRS\WellTProfiles\wellTempData.mat')
-warning('load skipped')
+% load('C:\Users\Asus\OneDrive\INRS\WellTProfiles\wellTempData.mat')
+load('D:\COMSOL_INRS\export\wellTempData.mat')
+% warning('load skipped')
 
 % Well name list
 wellNameList = unique(wellTempTab.wellName);

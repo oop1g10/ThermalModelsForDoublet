@@ -21,9 +21,9 @@ function paramsCombinationsTab = paramsCombinationsPrep( paramsList )
     % names and rows to each combination set
     paramsCombinationsTab = array2table(paramsCombinationsMatrix, 'VariableNames', paramNames);
 
-    % Specific case for dispersivities: add aY and aZ based on specified proportions to aX.
-    aXYZ_list = aXYZ_toTest( paramsCombinationsTab.aX' );
-    paramsCombinationsTab.aY = aXYZ_list(:,2);
-    paramsCombinationsTab.aZ = aXYZ_list(:,3);
+%     % Specific case for dispersivities: add aY and aZ based on specified proportions to aX.
+%     aXYZ_list = aXYZ_toTest( paramsCombinationsTab.aX' );
+%     paramsCombinationsTab.aY = aXYZ_list(:,2);
+%     paramsCombinationsTab.aZ = aXYZ_list(:,3);
 
 end

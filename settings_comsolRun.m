@@ -1,4 +1,4 @@
-function [ comsolPath, exportPath, comsolLibrary, showComsolProgress ] = settings_comsolRun( runOnIridisLinux )
+function [ comsolFile, exportPath, comsolLibrary, showComsolProgress ] = settings_comsolRun( runOnIridisLinux, methodMesh )
 %SETTINGS_COMSOLRUN returns all names and settings needed for comsol run
 
 if runOnIridisLinux
@@ -8,13 +8,30 @@ if runOnIridisLinux
     exportPath = [comsolPath 'export/'];
     comsolLibrary = '/local/software/comsol/5.5/mli';
     showComsolProgress = false; % progress info
-else % if computation is on Windows
+elseif isMyComputer() % if computation is on my laptop
+    % if computation is on Windows
     %comsolPath = 'D:\COMSOL\cylinder mesh\';
     comsolPath = 'D:\COMSOL_INRS\models\';
     exportPath = [comsolPath 'export\'];
     comsolLibrary = 'C:\Program Files\COMSOL\COMSOL56\Multiphysics\mli';
-    showComsolProgress = true; % progress info
+    showComsolProgress = false; % progress info
+else % Madison computer is used. Change Comsol folder
+    comsolPath = 'E:\Sasha\COMSOL_INRS\models\';
+    exportPath = [comsolPath 'export\'];
+    comsolLibrary = 'C:\Program Files\COMSOL\COMSOL56\Multiphysics_copy1\mli';
+    showComsolProgress = false; % progress info
 end
+
+if  strcmp(methodMesh, '3d')
+    %Distinguish model name without and with pipe
+    comsolFile = [comsolPath '3D_TODO_Matlab'];
+elseif strcmp(methodMesh, '2d')
+    %Distinguish model name without and with grout
+    comsolFile = [comsolPath 'doublet_2d_Matlab'];
+else
+    error('Please specify correct model dimension!')
+end
+
 
 end
 

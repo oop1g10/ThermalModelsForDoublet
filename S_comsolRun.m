@@ -24,11 +24,11 @@ if runOnIridisLinux
     addpath('~/comsol/matlab_files') % Tell matlab where all functions are located
 end
 
-% set folder names for comsol run
-[ comsolPath, exportPath, comsolLibrary, showComsolProgress ] = settings_comsolRun( runOnIridisLinux );
-
 [~, ~, ~, ~, ~, solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
 fprintf('methodMesh: %s\n', methodMesh);
+
+% set folder names for comsol run
+[ comsolFile, exportPath, comsolLibrary, showComsolProgress ] = settings_comsolRun( runOnIridisLinux, methodMesh );
 
 %List of parameter combination indices to calculate, [] means all
 paramsIndicesToCalculate = [];
@@ -42,16 +42,6 @@ if ~isempty(env_MATLAB_EVAL)
     eval(env_MATLAB_EVAL);
 end
 
-if  strcmp(methodMesh, '3d')
-    %Distinguish model name without and with pipe
-    comsolFile = [comsolPath '3D_TODO_Matlab'];
-elseif strcmp(methodMesh, '2d')
-    %Distinguish model name without and with grout
-    comsolFile = [comsolPath 'doublet_2d_Matlab'];
-else
-    error('Please specify correct model dimension!')
-end
-
 %% Input flow and heat tranpost parameters
 % Standard model parameters
 paramsStd = standardParams(variant);
@@ -63,7 +53,13 @@ if paramsFor_FieldTest
     paramsList = paramsStd;
     % paramsList.alpha_deg = [90, 0]; % direction of groundwater flow
     % Prepare combinations of all parameters to run model through
-    paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];    
+    paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
+    
+    % Calculate numerical model with parameters of calibrated analytical model
+    paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
+    paramsList = paramsCalib;
+    paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
+
 end
 if paramsFor_standardPlots
     paramsList = paramsStd;
@@ -71,7 +67,9 @@ if paramsFor_standardPlots
     paramsList.q = q_list; % add zero groundwater velocity as first in list    
     % List of aXYZ (aquifer dispersivities in 3D)
     aXYZ_list = aXYZ_toTest( [0 2] ); % longitudinal dispersivity [m]
-    paramsList.aX = aXYZ_list(:,1)'; % Only ax is provided, ay az will be calculated later from specified proportion
+    paramsList.aX = aXYZ_list(:,1)'; 
+    paramsList.aY = aXYZ_list(:,2)'; 
+    paramsList.aZ = aXYZ_list(:,3)'; 
     % Prepare combinations of all parameters to run model through
     paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
 end
@@ -104,7 +102,9 @@ if paramsFor_meshConvergence
     end
     % Better do mesh convergence with nonzero groundwater flow and non zero dispersivity
     paramsList.q = q_list; %q_list(3); % non zero groundwater velocity
-    paramsList.aX = aXYZ_list(2,1); % non zero ax % Only ax is provided, ay az will be calculated later from specified proportion
+    paramsList.aX = aXYZ_list(2,1); % non zero ax 
+    paramsList.aY = aXYZ_list(2,2); 
+    paramsList.aZ = aXYZ_list(2,3); 
     % Prepare combinations of all parameters to run model through
     paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
 end

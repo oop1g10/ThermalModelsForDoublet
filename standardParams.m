@@ -94,7 +94,7 @@ if strcmp(variant, 'FieldExp1') % FieldExp 1 = first field experiment, FieldExp2
         params.M = params.H; % [m] thickness of aquifer, even the model is in 2D it is accounted for and influences model results
 
         params.alpha_deg = 280; % [deg] % angle of gw flow, if = 0 it is parallel to x axis (flows from left to right) if 90 = parallel to y axis
-        params.T0 = degC2kelvin(10); % 12 [deg C] % undisturbed temperature in aquifer 
+        params.T0 = degC2kelvin(10.17); % according to well 3.    12 [deg C] % undisturbed temperature in aquifer 
         params.Ti = degC2kelvin(37.4); % 30 [deg C] % injection temperature
         params.a = 4.97; % [m] half of distance between two wells
     %   params.Q = 0.03 * 3; % [m^3/second] water injection and production rate

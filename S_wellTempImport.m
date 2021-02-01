@@ -125,6 +125,15 @@ t_listMeasuredAllRound = timeRoundToMeasured(t_listMeasuredAll);
 [~, indexListMeasured] = ismember(t_listMeasuredAllRound, t_listIntersectRound);
 wellTempTabTest1 = wellTempTabTest1(indexListMeasured~=0, :);
 
+% Measurements for well 2 after the temperature peack time are not considered for
+% calibration
+timeTest1FinishWell2 = datetime('2020-09-16 13:50:00','InputFormat','yyyy-MM-dd HH:mm:ss');
+% Filter temperatures for relevant test period only
+relevantRowsToDelete = wellTempTabTest1.dateTime >= timeTest1FinishWell2 ...
+    & strcmp(wellTempTabTest1.wellName, 'aquifro2') ;
+wellTempTabTest1 = wellTempTabTest1(~relevantRowsToDelete, :);
+
+
 %% Save relevant temperature and time list as matfile
 % Version 7.3 is needed to support files >= 2GB, but older matlab versions cannot read
 % this format of table saving. 

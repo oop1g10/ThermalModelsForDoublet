@@ -9,7 +9,11 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
     model_3dComsol = ~model_2dPlanComsol; % if 2d is selected, 3d choise is automatically FALSE
 
     % Standard general settings
-    folder = 'D:\COMSOL_INRS\export\'; 
+    if isMyComputer()
+        folder = 'D:\COMSOL_INRS\export\'; 
+    else % Madison computer is used. Change Comsol folder
+        folder = 'E:\Sasha\COMSOL_INRS\export\';         
+    end
     solution = 'sol1'; % solution used in comsol
     % Load results comsolResultsTab from Comsol calculations
     %% 2D
