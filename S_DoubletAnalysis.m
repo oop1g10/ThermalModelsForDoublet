@@ -606,8 +606,9 @@ if plotT_t_well
     wellCoordsPlot = wellCoords(~strcmp(wellCoords.wellName, 'aquifro6'), :);
     t_listComparison = timesForComparison(variant);  
     % Get best calibrated parameters    
-     paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
-    % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:384', variant);    
+    % paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
+    % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:384', variant);
+    paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
     % paramsCalib = paramsStd;
     
     Mt_T_t_well = 1; % calculation only in one point

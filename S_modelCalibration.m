@@ -20,17 +20,19 @@ fprintf('Model method: %s\n', modelMethod);
 
 % Load previously saved workspace variables with comsol data in comsolResultsTab
 load(comsolDataFile)
-warning('paramsStd equal to best fit for ansol')
-bestFitParams = 'q[2.8128e-05] aXYZ[1.97503 1.97503 1.97503] ro[0.0762] H[6] M[6] adeg[278.74] T0[283.15] Ti[310.55] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[800.026] lS[1.90001] n[0.599998] mesh[0.1]';
+disp('paramsStd equal to best fit for ansol')
+paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
+% paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
+paramsInit = paramsCalib;
 
 % Prepare list of parameters for calibration with their ranges
-paramRanges(1,:) = prepParamRange('LOG10_q', [], log10(1E-6), log10(1E-2), log10(2.8128e-05), NaN); % paramsStd.q
-paramRanges(end+1,:) = prepParamRange('LINKED_aX', [], 0, 4, 1.97503, NaN); % aX
-paramRanges(end+1,:) = prepParamRange('alpha_deg', [], 0, 360, 278.74, NaN); %alpha_deg
-paramRanges(end+1,:) = prepParamRange('cS', [], 800, 1100, 800.026, NaN); %cS
-paramRanges(end+1,:) = prepParamRange('lS', [], 1, 3.2, 1.90001, NaN); %lS
-paramRanges(end+1,:) = prepParamRange('n', [], 0.3, 0.4, 0.35, NaN); %n
-paramRanges(end+1,:) = prepParamRange('LINKED_H', [], 3, 9, paramsStd.H, NaN);
+paramRanges(1,:) = prepParamRange('LOG10_q', [], log10(1E-6), log10(1E-2), log10(paramsInit.q), NaN); % paramsStd.q
+paramRanges(end+1,:) = prepParamRange('LINKED_aX', [], 0, 4, paramsInit.aX, NaN); % aX
+paramRanges(end+1,:) = prepParamRange('alpha_deg', [], 0, 360, paramsInit.alpha_deg, NaN); %alpha_deg
+paramRanges(end+1,:) = prepParamRange('cS', [], 800, 1100, paramsInit.cS, NaN); %cS
+paramRanges(end+1,:) = prepParamRange('lS', [], 1, 3.2, paramsInit.lS, NaN); %lS
+paramRanges(end+1,:) = prepParamRange('n', [], 0.3, 0.4, paramsInit.n, NaN); %n
+paramRanges(end+1,:) = prepParamRange('LINKED_H', [], 3, 9, paramsInit.H, NaN);
 
 % Show in command window calibrated parameters and their ranges
 paramRanges
