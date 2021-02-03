@@ -9,6 +9,8 @@ function paramsCalib = paramsFromCalib(calibVariant, variant)
         bestFitParams = 'q[2.24335e-05] aXYZ[0.00425659 0.00425659 0.00425659] ro[0.0762] H[6.18782] M[6.18782] adeg[302.687] T0[283.15] Ti[310.55] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[993.007] lS[2.87887] n[0.399983] mesh[0.1]';
     elseif strcmp(calibVariant, 'Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol')
         bestFitParams = 'q[1.08293e-05] aXYZ[0.710769 0.710769 0.710769] ro[0.0762] H[3.00286] M[3.00286] adeg[216.44] T0[283.32] Ti[310.55] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[823.19] lS[2.78244] n[0.380194] mesh[0.1]';
+    elseif strcmp(calibVariant, 'Numerical: q,aX,alpha,cS,lS,n,H RunCount:431 diff T0,lS,n init as prev numsim 447')
+        bestFitParams = 'q[1.063e-05] aXYZ[0.635331 0.635331 0.635331] ro[0.0762] H[3] M[3] adeg[215.359] T0[283.32] Ti[310.55] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[803.766] lS[3.18097] n[0.31096] mesh[0.1]';
     end
     paramsCalib = comsolFilename_Info( ['plan sol1 0001 ', bestFitParams, '.txt'], variant );
 end

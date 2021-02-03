@@ -9,7 +9,7 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
 %     end
 
     if numel(legendTexts_q) >= 3
-        setFigSize( 1, 2 ); %size for single column figure %2.1
+        setFigSize( 2, 2 ); %size for single column figure %2.1
     else
         setFigSize( 1, 1 ); %size for single column figure
     end
@@ -37,7 +37,7 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
             end
             
            % markerStyle = 'none'; %'*';
-            lineWidthfactor = 1;
+            lineWidthfactor = 1.5;
             % Sparse (every third point) for numerical model otherwise there are too many circles!
             %T_q_line = T_q(i,1:skipCount:end);
             %t_list_line = t_list(1:skipCount:end);
@@ -60,7 +60,7 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
                 lineStyle = lineStyles{mod(i-1,numel(lineStyles))+1}; %repeat usage of line styles if not enough specified
             end
                         
-            lineWidthfactor = 1;
+            lineWidthfactor = 1.5;
             % Sparse (every third point) for numerical model otherwise there are too many circles!
             if length(t_list) > 100 %in case of 3D model many times are calculated, so every 6rd value is ploted
                 T_q_line = T_q(i,1:6:end);
@@ -80,7 +80,7 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
                 lineStyle = lineStyles{mod(i-1,numel(lineStyles))+1}; %repeat usage of line styles if not enough specified
             end
 
-            lineWidthfactor = 1;         %2;
+            lineWidthfactor = 1.5;         %1;
             T_q_line = T_q(i,:);
             t_list_line = t_list;
 

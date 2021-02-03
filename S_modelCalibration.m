@@ -21,8 +21,8 @@ fprintf('Model method: %s\n', modelMethod);
 % Load previously saved workspace variables with comsol data in comsolResultsTab
 load(comsolDataFile)
 disp('paramsStd equal to best fit for ansol')
-paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
-% paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
+% paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
+paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
 paramsInit = paramsCalib;
 
 % Prepare list of parameters for calibration with their ranges

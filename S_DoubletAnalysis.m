@@ -28,8 +28,9 @@ plotT_t_well = true; %+ T change vs time at different wells of field site for mo
 
 
 %% Save the plots
-plotSave = false;
+plotSave = true;
 plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_fieldtest\';
+plotExportPathCalib = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_fieldtestCalib\';
 
 [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsConvergence, variant,...
     solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
@@ -608,7 +609,8 @@ if plotT_t_well
     % Get best calibrated parameters    
     % paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:384', variant);
-    paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
+    % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
+     paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:431 diff T0,lS,n init as prev numsim 447', variant);    
     % paramsCalib = paramsStd;
     
     Mt_T_t_well = 1; % calculation only in one point
@@ -637,13 +639,13 @@ if plotT_t_well
     well_colorOrder = [1 2 3 4 5 6];
     % Duplicate colour number to be the same for each well
     well_colorOrder = sort(repmat(well_colorOrder, 1, 2));        
-    plotName = sprintf('%s_%s', plotNamePrefix, cell2mat(modelMethodsPlot));
+    plotName = sprintf('%s_%s', plotNamePrefix, modelMethodPlot);
     plotTitleT_t_well = plotName;
     plotTitleT_t_well(plotTitleT_t_well == '_') = '-'; %replace _ with - in plot title not to print as subscript    
     plotT_q_fun( t_listComparison, T_t_well, [], [], ...
         legendTexts_well_method, well_colorOrder, plotTitleT_t_well, {'-', ':'}, {'none','o'})   
     % Save figure
     if plotSave
-        saveFig([plotExportPath plotName])
+        saveFig([plotExportPathCalib plotName])
     end    
 end
