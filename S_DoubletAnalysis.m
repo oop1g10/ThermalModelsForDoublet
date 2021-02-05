@@ -610,7 +610,9 @@ if plotT_t_well
     % paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:384', variant);
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
-     paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:431 diff T0,lS,n init as prev numsim 447', variant);    
+    % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:431 diff T0,lS,n init as prev numsim 447', variant); 
+    % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); 
+     paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:0488 WIDER ranges cS,H init 431', variant);
     % paramsCalib = paramsStd;
     
     Mt_T_t_well = 1; % calculation only in one point

@@ -119,6 +119,7 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     end
     
     % Depth range for measured well temperature
-    measuredWellDepth_range = [27.5, 28.5];
+    % measuredWellDepth_range = [27.5, 28.5];
+      measuredWellDepth_range = [28.5, 29.5];
 end
 

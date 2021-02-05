@@ -22,17 +22,17 @@ fprintf('Model method: %s\n', modelMethod);
 load(comsolDataFile)
 disp('paramsStd equal to best fit for ansol')
 % paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
-paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
+paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:431 diff T0,lS,n init as prev numsim 447', variant);
 paramsInit = paramsCalib;
 
 % Prepare list of parameters for calibration with their ranges
 paramRanges(1,:) = prepParamRange('LOG10_q', [], log10(1E-6), log10(1E-2), log10(paramsInit.q), NaN); % paramsStd.q
 paramRanges(end+1,:) = prepParamRange('LINKED_aX', [], 0, 4, paramsInit.aX, NaN); % aX
 paramRanges(end+1,:) = prepParamRange('alpha_deg', [], 0, 360, paramsInit.alpha_deg, NaN); %alpha_deg
-paramRanges(end+1,:) = prepParamRange('cS', [], 800, 1100, paramsInit.cS, NaN); %cS
-paramRanges(end+1,:) = prepParamRange('lS', [], 1, 3.2, paramsInit.lS, NaN); %lS
-paramRanges(end+1,:) = prepParamRange('n', [], 0.3, 0.4, paramsInit.n, NaN); %n
-paramRanges(end+1,:) = prepParamRange('LINKED_H', [], 3, 9, paramsInit.H, NaN);
+paramRanges(end+1,:) = prepParamRange('cS', [], 600, 1100, paramsInit.cS, NaN); %cS
+paramRanges(end+1,:) = prepParamRange('lS', [], 1, 4, paramsInit.lS, NaN); %lS
+paramRanges(end+1,:) = prepParamRange('n', [], 0.2, 0.4, paramsInit.n, NaN); %n
+paramRanges(end+1,:) = prepParamRange('LINKED_H', [], 1, 9, paramsInit.H, NaN);
 
 % Show in command window calibrated parameters and their ranges
 paramRanges
