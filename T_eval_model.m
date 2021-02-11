@@ -11,7 +11,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
 %       If Mt is [] EMPTY than it means that no space discretisation is needed and the x-list is taken directly from x_range (to evaluate T at separate point)
 % params - structure with parameters
 % t_list - list of times (seconds)
-% comsolResultsTab - table with all COmsol results (Temperatures and times and positions and element triangulation)
+% comsolResultsTab - table with all Comsol results (Temperatures and times and positions and element triangulation)
 % varOut -  'T' to return Temperatures,
 %           't_b' to return time to break through
 %           'v' to return velocities

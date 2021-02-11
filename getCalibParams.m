@@ -1,12 +1,12 @@
-function paramsCalib = getCalibParams( paramValues, paramRanges, paramsStd )
+function paramsCalib = getCalibParams( paramValues, paramNames, paramsStd )
 %Return meanings of values in fitted vector
 %paramsCalib - structure with parameters
 
     % Put used not calibrated standard params into the structure
     paramsCalib = paramsStd;
     % Set values of calibrated parameters 
-    for i = 1 : size(paramRanges,1)
-        paramName = paramRanges.name{i};
+    for i = 1 : size(paramNames,1)
+        paramName = paramNames{i};
         paramValue = paramValues(i);
         % Logarythmic parameter is used (log10)
         if contains(paramName, 'LOG10')

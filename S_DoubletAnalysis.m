@@ -1,5 +1,6 @@
-clear
-clear T_eval_model % clear persistent variables in function (used as cache)
+% Clean ALL is used here to clear persistent variables, in case input data is changed
+% Persistent variables in function are used as cache.
+clear all
 
 %% Decide which plots to generate
 plotT_q = false; %+ T change vs time at different GW flows

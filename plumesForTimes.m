@@ -82,7 +82,7 @@ function [xPlume_times, yPlume_times, zPlume_times] = ...
         % if determined Xplume is already as large as steady state plume extent, xPlplumeSS, then stop searching X plumes for larger times 
         if all(xPlume_times(it) >= xPlumeSS) && ~isempty(xPlumeSS)
             break % exit the loop for time list
-        end
+        end    
     end
 
 end

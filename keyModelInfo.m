@@ -14,7 +14,7 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     
     %% Temperature at abstraction well at time timeForT
     Mt_single = 1; % single point need at abstraction well
-    [~, ~, xAbstraction, yAbstraction] = getWellCoords(params.a);
+    [xInjection, yInjection, xAbstraction, yAbstraction] = getWellCoords(params.a);
     [T_bh, ~, ~, ~, ~, ~, elementsCountComsol, comsolResultsRow ] = ...
         T_eval_model(modelMethod, xAbstraction, yAbstraction, z, ...
                      Mt_single, params, timeForT, comsolResultsTab, 'T', variant);
@@ -30,7 +30,7 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     T_bh_SS = T_bh_max * T_SS_low;
     % Temperatures at borehole wall for all available times
     [T_bh_t, ~, ~, ~, ~, ~ ] = ...
-        T_eval_model(modelMethod, ro, y, z, ...
+        T_eval_model(modelMethod, xAbstraction, yAbstraction, z, ...
                      Mt_single, params, t_list, comsolResultsTab, 'T', variant);
     % Find interpolated time for almost steady state temperature at bh wall
     timeSS_Tbh = interpolateXforY(T_bh_t, T_bh_SS, t_list, '+up');
@@ -43,9 +43,14 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     % isotherm length (plume extent) for specific time timeforT (30 years)
     [xPlume, yPlume, zPlume] = plumesForTimes( modelMethod, timeForT, T_plume_list, params, ...
                                                 comsolResultsTab, [], variant );
+    % Calculate plume length after timeForT  
+    plumeLength = sqrt((xPlume - xInjection).^2 + (yPlume - yInjection).^2 + (zPlume - z).^2);
+    
     % isotherm length (plume extent) and for timeForT_max (300 years)
     [xPlumeSS, yPlumeSS, zPlumeSS] = plumesForTimes( modelMethod, timeForT_max, T_plume_list,...
                                                     params, comsolResultsTab, [], variant );
+    % Calculate plume length after timeForT_max  
+    plumeLengthSS = sqrt((xPlumeSS - xInjection).^2 + (yPlumeSS - yInjection).^2 + (zPlumeSS - z).^2);
     
     %% Find time to reach steady state for given isotherm
     % lower isotherm extent by 1%   to find when it reached steady state
@@ -101,9 +106,11 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     keyModelInfoRow.xPlume = xPlume;
     keyModelInfoRow.yPlume = yPlume;
     keyModelInfoRow.zPlume = zPlume;
+    keyModelInfoRow.plumeLength = plumeLength;
     keyModelInfoRow.xPlumeSS = xPlumeSS;
     keyModelInfoRow.yPlumeSS = yPlumeSS;
     keyModelInfoRow.zPlumeSS = zPlumeSS;
+    keyModelInfoRow.plumeLengthSS = plumeLengthSS;
     % Old method is used because new method much slower  
     keyModelInfoRow.timeSS_xPlume = timeSS_xPlumeOld; % new method --> timeSS_xPlume;
     keyModelInfoRow.elementsCountComsol = elementsCountComsol;

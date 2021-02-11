@@ -1,7 +1,7 @@
 function objVal = modelObjFunRmse( paramValues, modelMethod, paramRanges, paramsStd, comsolResultsTab, variant)
 %Compute model and RMSE
     % Set parameters to compute model
-    params = getCalibParams(paramValues, paramRanges, paramsStd);
+    params = getCalibParams(paramValues, paramRanges.name, paramsStd);
     % Display evaluated parameters and the count of model runs
     % (calculations)
     persistent runCount

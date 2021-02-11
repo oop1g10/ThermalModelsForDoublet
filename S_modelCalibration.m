@@ -1,4 +1,3 @@
-clear
 % Clean ALL is used here to clear persistent variables, in case input data is changed
 % Persistent variables in function are used as cache.
 clear all 
@@ -26,7 +25,8 @@ paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:431 diff
 paramsInit = paramsCalib;
 
 % Prepare list of parameters for calibration with their ranges
-paramRanges(1,:) = prepParamRange('LOG10_q', [], log10(1E-6), log10(1E-2), log10(paramsInit.q), NaN); % paramsStd.q
+paramRanges = table;
+paramRanges(end+1,:) = prepParamRange('LOG10_q', [], log10(1E-6), log10(1E-2), log10(paramsInit.q), NaN); % paramsStd.q
 paramRanges(end+1,:) = prepParamRange('LINKED_aX', [], 0, 4, paramsInit.aX, NaN); % aX
 paramRanges(end+1,:) = prepParamRange('alpha_deg', [], 0, 360, paramsInit.alpha_deg, NaN); %alpha_deg
 paramRanges(end+1,:) = prepParamRange('cS', [], 600, 1100, paramsInit.cS, NaN); %cS

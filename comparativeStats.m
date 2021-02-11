@@ -27,6 +27,10 @@ function [ comparativeStatsTab, Xmesh, Ymesh ] = ...
     for im = 1:numel(modelMethods)
         keyModelInfoRow = keyModelInfo( timeTbh, timeTbh_max, T_plume_list, x_Tlist, ...
                                          modelMethods{im}, params, comsolResultsTab, variant);
+        % Delete columns with cells which are not needed for comparative stats
+        keyModelInfoRow.t_listComparison = [];
+        keyModelInfoRow.well_T_comparison = [];
+        
         % Elements count is present only for comsol model (numerical model), for ansol it is empty []
         if ~isempty(keyModelInfoRow.elementsCountComsol)
             elementsCountComsol = keyModelInfoRow.elementsCountComsol;
@@ -45,7 +49,7 @@ function [ comparativeStatsTab, Xmesh, Ymesh ] = ...
  
     % Calculate temperatures for models
     T_points_t_modelMethod = nan(Mt*Mt, numel(t_list), numel(modelMethods));
-    warning('RMSE not calculated!!!!!!!!!!!!')
+%     warning('RMSE not calculated!!!!!!!!!!!!')
         Xmesh = []; Ymesh = [];
 %     for im = 1:numel(modelMethods)
 %         [T_points_t_modelMethod(:,:,im), ~, ~, Xmesh, Ymesh, ~ ] = ...
@@ -61,8 +65,8 @@ function [ comparativeStatsTab, Xmesh, Ymesh ] = ...
     comparativeStatsTab.rmse_2D = {rmse_2D};
     comparativeStatsTab.mae_2D = {mae_2D};
     % Calculate maximum RMSE and MAE from all points
-    comparativeStatsTab.rmse_2Dmax = max(rmse_2D);
-    comparativeStatsTab.mae_2Dmax = max(mae_2D);
+    comparativeStatsTab.rmse_2Dmax = {max(rmse_2D)};
+    comparativeStatsTab.mae_2Dmax = {max(mae_2D)};
     % Calculate total RMSE and MAE for all points and for all times.
     [comparativeStatsTab.rmseTotal, comparativeStatsTab.maeTotal] = ...
         calcRmseMae(T_points_t_target(:), T_points_t_model(:), 1);

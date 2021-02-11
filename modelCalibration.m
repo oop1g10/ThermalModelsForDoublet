@@ -15,7 +15,7 @@ function [paramsCalib, comsolResultsRowCalib] = ...
 fprintf('%s', info.message);
 
 %Best-fit (calibrated) parameters :)
-paramsCalib = getCalibParams( paramValues, paramRanges, paramsStd); %without ; to show result
+paramsCalib = getCalibParams( paramValues, paramRanges.name, paramsStd); %without ; to show result
 
 %% Import line with results for best-fit params
     comsolResultsRowCalib = [];
