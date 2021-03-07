@@ -86,7 +86,12 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
             if contains(evalTask, 't_b')
                 % Get time to breakthrough for points of interest for current q
                 % 1% is used to change the initial aquifer temperature to detect T breaktrhough time
-                T_breakthrough = (params.Ti - params.T0) * 0.01 ;
+                % T breakthough (T diff) should be about 1 deg K (if max T diff is high, e.g. 27 deg K) because if
+                % it is lower and t dispersivity is high, then thermal
+                % breakthough reaches observation wells in the first second
+                % of calculation.
+%                 T_breakthrough = (params.Ti - params.T0) * 0.01;
+                T_breakthrough = 1; % T difference in deg Kelvin
                 % Temperatures at selected locations for all available times
                 t_list_all = comsolResultsTab.timeList{1};
                 T_points_tb_t = T_eval_model(modelMethod, x_range, y_range, z_range, ...
@@ -96,6 +101,12 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
                 for ip = 1 : size(T_points_tb_t, 1) % for each row i.e. point                   
                     time_points_tb(ip) = ...
                         interpolateXforY(T_points_tb_t(ip, :), T_breakthrough, t_list_all, '+up'); 
+                    % If all temperatures are higher than the breakthrough
+                    % temperature means the breakthrough happened before
+                    % the first time. --> Use the first time as a result
+                    if min(T_points_tb_t(ip, :)) > T_breakthrough
+                        time_points_tb(ip) = t_list_all(1);
+                    end
                 end
                 % Reshape = Make matrix from list, rows for y or z coordinate, columns for x coordinate
                 % Either y_list or z_list will contain only one element

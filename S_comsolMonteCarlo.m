@@ -10,10 +10,12 @@ runOnIridisLinux = false; % if to run on supercomputer which uses Linux
 perfomSimulations = false;
     aXYZRatios = true; % Use samples with aXYZ ratios only, ie. set as 1 parameter not vary independently.
     
-performLoadFiles = false; % Import cvs files as results table from folder
+performLoadFiles = false; % Import txt files as results table from folder
     keyInfoResultsCompStat_FilePrefix = 'keyInfoResultsCompStatTab_'; % Prefix for files to be loaded
+    withoutAnalytical_OnlyNumerical = false; % True for testing only. Not to wait for long analytical calculations
     
 performMcat = true;
+    modelMethodToPlot = 2; % 2 % means: 1 - analytical, 2 - numerical
     plotHistogramMC = false; % plot histogram of MC results for Tb to see the outliers
     plotXYvar_percentiles_MC = false; % option to plot difference between Homo and Hetero models (without/with fracture)
         plotXYvar_percentiles_MC_lines = true; % to switch on/off ploting of percentile lines if more fixed values (rows) exist
@@ -30,7 +32,7 @@ performMcat = true;
         % For this plot above CHOOSE WHICH PARAMETERS to plot
         paramsFor_q = false;
         paramsFor_aX = false;
-    plotSave = false; % save this option plot
+    plotSave = true; % save this option plot
 
 %% Folder settings
 addpath('.\MCAT5.1') % Only for PC to plot MCAT analysis
@@ -38,10 +40,10 @@ addpath('.\MCAT5.1') % Only for PC to plot MCAT analysis
 % set folder names for comsol run
 [~, ~, modelMethods, ~, variant, solution, methodMesh, ~, ~, ~, ~, exportPath ] = ...
             comsolDataFileInUse_Info( );
-modelMethod = modelMethods{1}; % Method of model calculation, 1 = analytical, 2 = numerical
+modelMethod = modelMethods{2}; % Method of model calculation, 1 = analytical, 2 = numerical (if = 1 Nothing will happen). should always be = 2.
 fprintf('methodMesh: %s modelMethod: %s \n', methodMesh, modelMethod);
 
-importPathSuffix = '_2d_fieldtest1';
+importPathSuffix = '_2d_fieldtest1_new_numansol1000';  % '_2d_fieldtest1';
 % ImportPath contains csv files - results from comsol calculations.
 importPath = [exportPath, 'MonteCarlo', importPathSuffix, '\'];
 % Matlab file for saving data
@@ -61,7 +63,7 @@ paramsStd = standardParams( variant );
 distribution = 'Uniform';
 paramRanges_MC = table;
 paramRanges_MC(end+1,:) = prepParamRange('LOG10_q', distribution, log10(1E-6), log10(1E-2), NaN, NaN); % paramsStd.q
-paramRanges_MC(end+1,:) = prepParamRange('LINKED_aX', distribution, 0, 4, NaN, NaN); % aX
+% paramRanges_MC(end+1,:) = prepParamRange('LINKED_aX', distribution, 0, 4, NaN, NaN); % aX
 paramRanges_MC(end+1,:) = prepParamRange('alpha_deg', distribution, 0, 360, NaN, NaN); %alpha_deg
 paramRanges_MC(end+1,:) = prepParamRange('cS', distribution, 700, 1100, NaN, NaN); %cS
 paramRanges_MC(end+1,:) = prepParamRange('lS', distribution, 1, 4, NaN, NaN); %lS
@@ -73,11 +75,11 @@ paramRanges_MC(end+1,:) = prepParamRange('LINKED_H', distribution, 1, 9, NaN, Na
 if perfomSimulations
     % Latin Hypercube sampling and running of model
     % Number of runs
-    numberSimul = 2500; 
+    numberSimul = 1000; 
     paramSamples = prepSamples_COMSOL(paramRanges_MC, numberSimul); %prepare random samples for all parameters
 
     %List of parameter combination indices to calculate, [] means all
-    paramsIndicesToCalculate = [];
+    paramsIndicesToCalculate = [894:numberSimul];
     % Allow to change this from Linux command line by specifying ENV variable:
     % export MATLAB_EVAL="paramsIndicesToCalculate=[1:2];"
     % By getting this ENV variable and evaluating it the variable paramsIndicesToCalculate in Matlab is changed
@@ -100,7 +102,7 @@ if perfomSimulations
     % SuperTable predefine which will contain all relevant results for MonteCarlo analysis
     keyInfoResultsCompStatTab = table;
     for i = paramsIndicesToCalculate
-        %% Prepare parameters, compute, export and import results COMSOL
+        % Prepare parameters, compute, export and import results COMSOL
         comsolResultsTab = table;
         %Prepare params for COMSOL execution
         % Use standard parameters with renewed values for sample parameters for MonteCarlo simulation
@@ -126,7 +128,7 @@ if perfomSimulations
 %     writetable(keyInfoResultsCompStatTab, [exportPath 'keyInfoResultsCompStatTab_' cell2mat(modelMethods) ...
 %                                            '_' paramsIndicesToCalculateInfo '_' simID '.csv'], 'Delimiter', ',')
 
-    %% If numerical model is used the remove model from comsol server memory (close mph file) and disconnect from comsol server
+    % If numerical model is used the remove model from comsol server memory (close mph file) and disconnect from comsol server
     if isModelNumerical( modelMethod )    
         import com.comsol.model.*  % pathway to comsol utilities for them to work
         import com.comsol.model.util.*
@@ -142,14 +144,16 @@ if performLoadFiles
     % Note that table created from import has columns with one value only (e.g. T_x_1, T_x2..)
     % unlike originally created table with has T_x as matrix with all values in one column.
     % importFolderCsv inputs: (from what folder ot import files, what files to selectby PREfix)   
-    display('Part of file indices are calculated')
-    iFileList = 1:500;
+    warning('Part of file indices are calculated')
+    iFileList = 1:1000; % ;
     
-%     warning('Only numerical model is evaluated. No comparison with ansol')
-%     modelMethodsTemp = [modelMethods(2), modelMethods(2)];
-%     keyInfoResultsCompStatTab = importFolderAndCompStat( importPath, modelMethodsTemp, variant, iFileList );
-    keyInfoResultsCompStatTab = importFolderAndCompStat( importPath, modelMethods, variant, iFileList );
-
+    if withoutAnalytical_OnlyNumerical
+        warning('Only numerical model is evaluated. No comparison with ansol')
+        modelMethodsTemp = [modelMethods(2), modelMethods(2)];
+        keyInfoResultsCompStatTab = importFolderAndCompStat( importPath, modelMethodsTemp, variant, iFileList );
+    else % Both analytical and numerical and their comparison
+        keyInfoResultsCompStatTab = importFolderAndCompStat( importPath, modelMethods, variant, iFileList );
+    end
     fprintf('Number of comparisons: %d\n', size(keyInfoResultsCompStatTab,1)/2);
 
     % Remove duplicitly calculated simulations (if present)
@@ -161,14 +165,20 @@ if performLoadFiles
     % number of imported after unique
     fprintf('Number of imported simulations unique: %d\n', size(keyInfoResultsCompStatTab,1));
             
+    % Save data for MCAT
+    save(mcatComsolDataFilename,'keyInfoResultsCompStatTab');
+end
+
+%% Monte Carlo Analysis of results in MCAT
+if performMcat
+    % Load previously prepared MCAT data 
+    load(mcatComsolDataFilename);
+    % Choose which model method to plot
     % Filter out analytical results
     keyInfoResultsCompStatTab_MC = ...
-        keyInfoResultsCompStatTab( strcmp(keyInfoResultsCompStatTab.modelMethod, modelMethods(2)), : );
-    fprintf('Number of simulations used for MC (%s): %d\n', ...
-            modelMethods{2}, size(keyInfoResultsCompStatTab_MC,1));
-    % Filter out numerical results (or method 1)
-    keyInfoResultsCompStatTab_MC1 = ...
-        keyInfoResultsCompStatTab( strcmp(keyInfoResultsCompStatTab.modelMethod, modelMethods(1)), : );
+        keyInfoResultsCompStatTab( strcmp(keyInfoResultsCompStatTab.modelMethod, modelMethods(modelMethodToPlot)), : );
+    fprintf('Number of comparisons used for MC (%s): %d\n', ...
+            modelMethods{modelMethodToPlot}, size(keyInfoResultsCompStatTab_MC,1));
     
     % Prepare list of parameters which were varying during simulation runs
     paramsNameList_MC = paramRanges_MC.name;
@@ -177,10 +187,20 @@ if performLoadFiles
     
     % Prepare table with stats
     statsNames = {'T_bh', ... % temperature at abstraction well after 15 days %                   'timeSS_Tbh', ...
+                  't_b_aquifro2', ... % time to breakthrough for well number
+                  't_b_aquifro3', ... % time to breakthrough for well number
+                  't_b_aquifro4', ... % time to breakthrough for well number
+                  't_b_aquifro5', ... % time to breakthrough for well number
+                  't_b_aquifro6', ... % time to breakthrough for well number                  
+                  't_b_aquifro2_RelDiff', ... % time to breakthrough for well number
+                  't_b_aquifro3_RelDiff', ... % time to breakthrough for well number
+                  't_b_aquifro4_RelDiff', ... % time to breakthrough for well number
+                  't_b_aquifro5_RelDiff', ... % time to breakthrough for well number
+                  't_b_aquifro6_RelDiff', ... % time to breakthrough for well number                 
                   'T_x', ...
-                  'xPlume'... % T_plume_listMC = [0.5 1 2 5];
+                  'xPlume'... % T_plume_listMC =  [1 3 5 7]; extention of plume on x axis after 14.6 days
                   'xPlumeSS'...
-                  'plumeLength'...
+                  'plumeLength'... % reached length of plume in xy space after 14.6 days
                   'plumeLengthSS'...
                   'timeSS_xPlume'... % time to stabilise longitudinal thermal plume of 2 Kelvin temperature change
                   'RMSEadj'...                    
@@ -198,7 +218,7 @@ if performLoadFiles
     statsTab_MCAT = table;
     for i = 1 : numel(statsNames)
         statsName = statsNames{i};
-        statsValues = keyInfoResultsCompStatTab_MC.(statsName);
+        statsValues = keyInfoResultsCompStatTab_MC.(statsName); % numerical or analytical
         statsColumns = size(statsValues, 2);
         % If the current column contains sereval values
         if statsColumns > 1
@@ -211,21 +231,15 @@ if performLoadFiles
             end
         else
             % Assign the unchanged name and values to results table
-            statsTab_MCAT.(statsName) = statsValues;          
-        end        
+            columnName = statsName;
+            statsTab_MCAT.(columnName) = statsValues; 
+        end  
+        % If y axis is for time convert seconds to days logarythmic!
+        if columnName(1) == 't'
+            statsTab_MCAT.(columnName) = log10(secondsToDays(statsTab_MCAT.(columnName)));
+        end
     end
-    
-    % Save data for MCAT
-    save(mcatComsolDataFilename, ...
-         'paramsTab_MCAT', 'statsTab_MCAT', 'keyInfoResultsCompStatTab', 'keyInfoResultsCompStatTab_MC', 'keyInfoResultsCompStatTab_MC1');
-end
-
-%% Monte Carlo Analysis of results in MCAT
-if performMcat
-    % Load previously prepared MCAT data 
-    load(mcatComsolDataFilename);
-    fprintf('Number of comparisons for MCAT: %d\n', size(keyInfoResultsCompStatTab_MC,1));
-        
+            
     %% Plot historgam of MC runs versus Tb
 %     if plotHistogramMC
 %         plotNamePrefix = 'HistogramMC';
@@ -331,7 +345,7 @@ if performMcat
     mcatInput.obs = [];
     %obs = LeachOutCal.q_obsReal; %measured leachate	            % observed time-series vector [no. of samples x 1]
     %obs = ClCombinedABleachCal.ChloridesMgL;				% measured Chloride concentration	          
-    mcatInput.id = modelMethod; % descriptor [string]
+    mcatInput.id = modelMethods{modelMethodToPlot}; % descriptor [string]
     mcatInput.dt = 1; % sampling interval in minutes
     mcatInput.t = []; % time vector if irregularly spaced samples
 
@@ -351,7 +365,8 @@ if performMcat
     % First preprare the figure
     % then save in assigned folder
     if false % Only for MANUAL execution!
-        saveFig([plotExportPath 'DottyObj_T_bh'])
+        %saveFig([plotExportPath 'DottyObj_T_bh'])
+        saveFig([plotExportPath 'Dotty_Obj_PlumeLength3_5diffK_1000num'])
     end
     
 %     %% Calculation and plotting of percentiles TDiff due to fractures

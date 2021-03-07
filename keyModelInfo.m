@@ -171,5 +171,20 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     % Add sum of adjusted RMSE to keyInfo (objective value to be used for parameters fitting)
     keyModelInfoRow.RMSEadj = sum(well_T_comparison.RMSEadj(~isnan(well_T_comparison.RMSEadj)));
     
+    
+    %% Calculation of breakthrough times
+    % Get coordinates for breakthrough time calculation on wells
+    wellCoords = wellCoordinates(variant);
+    % For each coordinate calculate break through time
+    for iWell = 1 : size(wellCoords, 1)
+        % Calculate time to breakthrough
+        [~, ~, ~, ~, ~, ~, ~, ~, t_b ] = ...
+            T_eval_model(modelMethod, wellCoords.x(iWell), wellCoords.y(iWell), z, ...
+                         Mt_single, params, timeForT, comsolResultsTab, 't_b', variant);
+        % Assign time to breakthrough to results table
+        t_b_columnName = ['t_b_',  wellCoords.wellName{iWell}];
+        keyModelInfoRow.(t_b_columnName) = t_b;
+    end
+
 end
 

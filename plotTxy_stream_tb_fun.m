@@ -1,6 +1,6 @@
 function plotTxy_stream_tb_fun( Txy_q, legendTexts_q, time, T_isotherm, tb_list, ...
                                 phi_xy, v_x, v_y, t_b, ...
-                                Xmesh, Ymesh, titleStr, iColor, coord_list_ObsWells)
+                                Xmesh, Ymesh, titleStr, iColor, coord_list_ObsWells, plotTxy_stream_tb_stream_withLabels)
 % PLOTS plot isotherms and hydraulic potential phi and groundwater streamlines in plan view
 
 % Input parameters:
@@ -28,7 +28,12 @@ function plotTxy_stream_tb_fun( Txy_q, legendTexts_q, time, T_isotherm, tb_list,
     % if Hydraulic potential data is present in inputs then plot it
     if any(any(~isnan(phi_xy)))
         % Hydraulic potential (phi)
-        contour( Xmesh, Ymesh, phi_xy, 30, 'ShowText','on' ) % 'ShowText','on'
+        if plotTxy_stream_tb_stream_withLabels
+            labels = 'on';
+        else
+            labels = 'off';
+        end
+        contour( Xmesh, Ymesh, phi_xy, 30, 'ShowText',labels ) % 'ShowText','on'
     end
     % if groundwater velocity data is present in inputs then plot it
     if any(any(~isnan(v_x))) 

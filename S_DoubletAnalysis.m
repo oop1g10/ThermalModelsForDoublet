@@ -5,9 +5,11 @@ clear all
 %% Decide which plots to generate
 plotT_q = false; %+ T change vs time at different GW flows
 plotTxy_stream_tb = false; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
-    plotTxy_stream_tb_Txy = false; % plot isotherms
-    plotTxy_stream_tb_tb = false; % plot time to breakthrough
-    plotTxy_stream_tb_stream = false; % plot streamlines
+    plotTxy_stream_tb_Txy = true; % plot isotherms
+    plotTxy_stream_tb_tb = true; % plot time to breakthrough
+    plotTxy_stream_tb_stream = true; % plot streamlines
+        plotTxy_stream_tb_stream_withLabels = false; % if to plot hydraulic pressure labels
+    plotTxy_stream_tb_param = true; % Plot for set parameters
 plotTxy_q = false; %+ How groundwater velocity influences plume development in x&y direction (plan view)
 % for 3D  only
 plotTz_q_x = false; %+ Temperature at different x versus depth (z dimention) for different GW flows
@@ -29,7 +31,7 @@ plotT_t_well = true; %+ T change vs time at different wells of field site for mo
 
 
 %% Save the plots
-plotSave = true;
+plotSave = false;
 plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_fieldtest\';
 plotExportPathCalib = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_fieldtestCalib\';
 
@@ -133,8 +135,8 @@ end
 if plotTxy_stream_tb
     plotNamePrefix = 'Txy_stream_tb'; % plot name to save the plot with relevant name
     % times for results    1.9481 years col 94 and 5.3348 yrs column 101 in time list from comsol
-    % t_list_plotTxy_q = 168238080; % [6.143644800000002e+07, 168238080]; % time in seconds    
-    t_list_plotTxy_q = daysToSeconds(14); %t_list(16) ; % t_list(15); % = 9.5 days %    10 / secondsToDays(1); % seconds from days
+    % t_list_plotTxy_q = 168238080; % [6.143644800000002e+07, 168238080]; % time in seconds        
+    t_list_plotTxy_q = [t_list(44), timeTbh]; %  around 14 days as calc in numerical model %t_list(16) ; % t_list(15); % = 9.5 days %    10 / secondsToDays(1); % seconds from days
     % preassign 4 D matrices for T to save the results
     Txy_stream_tb = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
     % same for tb ( which is based on I phi)
@@ -145,6 +147,15 @@ if plotTxy_stream_tb
     % both v_x and v_y are calculated in all mesh points.
     v_x = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
     v_y = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
+    % If only one parameter should be plotted
+    if plotTxy_stream_tb_param
+        % best fit calibrated params
+        paramsUse = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:0488 WIDER ranges cS,H init 431', variant);
+       % paramsUse = paramsStd; % Params before calibration
+        q_list = paramsUse.q;
+    else
+        paramsUse = paramsStd;
+    end
     
     hWait = waitbar(0, '', 'Name','Calculating results ...');
     i = 0;
@@ -156,8 +167,9 @@ if plotTxy_stream_tb
             waitInfo = sprintf('v_D = %.3f m/day',   q_list(iq) * daysToSeconds(1) );
             waitbar(i / (numel(t_list_plotTxy_q) * numel(q_list)), hWait, waitInfo); %show progress
 
-            params = paramsStd;
+            params = paramsUse;
             params.q = q_list(iq);
+            zUse = params.H/2;
             
             %% Temperature, time to breakthrough, streamlines and hydraulic potential for plot
             % create string with variable names requested for plot
@@ -178,14 +190,15 @@ if plotTxy_stream_tb
             % Calculate required variable for current q
             [~, ~, Txy_stream_tb(:,:,it, iq ), Xmesh, Ymesh, ~, ~, ~, t_b_mesh(:,:,it, iq ), ...
                 v_x(:,:,it, iq ), v_y(:,:,it, iq ), phi_xy_mesh(:,:,it, iq )] = ...          
-               T_eval_model(modelMethodPlot, x_range, y_range, z, ...
+               T_eval_model(modelMethodPlot, x_range, y_range, zUse, ...
                             Mt, params, t_list_plotTxy_q(it), comsolResultsTab, evalTask, variant);
         end
     end
     close(hWait); % close progress window
 
     %% Plot PLAN VIEW streamlines, hydraulic potential,  isotherms and times to thermal breakthrough
-    T_isotherm = T_plume_list ; % [11 15 19]; % [-14, - 10, -5, -1]; % temperature for limit of plume on plot display (Kelvin)
+%     T_isotherm = T_plume_list ; % [11 15 19]; % [-14, - 10, -5, -1]; % temperature for limit of plume on plot display (Kelvin)
+    T_isotherm = [1, 5, 10, 20, 25];
     tb_list = [ 1, 2, 5, 10, 25, 50, 100] / secondsToDays(1); % seconds
 
     for iq = 1:numel(q_list)       
@@ -197,7 +210,7 @@ if plotTxy_stream_tb
             plotTxy_stream_tb_fun( Txy_stream_tb(:,:,it, iq), legendTexts_q_plotTxy_stream_tb, t_list_plotTxy_q(it), ...
                             T_isotherm, tb_list, phi_xy_mesh(:,:,it, iq), v_x(:,:,it, iq), v_y(:,:,it, iq), ... 
                             t_b_mesh(:,:,it, iq), ...
-                            Xmesh, Ymesh, plotTitle, iq, coord_list_ObsWells) % last iq sets the colour of isotherms
+                            Xmesh, Ymesh, plotTitle, iq, coord_list_ObsWells, plotTxy_stream_tb_stream_withLabels) % last iq sets the colour of isotherms
                                                          % to correspond to the colour of groundwater velocity
             if plotSave        
                 if secondsToYears(t_list_plotTxy_q(it)) >= 1
@@ -612,8 +625,8 @@ if plotT_t_well
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:384', variant);
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:431 diff T0,lS,n init as prev numsim 447', variant); 
-    % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); 
-     paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:0488 WIDER ranges cS,H init 431', variant);
+     paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); 
+    % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:0488 WIDER ranges cS,H init 431', variant);   
     % paramsCalib = paramsStd;
     
     Mt_T_t_well = 1; % calculation only in one point
