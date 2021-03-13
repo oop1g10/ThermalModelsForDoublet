@@ -66,7 +66,7 @@ warning('mph saving skipped')
 
 fprintf('Data is saved with name %s \n ', wellTempDataFileImport)
 % save data in excel
-writetable(wellTempTabAll, [wellTempDataFileImport, '.csv'], 'Delimiter', ',')
+% writetable(wellTempTabAll, [wellTempDataFileImport, '.csv'], 'Delimiter', ',')
 % free memory. this variable is not needed anymore
 clear wellTempTabAll
 
@@ -77,23 +77,31 @@ clear wellTempTabAll
 % Prepare times that belong to test 1 test period and are also calculated
 % by numerical model.
 % t = [1, 2, 4, 8]; % (sec)
-% Period for test 1
-timeTest1Start = datetime('2020-09-14 15:07:30','InputFormat','yyyy-MM-dd HH:mm:ss');
-timeTest1Finish = datetime('2020-09-18 11:53:00','InputFormat','yyyy-MM-dd HH:mm:ss');
+if strcmp(variant, 'FieldExp2')    
+    timeTestStart = datetime('2020-10-01 14:29:06','InputFormat','yyyy-MM-dd HH:mm:ss');
+else
+    timeTestStart = datetime('2020-09-14 15:07:30','InputFormat','yyyy-MM-dd HH:mm:ss');
+end
+% end time for period for test 1 and for all periods (test 1 and test 2 and monitoring)
+if strcmp(variant, 'FieldExp1')
+    timeTestFinish = datetime('2020-09-18 11:53:00','InputFormat','yyyy-MM-dd HH:mm:ss');
+else % if all tests and monitoring than use all time
+    timeTestFinish = datetime('2020-11-27 14:54:30','InputFormat','yyyy-MM-dd HH:mm:ss');
+end
 % Filter temperatures for relevant test period only
-relevantRows = wellTempTab.dateTime >= timeTest1Start ...
-    & wellTempTab.dateTime <= timeTest1Finish ;
-wellTempTabTest1 = wellTempTab(relevantRows, :);
+relevantRows = wellTempTab.dateTime >= timeTestStart ...
+    & wellTempTab.dateTime <= timeTestFinish ;
+wellTempTabTest = wellTempTab(relevantRows, :);
 
 % Necessary depth (28 m)
-% depthTest1Start = 27.4; 
-% depthTest1Finish = 28.6;
-  depthTest1Start = 20; 
-  depthTest1Finish = 31;
+% depthTestStart = 27.4; 
+% depthTestFinish = 28.6;
+  depthTestStart = 20; 
+  depthTestFinish = 31;
 % Filter temperatures for relevant depth
-relevantRows = wellTempTabTest1.wellDepth >= depthTest1Start ...
-    & wellTempTabTest1.wellDepth <= depthTest1Finish ;
-wellTempTabTest1 = wellTempTabTest1(relevantRows, :);
+relevantRows = wellTempTabTest.wellDepth >= depthTestStart ...
+    & wellTempTabTest.wellDepth <= depthTestFinish ;
+wellTempTabTest = wellTempTabTest(relevantRows, :);
 
 % Necessary wells for test 1 
 % Do not need to filter by wells because filtering by period leaves only
@@ -102,9 +110,9 @@ wellTempTabTest1 = wellTempTabTest1(relevantRows, :);
 % Time list for numerical model                        
 t_listNum = standardRangesToCompare( variant )';
 % Measured times (during field test)
-durationTest1 = wellTempTabTest1.dateTime - timeTest1Start;
-t_listMeasuredAll = seconds(durationTest1);
-wellTempTabTest1.t = t_listMeasuredAll;
+durationTest = wellTempTabTest.dateTime - timeTestStart;
+t_listMeasuredAll = seconds(durationTest);
+wellTempTabTest.t = t_listMeasuredAll;
 t_listMeasured = unique(t_listMeasuredAll);
 
 % Intersection between measured and modelled times
@@ -116,30 +124,34 @@ t_listMeasuredRound = timeRoundToMeasured(t_listMeasured);
 % Intersection
 [t_listIntersectRound, indexListNumRound] = intersect(t_listNumRound, t_listMeasuredRound);
 % Select times from numerical time list which intersect with measured times
-t_listTest1 = t_listNum(indexListNumRound);
+t_listTest = t_listNum(indexListNumRound);
 
-% Select results based on relevant times t_listTest1 to 
+% Select results based on relevant times t_listTest to 
 % extract only relevant Temperatures to compare with model results
 t_listMeasuredAllRound = timeRoundToMeasured(t_listMeasuredAll);
 % Find which measurements rows contain relevant times for comparison
 [~, indexListMeasured] = ismember(t_listMeasuredAllRound, t_listIntersectRound);
-wellTempTabTest1 = wellTempTabTest1(indexListMeasured~=0, :);
+wellTempTabTest = wellTempTabTest(indexListMeasured~=0, :);
 
-% Measurements for well 2 after the temperature peack time are not considered for
+% Measurements for well 2 after the temperature peak time are not considered for
 % calibration
-timeTest1FinishWell2 = datetime('2020-09-16 13:50:00','InputFormat','yyyy-MM-dd HH:mm:ss');
-% Filter temperatures for relevant test period only
-relevantRowsToDelete = wellTempTabTest1.dateTime >= timeTest1FinishWell2 ...
-    & strcmp(wellTempTabTest1.wellName, 'aquifro2') ;
-wellTempTabTest1 = wellTempTabTest1(~relevantRowsToDelete, :);
-
+if strcmp(variant, 'FieldExp1')
+    % Injection of water and well temperature started to reduce from 16/09,
+    % in the morning 6 am, or from approximately from 1 am
+    % so data after this time is ignored for parameter calibration 
+    timeTestFinishWell2 = datetime('2020-09-16 13:50:00','InputFormat','yyyy-MM-dd HH:mm:ss');
+    % Filter temperatures for relevant test period only
+    relevantRowsToDelete = wellTempTabTest.dateTime >= timeTestFinishWell2 ...
+        & strcmp(wellTempTabTest.wellName, 'aquifro2') ;
+    wellTempTabTest = wellTempTabTest(~relevantRowsToDelete, :);
+end
 
 %% Save relevant temperature and time list as matfile
 % Version 7.3 is needed to support files >= 2GB, but older matlab versions cannot read
 % this format of table saving. 
 % Note minus '-v...' before version name = it means read it as Version to save file, not as string only.
-save(wellTempDataFileImportCompare, 'wellTempTabTest1', 't_listTest1', '-v7.3');
+save(wellTempDataFileImportCompare, 'wellTempTabTest', 't_listTest', '-v7.3');
 fprintf('Data is saved with name %s \n ', wellTempDataFileImportCompare)
 % save data in excel
-writetable(wellTempTabTest1, [wellTempDataFileImportCompare, '.csv'], 'Delimiter', ',')
+writetable(wellTempTabTest, [wellTempDataFileImportCompare, '.csv'], 'Delimiter', ',')
 

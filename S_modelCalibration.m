@@ -21,19 +21,23 @@ fprintf('Model method: %s\n', modelMethod);
 load(comsolDataFile)
 disp('paramsStd equal to best fit for ansol')
 % paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
-paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:431 diff T0,lS,n init as prev numsim 447', variant);
+paramsCalib = paramsFromCalib('Numerical2: RunCount:558 WIDER ranges init 431. zerodisp', variant);
 paramsInit = paramsCalib;
 
 % Prepare list of parameters for calibration with their ranges
 paramRanges = table;
 paramRanges(end+1,:) = prepParamRange('LOG10_q', [], log10(1E-6), log10(1E-2), log10(paramsInit.q), NaN); % paramsStd.q
-paramRanges(end+1,:) = prepParamRange('LINKED_aX', [], 0, 4, paramsInit.aX, NaN); % aX
+%paramRanges(end+1,:) = prepParamRange('LINKED_aX', [], 0, 4, paramsInit.aX, NaN); % aX
 paramRanges(end+1,:) = prepParamRange('alpha_deg', [], 0, 360, paramsInit.alpha_deg, NaN); %alpha_deg
 paramRanges(end+1,:) = prepParamRange('cS', [], 600, 1100, paramsInit.cS, NaN); %cS
 paramRanges(end+1,:) = prepParamRange('lS', [], 1, 4, paramsInit.lS, NaN); %lS
 paramRanges(end+1,:) = prepParamRange('n', [], 0.2, 0.4, paramsInit.n, NaN); %n
 paramRanges(end+1,:) = prepParamRange('LINKED_H', [], 1, 9, paramsInit.H, NaN);
-
+% During test 1 the water injection was reduced due to well clogging, and
+% water overflew the well, by unknown amount. therefore after well clogging occured the water flow is fitted
+if strcmp(variant, 'FieldExpAll')
+    paramRanges(end+1,:) = prepParamRange('Qb', [], 0.00041/10, 0.00041, 0.00041/2, NaN);       
+end
 % Show in command window calibrated parameters and their ranges
 paramRanges
 

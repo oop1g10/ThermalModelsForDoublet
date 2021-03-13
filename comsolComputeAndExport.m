@@ -25,11 +25,15 @@ function [planView_filename, profileView_filename] = ...
     
     %% Export selected data for COMSOL as plane slice in plan or profile view (2D)
     if ~isempty(planViewData)
-        model.result().export(planViewData).run(); % export
+        for id = 1 : numel(planViewData)
+            model.result().export(planViewData{id}).run(); % export
+        end
     end
     
     if ~isempty(profileViewData)
-        model.result().export(profileViewData).run(); % export
+        for id = 1 : numel(profileViewData)
+            model.result().export(profileViewData{id}).run(); % export
+        end
     end
     
     % Export the whole table with all data as txt file to specified folder

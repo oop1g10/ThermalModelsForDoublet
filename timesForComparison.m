@@ -8,11 +8,10 @@ function t_listComparison = timesForComparison(variant)
     % Extract name of data file with measured temperatures and Variant
     [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, wellTempDataFileImportCompare ] = ...
                 comsolDataFileInUse_Info( );
-    % Load table with results wellTempTabTest1
+    % Load table with results wellTempTabTest
     persistent t_listTest
     if isempty(t_listTest)
-        load(wellTempDataFileImportCompare, 't_listTest1');
-        t_listTest = t_listTest1;
+        load(wellTempDataFileImportCompare, 't_listTest');
     end
     % Returned variable name cannot be the same as name of the persistent variable.  
     t_listComparison = t_listTest;

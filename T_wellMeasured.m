@@ -9,10 +9,10 @@ function [T_t, wellName] = ...
     % Extract name of data file with measured temperatures and Variant
     [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, wellTempDataFileImportCompare ] = ...
                 comsolDataFileInUse_Info( );        
-    % Load table with results wellTempTabTest1
-    persistent wellTempTabTest1
-    if isempty(wellTempTabTest1)
-        load(wellTempDataFileImportCompare, 'wellTempTabTest1');
+    % Load table with results wellTempTabTest
+    persistent wellTempTabTest
+    if isempty(wellTempTabTest)
+        load(wellTempDataFileImportCompare, 'wellTempTabTest');
     end
     
     % Determine well based on x y coordinate
@@ -27,10 +27,10 @@ function [T_t, wellName] = ...
     end
     
     % Filter temperatures by well name and depth
-    relevantRows = strcmp(wellTempTabTest1.wellName, wellName) & ...
-        wellTempTabTest1.wellDepth >= depth_range(1) & ...
-        wellTempTabTest1.wellDepth <= depth_range(2);
-    wellTempTabFiltered = wellTempTabTest1(relevantRows, :);
+    relevantRows = strcmp(wellTempTabTest.wellName, wellName) & ...
+        wellTempTabTest.wellDepth >= depth_range(1) & ...
+        wellTempTabTest.wellDepth <= depth_range(2);
+    wellTempTabFiltered = wellTempTabTest(relevantRows, :);
     % Make sure the times are rounded for comparison to work
     wellTempTabFiltered.tRound = timeRoundToMeasured(wellTempTabFiltered.t);
     

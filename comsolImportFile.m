@@ -30,7 +30,7 @@ T_ColumnSpecD = '%25f';%data
 % Support up to 140 columns for different time steps
 % for each exported variable: temperature, vx, vy, H (that means 4 variables)
 varCount = 4; % number of variables in the result table
-maxColumns = 140 * varCount; 
+maxColumns = 250 * varCount; % 140
 % First in row are x, y and z coordinates, then temperature columns
 formatSpecH = ['%26s%25s%25s', repmat(T_ColumnSpecH,1,maxColumns), '%s%[^\n\r]'];
 formatSpecD = ['%26f%25f%25f', repmat(T_ColumnSpecD,1,maxColumns), '%s%[^\n\r]'];

@@ -22,8 +22,8 @@ function [ params ] = comsolFilename_Info( comsolFilename, variant )
     params.aZ = fileInfo{6};
     % All other parameters follow, in any order, in pairs of cells as name and value
     for i = 7:2:numel(fileInfo)
-        % If in current cell is '.txt' it means that no more parameters in file name
-        if strcmp(fileInfo{i}, '.txt')
+        % If in current cell contains '.txt' it means that no more parameters in file name
+        if contains(fileInfo{i}, '.txt')
             break
         end
         % Take name of parameter from cell, example 'fe=' or 'fe'

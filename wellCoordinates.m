@@ -7,12 +7,17 @@ function wellCoords = wellCoordinates(variant)
         wellCoords.wellName = {'aquifro2'; 'aquifro3'; 'aquifro4'; 'aquifro5'; 'aquifro6'};
         wellCoords.x = [-3.42; -4.09; -0.04; 4.97; -4.97];
         wellCoords.y = [-5.01; 4.86; 1.57; 0.00; 0.00];
-    else
+    elseif strcmp(variant, 'FieldExpAll')
         % Well coordinates
         wellCoords = table;
         wellCoords.wellName = {'aquifro2'; 'aquifro3'; 'aquifro4'; 'aquifro5'; 'aquifro6'; 'aquifro7'};
         wellCoords.x = [-3.42; -4.09; -0.04; 4.97; -4.97; -0.51];
         wellCoords.y = [-5.01; 4.86; 1.57; 0.00; 0.00; 3.07];
+    elseif strcmp(variant, 'FieldExp2')
+        % Well coordinates
+        wellCoords = table;
+        wellCoords.wellName = {'aquifro3'; 'aquifro4'; 'aquifro5'; 'aquifro6'; 'aquifro7'};
+        wellCoords.x = [-4.09; -0.04; 4.97; -4.97; -0.51];
+        wellCoords.y = [4.86; 1.57; 0.00; 0.00; 3.07];
     end
-    
 end

@@ -84,8 +84,9 @@ function [ params, mu_w, deltaH, g_const, growthRateOptim, startStepSize, N_Schu
         params.q = 1E-6;% "Darcy gw velocity (m/s)"
         params.n = 0.1; % porosity of material in aquifer
  end
-        
-if strcmp(variant, 'FieldExp1') % FieldExp 1 = first field experiment, FieldExp2 = second experiment. 
+ 
+%  FieldExp 1 = first field experiment, FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).     
+if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExpAll') 
         deltaH = 0.0028; %0.001; % [m/m] Hydraulic  gradient, = 1 mm/m
     %   params.fe = fe; % "Heat input (W) per whole cylinder source"
         params.ro = 0.0762; %0.07; % borehole well radius [m]
@@ -97,8 +98,19 @@ if strcmp(variant, 'FieldExp1') % FieldExp 1 = first field experiment, FieldExp2
         params.T0 = degC2kelvin(10.17); % according to well 3.    12 [deg C] % undisturbed temperature in aquifer 
         params.Ti = degC2kelvin(37.4); % 30 [deg C] % injection temperature
         params.a = 4.97; % [m] half of distance between two wells
-    %   params.Q = 0.03 * 3; % [m^3/second] water injection and production rate
-        params.Q = 0.00041; % (cca 25 litre/minute translated in m^3/second)
+        
+        % params.Q was used for test 1 for the whole period. 
+        % For model with all tests (test 1 and test 2 and both monitoring
+        % periods) params.Qb is used only for second subperiod within test 1. with lower value.
+        % All other periods have fixed Q written in comsol mph file.
+        if strcmp(variant, 'FieldExpAll') 
+            params.Qb = 0.00041 / 2; % (m^3/second)  
+        elseif strcmp(variant, 'FieldExp1')
+            %  params.Q = 0.03 * 3; % [m^3/second] water injection and production rate
+            params.Q = 0.00041; % (cca 25 litre/minute translated in m^3/second)
+        else
+            % Q is not used because it is set directly into the comsol model
+        end
 
         %% Aquifer properties      
         % aXYZ  %longitudinal (x) and transverse (y,z) thermal dispersivities [m] 

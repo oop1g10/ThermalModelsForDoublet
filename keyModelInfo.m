@@ -135,6 +135,12 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     
     % Get list of wells with coordinates to compare, columns with Temperatures and RMSE comparisons will be added
     well_T_comparison = wellCoordinates(variant);
+    % For test 2 well 6 will be used only to validate the model result with time
+    % to thermal breakthrough. RMSE is not calculated for well 6 because it
+    % is influenced by heat injection from test 1.
+    if strcmp(variant, 'FieldExp2') 
+        well_T_comparison = well_T_comparison(~strcmp(well_T_comparison.wellName, 'aquifro6'), :);   
+    end
 
     % Add columns with modelled and measured Temperature and RMSE for each well for comparison times
     well_T_comparison.T_model = cell(size(well_T_comparison, 1), 1);
@@ -150,6 +156,9 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
         well_T_comparison.T_model{i} = ...
             T_eval_model(modelMethod, well_T_comparison.x(i), well_T_comparison.y(i), z, ...
                      Mt_single, params, t_listComparison, comsolResultsTab, 'T', variant);
+        well_T_comparison.T_model{i}(well_T_comparison.T_model{i} < -1) = NaN;
+        well_T_comparison.T_model{i}(well_T_comparison.T_model{i} < 0) = 0;
+        
         % Add column with MEASURED T for each well for comparison times
         well_T_comparison.T_measured{i} = ...
             T_wellMeasured(well_T_comparison.x(i), well_T_comparison.y(i), measuredWellDepth_range, t_listComparison, variant);

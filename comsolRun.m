@@ -7,7 +7,7 @@ function [comsolResultsTab, calcDurationSeconds] = comsolRun(params, paramsIndex
     
     [~, ~, ~, ~, variant, solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
     % set folder names for comsol run
-    [ comsolFile, exportPath, comsolLibrary, showComsolProgress ] = settings_comsolRun( runOnIridisLinux, methodMesh );
+    [ comsolFile, exportPath, comsolLibrary, showComsolProgress ] = settings_comsolRun( runOnIridisLinux, methodMesh, variant );
 
     %% Start connection to comsol server and open model file
     import com.comsol.model.*

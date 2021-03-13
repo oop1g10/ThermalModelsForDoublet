@@ -85,7 +85,8 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
             t_list_line = t_list;
 
         end
-        semilogx(secondsToDays(t_list_line), T_q_line, ...
+       % semilogx
+        plot(secondsToDays(t_list_line), T_q_line, ...
             'Color', colors(i,:), 'LineStyle', lineStyle, 'Marker', markerStyle, 'LineWidth', ...
                 1.001*defaultLineWidth*lineWidthfactor); %Circle points were too thin (probably bug), using 1.001 fixes it
         hold on

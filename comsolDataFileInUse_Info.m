@@ -25,8 +25,13 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
         % comsolDataFile = [folder 'comsolData_sol1_doublet_2d.mat']; 
         % comsolDataFile = [folder 'comsolData_sol1_doubletStdplots4gw_2d.mat'];
         
-        variant = 'FieldExp1'; %  
-        comsolDataFile = [exportPath 'comsolData_sol1_doubletTry_2d.mat']; 
+        % FieldExp 1 = first field experiment, FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).  
+        % variant = 'FieldExp1'; 
+        % comsolDataFile = [exportPath 'comsolData_sol1_doubletTry_2d.mat']; 
+        % variant = 'FieldExp2'; 
+        % comsolDataFile = [exportPath 'comsolData_sol1_doubletTest2_2d.mat']; 
+        variant = 'FieldExpAll'; 
+        comsolDataFile = [exportPath 'comsolData_sol1_doubletAll_2d.mat']; 
         
         modelMethods = {'Schulz', 'nDoublet2D'}; % 'nDoublet2D'
         modelMethodsConvergence = {'Schulz', 'nDoublet2D'};
@@ -48,7 +53,10 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
     % Name of data file with measured temperatures
     wellTempDataFileName = 'wellTempData.mat';
     wellTempDataFileImport = [exportPath, wellTempDataFileName]; % place and name where to save results in matfile 
-    wellTempDataFileImportCompare = [exportPath, 'wellTempDataTest1.mat']; % place and name where to save results in matfile 
-    
+    if strcmp(variant, 'FieldExpAll')
+        wellTempDataFileImportCompare = [exportPath, 'wellTempDataTestAll.mat']; % place and name where to save results in matfile 
+    else
+        wellTempDataFileImportCompare = [exportPath, 'wellTempDataTest1.mat']; % place and name where to save results in matfile 
+    end
 end
 

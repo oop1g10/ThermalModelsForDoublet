@@ -61,17 +61,18 @@ load(comsolDataFile)
 % If needed ONLY: Add missing columns to loaded result   
 % comsolResultsTab = addToTabAbsentParams( comsolResultsTab );
 
-%% Calculate which power is needed for 1 K change for the set Q
-% fe = m^3/second * kg/m^3 * J/kg/K  = J / sec / K = W / K 
-fe_1K = paramsStd.Q * paramsStd.rhoW * paramsStd.cW; 
-fprintf('%.1f W per K\n', fe_1K)
-% 5600 W for 1 K
-% 5.6 kW for 1 K
-% for 10 K the needed kW is
-deltaT = paramsStd.Ti - paramsStd.T0; % K 
-fe = fe_1K * deltaT; % necessary fe to heat water at set Q for 10 K
-% 56 kW!!!!
-fprintf('%.1f W per deltaT %.1f K \n', fe, deltaT)
+%% Power calculation
+% %% Calculate which power is needed for 1 K change for the set Q
+% % fe = m^3/second * kg/m^3 * J/kg/K  = J / sec / K = W / K 
+% fe_1K = paramsStd.Q * paramsStd.rhoW * paramsStd.cW; 
+% fprintf('%.1f W per K\n', fe_1K)
+% % 5600 W for 1 K
+% % 5.6 kW for 1 K
+% % for 10 K the needed kW is
+% deltaT = paramsStd.Ti - paramsStd.T0; % K 
+% fe = fe_1K * deltaT; % necessary fe to heat water at set Q for 10 K
+% % 56 kW!!!!
+% fprintf('%.1f W per deltaT %.1f K \n', fe, deltaT)
 
 %% Extract data for plot T change at different GW flows
 % Point where temperature will be analyzed
@@ -618,14 +619,18 @@ if plotT_t_well
     plotNamePrefix = 'T_t_well'; % plot name to save the plot with relevant name
     wellCoords = wellCoordinates(variant);
     % Delete injection well 6, injection well should not be plotted
-    wellCoordsPlot = wellCoords(~strcmp(wellCoords.wellName, 'aquifro6'), :);
+    % wellCoordsPlot = wellCoords(~strcmp(wellCoords.wellName, 'aquifro6'), :);
+    wellCoordsPlot = wellCoords;
     t_listComparison = timesForComparison(variant);  
     % Get best calibrated parameters    
     % paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:384', variant);
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:431 diff T0,lS,n init as prev numsim 447', variant); 
-     paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); 
+%      paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); 
+     paramsCalib = paramsFromCalib('Numerical2: RunCount: 261', variant); 
+     
+     
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:0488 WIDER ranges cS,H init 431', variant);   
     % paramsCalib = paramsStd;
     

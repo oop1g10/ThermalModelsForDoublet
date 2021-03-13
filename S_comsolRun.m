@@ -4,7 +4,7 @@ clear
 %% Computation Options
 runOnIridisLinux = isunix(); % Automatically puts true if computed on Iridis Linux (unix) system
 saveComsolResultMPH = false; % Save model file after computation
-noCalcOnlyParamsSaveMPH = true; % In case of batch runs to use only single Comsol-Matlab LiveLink licence, 
+noCalcOnlyParamsSaveMPH = false; % In case of batch runs to use only single Comsol-Matlab LiveLink licence, 
                                 % to set params on mph and save it, do not run Comsol through Matlab
 % Parameters to calculate
 paramsFor_FieldTest = true; % minimum number of params for test model runs
@@ -28,7 +28,7 @@ end
 fprintf('methodMesh: %s\n', methodMesh);
 
 % set folder names for comsol run
-[ comsolFile, exportPath, comsolLibrary, showComsolProgress ] = settings_comsolRun( runOnIridisLinux, methodMesh );
+[ comsolFile, exportPath, comsolLibrary, showComsolProgress ] = settings_comsolRun( runOnIridisLinux, methodMesh, variant );
 
 %List of parameter combination indices to calculate, [] means all
 paramsIndicesToCalculate = [];
@@ -56,7 +56,7 @@ if paramsFor_FieldTest
     paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
     
     % Calculate numerical model with parameters of calibrated analytical model
-    paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
+    paramsCalib = paramsFromCalib('Numerical2: RunCount:558 WIDER ranges init 431. zerodisp', variant);
     paramsList = paramsCalib;
     paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
 

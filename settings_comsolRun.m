@@ -1,4 +1,4 @@
-function [ comsolFile, exportPath, comsolLibrary, showComsolProgress ] = settings_comsolRun( runOnIridisLinux, methodMesh )
+function [ comsolFile, exportPath, comsolLibrary, showComsolProgress ] = settings_comsolRun( runOnIridisLinux, methodMesh, variant )
 %SETTINGS_COMSOLRUN returns all names and settings needed for comsol run
 
 if runOnIridisLinux
@@ -26,8 +26,13 @@ if  strcmp(methodMesh, '3d')
     %Distinguish model name without and with pipe
     comsolFile = [comsolPath '3D_TODO_Matlab'];
 elseif strcmp(methodMesh, '2d')
-    %Distinguish model name without and with grout
-    comsolFile = [comsolPath 'doublet_2d_Matlab'];
+    % Distinguish model accoring to variant
+    % FieldExp 1 = first field experiment; FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).
+    if  strcmp(variant, 'FieldExpAll')
+        comsolFile = [comsolPath 'doublet_2d_AllTests_Matlab'];        
+    else
+        comsolFile = [comsolPath 'doublet_2d_Matlab'];
+    end
 else
     error('Please specify correct model dimension!')
 end
