@@ -20,11 +20,18 @@ function paramsCalib = paramsFromCalib(calibVariant, variant)
             error('such calibvariant does not exist')
         end
     elseif strcmp(variant, 'FieldExp2')
-        if strcmp(calibVariant, 'Numerical2: RunCount: 261') % RMSEadj: 1.162524 BEST
-            % Best fit params after initial calibration with dispersivity, for All tests dataset. with dispersivity and no data for monitoring 1
-            bestFitParams = 'q[1.00259e-06] aXYZ[0.174622 0.174622 0.174622] ro[0.0762] H[8.20562] M[8.20562] adeg[235.278] T0[283.32] Ti[310.55] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[648.094] lS[3.3537] n[0.235899] mesh[0.1]';
+        if strcmp(calibVariant, 'Numerical2: RunCount: 261 adjusted') % RMSEadj: 1.162524 BEST
+            % Best fit params after initial calibration with ZERO dispersivity, for All tests dataset. with dispersivity and no data for monitoring 1
+            % and with ls 1.5
+            bestFitParams = 'q[1.00259e-06] aXYZ[0 0 0] ro[0.0762] H[8.20562] M[8.20562] adeg[235.278] T0[283.32] Ti[310.55] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[648.094] lS[1.5] n[0.235899] mesh[0.1]';
+        elseif strcmp(calibVariant, 'Numerical2: RunCount: 411') % RMSEadj:  0.777966 BEST Finished  411, time 1.40 minutes
+            bestFitParams = 'q[1.00012e-06] aXYZ[0 0 0] ro[0.0762] H[7.33363] M[7.33363] adeg[218.165] T0[283.32] Ti[310.55] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[804.683] lS[2.49968] n[0.228189] mesh[0.1]';
+        elseif strcmp(calibVariant, 'Numerical2: RunCount: 423') % RMSEadj: 1.408902 BEST 
+            bestFitParams = 'q[1.01982e-06] aXYZ[0 0 0] ro[0.0762] H[8.99804] M[8.99804] adeg[216.871] T0[283.32] Ti[303.341] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[600.512] lS[2.49835] n[0.200041] mesh[0.1]';
+        elseif strcmp(calibVariant, 'Numerical2: RunCount: 359') % RMSEadj: 1.411372 BEST 
+            bestFitParams = 'q[1.06255e-06] aXYZ[4.46229e-07 4.46229e-07 4.46229e-07] ro[0.0762] H[8.99361] M[8.99361] adeg[210.103] T0[283.32] Ti[302.9] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[611.083] lS[1.70884] n[0.201153] mesh[0.1]';
         else
-            error('such calibvariant does not exist')   
+            error('such calibvariant does not exist')
         end 
     elseif strcmp(variant, 'FieldExpAll')
         if strcmp(calibVariant, 'Numerical2: RunCount:558 WIDER ranges init 431. zerodisp') % RMSEadj 3.01
@@ -33,6 +40,8 @@ function paramsCalib = paramsFromCalib(calibVariant, variant)
         elseif strcmp(calibVariant, 'Numerical2: RunCount: 261') % RMSEadj: 1.162524 BEST
             % Best fit params after initial calibration with dispersivity, for All tests dataset. with dispersivity and no data for monitoring 1
             bestFitParams = 'q[1.00259e-06] aXYZ[0.174622 0.174622 0.174622] ro[0.0762] H[8.20562] M[8.20562] adeg[235.278] T0[283.32] Ti[310.55] a[4.97] Qb[0.000244125] rhoW[999.75] cW[4192] rhoS[2600] cS[648.094] lS[3.3537] n[0.235899] mesh[0.1]';
+        elseif strcmp(calibVariant, 'Numerical2: RunCount: 482') % RMSEadj: 1.243685 BEST finished calibration for all tests with zero dispersivity
+            bestFitParams = 'q[2.39473e-06] aXYZ[0 0 0] ro[0.0762] H[4.5549] M[4.5549] adeg[233.01] T0[283.32] Ti[310.55] a[4.97] Qb[0.000408806] rhoW[999.75] cW[4192] rhoS[2600] cS[671.654] lS[3.98691] n[0.20024] mesh[0.1]';
         else
             error('such calibvariant does not exist')   
         end

@@ -40,7 +40,7 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
             t_max = secondsToDays(max(t_list)); % maximum simulation time [days]
             % Times and isotherms for comparative statistics (key info comparison)
             % time to calculate temperature at specified location (or well), [seconds]
-            timeTbh =  181014; % 2.1 days in seconds, it is when heat injection finished for test 2.
+            timeTbh =  daysToSeconds(2.0951); % 2.1 days in seconds, it is when heat injection finished for test 2.
         else
             t_max = 300 * 365; % maximum simulation time [days]
             % For field experiment use full list of all calculated times in comsol
@@ -129,7 +129,7 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     % Field test design parameters
     % Q_range = [paramsStd.Q / 3, paramsStd.Q * 10];
     % Q_list = logspace(log10(Q_range(1)), log10(Q_range(2)),5); 
-    if strcmp(variant, 'FieldExpAll')
+    if strcmp(variant, 'FieldExpAll') || strcmp(variant, 'FieldExp2')
         Q_list =  [];
     else
         Q_list = [paramsStd.Q / 5 * 2 , paramsStd.Q / 5 * 3, paramsStd.Q / 5 * 4, paramsStd.Q, ...

@@ -22,7 +22,7 @@ load(comsolDataFile)
 %% Test calculation of key info for model and measurement comparison
 % params = paramsStd;
 % params = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:0488 WIDER ranges cS,H init 431', variant);
-params = paramsFromCalib('Numerical2: RunCount: 261', variant);
+params = paramsFromCalib('Numerical2: RunCount: 411', variant);
 keyModelInfoRow = keyModelInfo( timeTbh, timeForT_max, T_plume_list, x_Tlist, ...
                                   modelMethodPlot, params, comsolResultsTab, variant);
                               

@@ -2,9 +2,18 @@ clear
 clc
 %
 folder = 'D:\COMSOL_INRS\export\';
-results = 'doubletAll'; % 'doubletTry'; %'doublet'; %'doubletsmallQpump' ; %'doubletStdplots4gw' ; %'doubletMeshConvergenceQ3HM3000'; %'doubletMeshConvergence' ; % ;'doublet'; % 
 [~, ~, ~, ~, variant, solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
 fprintf('methodMesh: %s \n', methodMesh);
+if strcmp(variant, 'FieldExpAll')
+    results = 'doubletAll';  
+elseif strcmp(variant, 'FieldExp2')
+    results = 'doubletTest2'; 
+elseif strcmp(variant, 'FieldExp1')
+   results = 'doubletTest1';
+else
+    error('unknown variant')
+end
+%'doubletAll'; % 'doubletTry'; %'doublet'; %'doubletsmallQpump' ; %'doubletStdplots4gw' ; %'doubletMeshConvergenceQ3HM3000'; %'doubletMeshConvergence' ; % ;'doublet'; %
 % Name of data file with comsol imported results
 comsolDataFileName = sprintf('comsolData_%s_%s_%s.mat', solution, results, methodMesh);
 comsolDataFileImport = [folder, comsolDataFileName] ; % place and name where to save results in matfile 

@@ -30,6 +30,8 @@ elseif strcmp(methodMesh, '2d')
     % FieldExp 1 = first field experiment; FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).
     if  strcmp(variant, 'FieldExpAll')
         comsolFile = [comsolPath 'doublet_2d_AllTests_Matlab'];        
+    elseif strcmp(variant, 'FieldExp2')
+        comsolFile = [comsolPath 'doublet_2d_Test2_Matlab'];        
     else
         comsolFile = [comsolPath 'doublet_2d_Matlab'];
     end

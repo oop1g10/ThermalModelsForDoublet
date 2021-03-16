@@ -628,11 +628,20 @@ if plotT_t_well
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:447 diff T0,lS,n init as ansol', variant);
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:431 diff T0,lS,n init as prev numsim 447', variant); 
 %      paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); 
-     paramsCalib = paramsFromCalib('Numerical2: RunCount: 261', variant); 
-     
-     
+     % paramsCalib = paramsFromCalib('Numerical2: RunCount: 261 adjusted', variant); 
+   %  paramsCalib = paramsFromCalib('Numerical2: RunCount: 411', variant);
+   %  paramsCalib = paramsFromCalib('Numerical2: RunCount: 482', variant);
     % paramsCalib = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:0488 WIDER ranges cS,H init 431', variant);   
-    % paramsCalib = paramsStd;
+    % paramsCalib = paramsStd;   
+    if strcmp(variant, 'FieldExpAll')
+        paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 482', variant); % finished calib params     
+%     elseif strcmp(variant, 'FieldExp2')
+%         paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 423', variant); % latest best fit params test 2
+    elseif strcmp(variant, 'FieldExp2')
+        paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 359', variant); % latest best fit params test 2 with dispersivity       
+    elseif strcmp(variant, 'FieldExp1')
+        paramsCalib = paramsFromCalib( 'Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); % best fit params test 1       
+    end
     
     Mt_T_t_well = 1; % calculation only in one point
     T_t_well = nan(size(wellCoordsPlot,1) * 2, length(t_listComparison));

@@ -173,7 +173,13 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
         end
         well_T_comparison.RMSEadj(i) =  well_T_comparison.RMSE(i) / T_MaxMinDiff;
     end     
-
+    % Give larger weight to RMSE adj for well 4 to achieve better
+    % calibration for test 2 measurements
+    if strcmp(variant, 'FieldExp2') 
+        well_T_comparison.RMSEadj(strcmp(well_T_comparison.wellName, 'aquifro4')) = ...
+            well_T_comparison.RMSEadj(strcmp(well_T_comparison.wellName, 'aquifro4')) * 5; 
+    end
+    
     % Add table with comparisons to keyInfo as a cell
     keyModelInfoRow.well_T_comparison = {well_T_comparison};
 
