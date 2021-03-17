@@ -141,7 +141,6 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     if strcmp(variant, 'FieldExp2') 
         well_T_comparison = well_T_comparison(~strcmp(well_T_comparison.wellName, 'aquifro6'), :);   
     end
-
     % Add columns with modelled and measured Temperature and RMSE for each well for comparison times
     well_T_comparison.T_model = cell(size(well_T_comparison, 1), 1);
     well_T_comparison.T_measured = cell(size(well_T_comparison, 1), 1);

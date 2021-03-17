@@ -86,7 +86,7 @@ function [ params, mu_w, deltaH, g_const, growthRateOptim, startStepSize, N_Schu
  end
  
 %  FieldExp 1 = first field experiment, FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).     
-if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExpAll') 
+if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m') || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExpAll') 
         deltaH = 0.0028; %0.001; % [m/m] Hydraulic  gradient, = 1 mm/m
     %   params.fe = fe; % "Heat input (W) per whole cylinder source"
         params.ro = 0.0762; %0.07; % borehole well radius [m]
@@ -95,7 +95,13 @@ if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp2') || strcmp(varian
         params.M = params.H; % [m] thickness of aquifer, even the model is in 2D it is accounted for and influences model results
 
         params.alpha_deg = 280; % [deg] % angle of gw flow, if = 0 it is parallel to x axis (flows from left to right) if 90 = parallel to y axis
-        params.T0 = degC2kelvin(10.17); % according to well 3.    12 [deg C] % undisturbed temperature in aquifer 
+        if strcmp(variant, 'FieldExp2')
+            % test 2 has different initial temeprature by 0.32 degrees
+            % higher.
+            params.T0 = degC2kelvin(10.17 + 0.32); % according to well 3, undisturbed temperature in aquifer 
+        else
+            params.T0 = degC2kelvin(10.17); % according to well 3, undisturbed temperature in aquifer 
+       end
         params.Ti = degC2kelvin(37.4); % 30 [deg C] % injection temperature
         params.a = 4.97; % [m] half of distance between two wells
         
@@ -105,7 +111,7 @@ if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp2') || strcmp(varian
         % All other periods have fixed Q written in comsol mph file.
         if strcmp(variant, 'FieldExpAll') 
             params.Qb = 0.00041 / 2; % (m^3/second)  
-        elseif strcmp(variant, 'FieldExp1')
+        elseif strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m')
             %  params.Q = 0.03 * 3; % [m^3/second] water injection and production rate
             params.Q = 0.00041; % (cca 25 litre/minute translated in m^3/second)
         else

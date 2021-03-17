@@ -19,6 +19,12 @@ function paramsCalib = paramsFromCalib(calibVariant, variant)
         else
             error('such calibvariant does not exist')
         end
+    elseif strcmp(variant, 'FieldExp1m')
+        if strcmp(calibVariant, 'Numerical: q,aX,alpha,cS,lS,n,H RunCount:0488 WIDER ranges cS,H init 431')
+            bestFitParams = 'q[1.50618e-05] aXYZ[0.1954 0.1954 0.1954] ro[0.0762] H[1.45979] M[1.45979] adeg[209.392] T0[283.32] Ti[310.55] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[929.114] lS[1.66504] n[0.322536] mesh[0.1]';
+        else
+            error('such calibvariant does not exist')
+        end
     elseif strcmp(variant, 'FieldExp2')
         if strcmp(calibVariant, 'Numerical2: RunCount: 261 adjusted') % RMSEadj: 1.162524 BEST
             % Best fit params after initial calibration with ZERO dispersivity, for All tests dataset. with dispersivity and no data for monitoring 1
@@ -30,6 +36,13 @@ function paramsCalib = paramsFromCalib(calibVariant, variant)
             bestFitParams = 'q[1.01982e-06] aXYZ[0 0 0] ro[0.0762] H[8.99804] M[8.99804] adeg[216.871] T0[283.32] Ti[303.341] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[600.512] lS[2.49835] n[0.200041] mesh[0.1]';
         elseif strcmp(calibVariant, 'Numerical2: RunCount: 359') % RMSEadj: 1.411372 BEST 
             bestFitParams = 'q[1.06255e-06] aXYZ[4.46229e-07 4.46229e-07 4.46229e-07] ro[0.0762] H[8.99361] M[8.99361] adeg[210.103] T0[283.32] Ti[302.9] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[611.083] lS[1.70884] n[0.201153] mesh[0.1]';
+        % WARMING these initial parameters are taken from test all
+        elseif strcmp(calibVariant, 'Numerical2: RunCount: 482') % RMSEadj: 1.243685 BEST finished calibration for all tests with zero dispersivity
+            bestFitParams = 'q[2.39473e-06] aXYZ[0 0 0] ro[0.0762] H[4.5549] M[4.5549] adeg[233.01] T0[283.32] Ti[305.15] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[671.654] lS[3.98691] n[0.20024] mesh[0.1]';
+
+        % calibration when LARGE range for ls thermal conductivity was set
+        elseif strcmp(calibVariant, 'Numerical2: RunCount: 539') % RMSEadj: 1.331887 BEST 
+            bestFitParams = 'q[1.03334e-06] aXYZ[3.98012e-06 3.98012e-06 3.98012e-06] ro[0.0762] H[8.42753] M[8.42753] adeg[230.303] T0[283.32] Ti[305.047] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[716.163] lS[4.52951] n[0.174094] mesh[0.1]';
         else
             error('such calibvariant does not exist')
         end 

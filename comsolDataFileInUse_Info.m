@@ -28,6 +28,8 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
         % FieldExp 1 = first field experiment, FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).  
 %         variant = 'FieldExp1'; 
 %         comsolDataFile = [exportPath 'comsolData_sol1_doubletTry_2d.mat']; 
+%         variant = 'FieldExp1m'; 
+%         comsolDataFile = [exportPath 'comsolData_sol1_doubletTryMonitor_2d.mat']; 
         variant = 'FieldExp2'; 
         comsolDataFile = [exportPath 'comsolData_sol1_doubletTest2_2d.mat']; 
 %         variant = 'FieldExpAll'; 
@@ -57,8 +59,12 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
         wellTempDataFileImportCompare = [exportPath, 'wellTempDataTestAll.mat']; % place and name where to save results in matfile 
     elseif strcmp(variant, 'FieldExp2')
         wellTempDataFileImportCompare = [exportPath, 'wellTempDataTest2.mat']; % place and name where to save results in matfile 
-    else
+    elseif strcmp(variant, 'FieldExp1')
         wellTempDataFileImportCompare = [exportPath, 'wellTempDataTest1.mat']; % place and name where to save results in matfile 
+    elseif strcmp(variant, 'FieldExp1m')
+        wellTempDataFileImportCompare = [exportPath, 'wellTempDataTest1m.mat']; % place and name where to save results in matfile 
+    else 
+        error('no such variant')
     end
 end
 

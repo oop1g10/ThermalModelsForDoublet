@@ -27,13 +27,16 @@ if  strcmp(methodMesh, '3d')
     comsolFile = [comsolPath '3D_TODO_Matlab'];
 elseif strcmp(methodMesh, '2d')
     % Distinguish model accoring to variant
-    % FieldExp 1 = first field experiment; FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).
+    % FieldExp 1 = first field experiment; FieldExp1m = first field experiment with monitoring;
+    %FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).
     if  strcmp(variant, 'FieldExpAll')
         comsolFile = [comsolPath 'doublet_2d_AllTests_Matlab'];        
     elseif strcmp(variant, 'FieldExp2')
         comsolFile = [comsolPath 'doublet_2d_Test2_Matlab'];        
-    else
-        comsolFile = [comsolPath 'doublet_2d_Matlab'];
+    elseif strcmp(variant, 'FieldExp1')
+        comsolFile = [comsolPath 'doublet_2d_Matlab'];     
+    elseif strcmp(variant, 'FieldExp1m')
+        comsolFile = [comsolPath 'doubletMonitoring_2d_Matlab'];
     end
 else
     error('Please specify correct model dimension!')

@@ -1,7 +1,7 @@
 function wellCoords = wellCoordinates(variant)
 % Return well coordinates based on variant
 % Coordinates will be different for test 1 and test 2
-    if strcmp(variant,'FieldExp1')
+    if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m')
         % Well coordinates
         wellCoords = table;
         wellCoords.wellName = {'aquifro2'; 'aquifro3'; 'aquifro4'; 'aquifro5'; 'aquifro6'};

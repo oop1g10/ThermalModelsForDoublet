@@ -10,6 +10,8 @@ elseif strcmp(variant, 'FieldExp2')
     results = 'doubletTest2'; 
 elseif strcmp(variant, 'FieldExp1')
    results = 'doubletTest1';
+elseif strcmp(variant, 'FieldExp1m')
+   results = 'doubletTest1m'; % field test 1 and monitoring
 else
     error('unknown variant')
 end

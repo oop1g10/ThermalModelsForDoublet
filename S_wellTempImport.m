@@ -88,10 +88,10 @@ end
 % end time for period for test 1 and for all periods (test 1 and test 2 and monitoring)
 if strcmp(variant, 'FieldExp1')
     timeTestFinish = datetime('2020-09-18 11:53:00','InputFormat','yyyy-MM-dd HH:mm:ss');
-    
+elseif strcmp(variant, 'FieldExp1m')
 % test 1 new verion:    test1 + monitoring
-%     % 17.2 days from start of test. i.e. monitoring data is included before start of test 2.
-%     timeTestFinish = datetime('2020-09-20 00:43:30','InputFormat','yyyy-MM-dd HH:mm:ss'); 
+    % 17.2 days from start of test. i.e. monitoring data is included before start of test 2.
+    timeTestFinish = datetime('2020-09-20 00:43:30','InputFormat','yyyy-MM-dd HH:mm:ss'); 
 else % if all tests and monitoring than use all time
     timeTestFinish = datetime('2020-11-27 14:54:30','InputFormat','yyyy-MM-dd HH:mm:ss');
 end

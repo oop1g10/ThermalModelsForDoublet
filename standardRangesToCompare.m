@@ -15,7 +15,7 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     % comparison 0.25 time step is good enough.
     
     %  FieldExp 1 = first field experiment; FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).
-    if  strcmp(variant, 'Homo') || strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExpAll')
+    if  strcmp(variant, 'Homo') || strcmp(variant, 'FieldExp1')  || strcmp(variant, 'FieldExp1m') || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExpAll')
         % build time list full from comsol
         if strcmp(variant, 'FieldExpAll')
             % For field experiment use full list of all calculated times in
@@ -41,10 +41,19 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
             % Times and isotherms for comparative statistics (key info comparison)
             % time to calculate temperature at specified location (or well), [seconds]
             timeTbh =  daysToSeconds(2.0951); % 2.1 days in seconds, it is when heat injection finished for test 2.
+        elseif strcmp(variant, 'FieldExp1m')
+            t_list_days = [1/60/24 : 2/24 : 333930/60/60/24, 333930/60/60/24, ...
+                333930/60/60/24 + 1/24/60 : 4/24 : 1466496/60/60/24, 1466496/60/60/24, ...
+                1466496/60/60/24 + 1/24/60 : 2/24 : 1647510/60/60/24, 1647510/60/60/24, ...
+                1647510/60/60/24 + 1/24/60 : 6/24 : 2511510/60/60/24, ...
+                2511510/60/60/24 + 1 :  24/24 :  6392820/60/60/24, 6392820/60/60/24]; % days       
+            t_list = daysToSeconds(round(t_list_days, 5, 'significant')); % seconds
+            t_max = secondsToDays(max(t_list)); % maximum simulation time [days]
+            timeTbh =  1255564.8; % 14.5 days in seconds in new time list for all field tests.
         else
             t_max = 300 * 365; % maximum simulation time [days]
             % For field experiment use full list of all calculated times in comsol
-            if strcmp(variant, 'FieldExp1')
+            if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m')
                 timeStep = 0.25/4;                
             else
                 timeStep = 0.25; % 0.25
@@ -92,7 +101,7 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
         x_TlistMC = x_Tlist;
     end
     % Calculate time series for different q (gw velocity)
-    if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExpAll')
+    if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m') || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExpAll')
         q_max = paramsStd.q * 10; % Specific flux (Darcy flux) [m s-1] 
     else
         q_max = 1 / daysToSeconds(1); % Specific flux (Darcy flux) [m s-1] which equals to 1 m/day        
@@ -131,14 +140,17 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     % Q_list = logspace(log10(Q_range(1)), log10(Q_range(2)),5); 
     if strcmp(variant, 'FieldExpAll') || strcmp(variant, 'FieldExp2')
         Q_list =  [];
-    else
+    elseif strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m')
         Q_list = [paramsStd.Q / 5 * 2 , paramsStd.Q / 5 * 3, paramsStd.Q / 5 * 4, paramsStd.Q, ...
                     paramsStd.Q / 5 * 6 ];
+    else
+        error('no such variant')
     end
     a_list = [1:1:6]; % HALF distance between wells 
     % xy coordinates for observation wells
     % For Field test variant set coordinates of real observation wells
-    if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExpAll')
+    if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m') ...
+            || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExpAll')
         % Well coordinates
         wellCoords = wellCoordinates(variant); 
         coord_list_ObsWells = [wellCoords.x, wellCoords.y];

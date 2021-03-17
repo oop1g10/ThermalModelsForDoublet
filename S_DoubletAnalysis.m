@@ -638,8 +638,11 @@ if plotT_t_well
 %     elseif strcmp(variant, 'FieldExp2')
 %         paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 423', variant); % latest best fit params test 2
     elseif strcmp(variant, 'FieldExp2')
-        paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 359', variant); % latest best fit params test 2 with dispersivity       
+        paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 482', variant); % finished calib params     
+%         paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 539', variant); % latest best fit params test 2 with dispersivity       
     elseif strcmp(variant, 'FieldExp1')
+        paramsCalib = paramsFromCalib( 'Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); % best fit params test 1       
+    elseif strcmp(variant, 'FieldExp1m') % field test 1 and monitoring 1
         paramsCalib = paramsFromCalib( 'Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); % best fit params test 1       
     end
     
