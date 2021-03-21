@@ -90,8 +90,10 @@ if strcmp(variant, 'FieldExp1')
     timeTestFinish = datetime('2020-09-18 11:53:00','InputFormat','yyyy-MM-dd HH:mm:ss');
 elseif strcmp(variant, 'FieldExp1m')
 % test 1 new verion:    test1 + monitoring
-    % 17.2 days from start of test. i.e. monitoring data is included before start of test 2.
-    timeTestFinish = datetime('2020-09-20 00:43:30','InputFormat','yyyy-MM-dd HH:mm:ss'); 
+    % Actually monitoring for test 1 finished on 17.2 days from start of
+    % test. but the end of test 1 plus monitoring calibration is chosen to
+    % be end of test 2. because well 2 is not effected by test 2.
+    timeTestFinish = datetime('2020-11-27 14:54:30','InputFormat','yyyy-MM-dd HH:mm:ss'); 
 else % if all tests and monitoring than use all time
     timeTestFinish = datetime('2020-11-27 14:54:30','InputFormat','yyyy-MM-dd HH:mm:ss');
 end
@@ -150,6 +152,24 @@ if strcmp(variant, 'FieldExp1')
     % Filter temperatures for relevant test period only
     relevantRowsToDelete = wellTempTabTest.dateTime >= timeTestFinishWell2 ...
         & strcmp(wellTempTabTest.wellName, 'aquifro2') ;
+    wellTempTabTest = wellTempTabTest(~relevantRowsToDelete, :);
+elseif strcmp(variant, 'FieldExp1m')
+    % Monitoring for test 1 finishes and info from wells 4 3 and 6 are
+    % excluded from calibration for test 1 becuase they are influenced by
+    % heat injection by test 2.
+    timeTestFinish_Test1m = datetime('2020-10-01 14:29:06','InputFormat','yyyy-MM-dd HH:mm:ss');
+    % Filter temperatures for relevant test period only and for relevant
+    % wells
+    relevantRowsToDelete = wellTempTabTest.dateTime > timeTestFinish_Test1m ...
+        & (strcmp(wellTempTabTest.wellName, 'aquifro3') ...
+            | strcmp(wellTempTabTest.wellName, 'aquifro4'));
+    wellTempTabTest = wellTempTabTest(~relevantRowsToDelete, :);
+    % Delete data for well 6 (injection well) after injection finished.
+    % because data is disturbed by removal of cable.
+    timeTestFinishWell6 = datetime('2020-09-18 11:53:00','InputFormat','yyyy-MM-dd HH:mm:ss');
+    % Filter temperatures for relevant test period only
+    relevantRowsToDelete = wellTempTabTest.dateTime >= timeTestFinishWell6 ...
+        & strcmp(wellTempTabTest.wellName, 'aquifro6') ;
     wellTempTabTest = wellTempTabTest(~relevantRowsToDelete, :);
 end
 

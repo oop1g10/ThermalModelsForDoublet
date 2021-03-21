@@ -44,7 +44,7 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
           %  T_q_line = T_q(i,:);
           %  t_list_line = t_list;
             
-            if length(t_list) > 100 %in case of 3D model many times are calculated, so every 6rd value is ploted
+            if length(t_list) > 200 %in case of 3D model many times are calculated, so every 6rd value is ploted
                 T_q_line = T_q(i,1:6:end);
                 t_list_line = t_list(1:6:end);
             else %in case of 2D model fewer times are calculated, so every 3rd value is ploted
@@ -62,7 +62,7 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
                         
             lineWidthfactor = 1.5;
             % Sparse (every third point) for numerical model otherwise there are too many circles!
-            if length(t_list) > 100 %in case of 3D model many times are calculated, so every 6rd value is ploted
+            if length(t_list) > 200 %in case of 3D model many times are calculated, so every 6rd value is ploted
                 T_q_line = T_q(i,1:6:end);
                 t_list_line = t_list(1:6:end);
             else %in case of 2D model fewer times are calculated, so every 3rd value is ploted

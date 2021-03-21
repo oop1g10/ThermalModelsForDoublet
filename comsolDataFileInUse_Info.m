@@ -28,10 +28,10 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
         % FieldExp 1 = first field experiment, FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).  
 %         variant = 'FieldExp1'; 
 %         comsolDataFile = [exportPath 'comsolData_sol1_doubletTry_2d.mat']; 
-%         variant = 'FieldExp1m'; 
-%         comsolDataFile = [exportPath 'comsolData_sol1_doubletTryMonitor_2d.mat']; 
-        variant = 'FieldExp2'; 
-        comsolDataFile = [exportPath 'comsolData_sol1_doubletTest2_2d.mat']; 
+        variant = 'FieldExp1m'; 
+        comsolDataFile = [exportPath 'comsolData_sol1_doubletTest1m_2d.mat']; 
+%         variant = 'FieldExp2'; 
+%         comsolDataFile = [exportPath 'comsolData_sol1_doubletTest2_2d.mat']; 
 %         variant = 'FieldExpAll'; 
 %         comsolDataFile = [exportPath 'comsolData_sol1_doubletAll_2d.mat']; 
         

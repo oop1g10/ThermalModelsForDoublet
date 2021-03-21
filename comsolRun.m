@@ -16,9 +16,9 @@ function [comsolResultsTab, calcDurationSeconds] = comsolRun(params, paramsIndex
     % Connect to COMSOL server
     % If COMSOL server is already connected, then do nothing
     try
-        % mphstart;
-        mphstart('10.20.114.29',2037)
-        % mphstart('10.20.114.29',2036)
+         mphstart;
+        %mphstart('10.20.114.29',2037)
+        %mphstart('10.20.114.29',2036)
     catch exception
         if ~contains(exception.message, 'Already connected to a server')
             warning(exception.message)
