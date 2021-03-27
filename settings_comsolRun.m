@@ -36,7 +36,7 @@ elseif strcmp(methodMesh, '2d')
     elseif strcmp(variant, 'FieldExp1')
         comsolFile = [comsolPath 'doublet_2d_Matlab'];     
     elseif strcmp(variant, 'FieldExp1m')
-        comsolFile = [comsolPath 'doubletMonitoring_2d_Matlab'];
+        comsolFile = [comsolPath 'doublet_2d_Test1m_Matlab']; %test 1 with monitoring 1
     end
 else
     error('Please specify correct model dimension!')

@@ -639,13 +639,13 @@ if plotT_t_well
 %         paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 423', variant); % latest best fit params test 2
     elseif strcmp(variant, 'FieldExp2')
 %        paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 482_ls39_Ti29', variant); % finished calib params     
-        paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 482_ls15_Ti29', variant); % finished calib params     
+        paramsCalib = paramsFromCalib( 'Numerical2: 424', variant); % finished calib params   best is Numerical2: 424  
 
 %         paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 539', variant); % latest best fit params test 2 with dispersivity       
     elseif strcmp(variant, 'FieldExp1')
         paramsCalib = paramsFromCalib( 'Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); % best fit params test 1       
     elseif strcmp(variant, 'FieldExp1m') % field test 1 and monitoring 1
-        paramsCalib = paramsFromCalib( 'Numerical: TEST', variant); % best fit params test 1       
+        paramsCalib = paramsFromCalib( 'Numerical: 0458', variant); % best fit params test 1 with monitoring   Numerical: 0458     
     end
     
     Mt_T_t_well = 1; % calculation only in one point

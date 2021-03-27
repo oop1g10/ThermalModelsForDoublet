@@ -137,9 +137,9 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     % Field test design parameters
     % Q_range = [paramsStd.Q / 3, paramsStd.Q * 10];
     % Q_list = logspace(log10(Q_range(1)), log10(Q_range(2)),5); 
-    if strcmp(variant, 'FieldExpAll') || strcmp(variant, 'FieldExp2')
+    if strcmp(variant, 'FieldExpAll') || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp1m')
         Q_list =  [];
-    elseif strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m')
+    elseif strcmp(variant, 'FieldExp1')
         Q_list = [paramsStd.Q / 5 * 2 , paramsStd.Q / 5 * 3, paramsStd.Q / 5 * 4, paramsStd.Q, ...
                     paramsStd.Q / 5 * 6 ];
     else

@@ -22,30 +22,31 @@ load(comsolDataFile)
 disp('paramsStd equal to best fit for ansol')
 % paramsCalib = paramsFromCalib('Analytical: q,aX,alpha,cS,lS,n', variant);
 % paramsCalib = paramsFromCalib('Numerical2: RunCount:558 WIDER ranges init 431. zerodisp', variant);
-paramsCalib = paramsFromCalib('Numerical2: RunCount: 482', variant); 
+paramsCalib = paramsFromCalib('Numerical2: RunCount: 482 modif', variant);  
 paramsInit = paramsCalib;
 
 % Prepare list of parameters for calibration with their ranges
 paramRanges = table;
 %% warning('groundwater flow faster initial value')
-paramRanges(end+1,:) = prepParamRange('LOG10_q', [], log10(1E-6), log10(1E-2), log10(paramsInit.q*10), NaN); % paramsStd.q
-paramRanges(end+1,:) = prepParamRange('alpha_deg', [], 180, 260, paramsInit.alpha_deg, NaN); %alpha_deg 0 360
-paramRanges(end+1,:) = prepParamRange('cS', [], 600, 1100, 800, NaN); %cS
+paramRanges(end+1,:) = prepParamRange('LOG10_q', [], log10(1E-6), log10(1E-2), log10(paramsInit.q), NaN); % paramsStd.q
+paramRanges(end+1,:) = prepParamRange('alpha_deg', [], 100, 300, paramsInit.alpha_deg, NaN); %alpha_deg 0 360
+paramRanges(end+1,:) = prepParamRange('cS', [], 600, 1100, paramsInit.cS, NaN); %cS
 if strcmp(variant, 'FieldExp2')
     paramRanges(end+1,:) = prepParamRange('lS', [], 1, 2.5, 1.5, NaN); %lS based on field measurements
     paramRanges(end+1,:) = prepParamRange('Ti', [], degC2kelvin(29), degC2kelvin(31), degC2kelvin(29.2), NaN); %lS based on field measurements
     paramRanges(end+1,:) = prepParamRange('LINKED_aX', [], 0, 2, 1, NaN); % aX
     paramRanges(end+1,:) = prepParamRange('n', [], 0.1, 0.4, paramsInit.n, NaN); %n
 elseif strcmp(variant, 'FieldExp1m')
-    paramRanges(end+1,:) = prepParamRange('lS', [], 1, 2, 1.5, NaN); %lS based on field measurements
+    paramRanges(end+1,:) = prepParamRange('lS', [], 1, 3, paramsInit.lS, NaN); %lS based on field measurements
+    paramRanges(end+1,:) = prepParamRange('n', [], 0.1, 0.4, paramsInit.n, NaN); %n
 else
     paramRanges(end+1,:) = prepParamRange('lS', [], 1, 4, paramsInit.lS, NaN); %lS
     paramRanges(end+1,:) = prepParamRange('n', [], 0.2, 0.4, paramsInit.n, NaN); %n
 end
-paramRanges(end+1,:) = prepParamRange('LINKED_H', [], 1, 9, 7, NaN);
+paramRanges(end+1,:) = prepParamRange('LINKED_H', [], 1, 9, paramsInit.H, NaN);
 % During test 1 the water injection was reduced due to well clogging, and
 % water overflew the well, by unknown amount. therefore after well clogging occured the water flow is fitted
-if strcmp(variant, 'FieldExpAll')
+if strcmp(variant, 'FieldExpAll') || strcmp(variant, 'FieldExp1m')
     paramRanges(end+1,:) = prepParamRange('Qb', [], 0.00041/10, 0.00041, 0.00041/2, NaN);       
 end
 % Show in command window calibrated parameters and their ranges

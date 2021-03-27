@@ -109,9 +109,9 @@ if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m') || strcmp(varia
         % For model with all tests (test 1 and test 2 and both monitoring
         % periods) params.Qb is used only for second subperiod within test 1. with lower value.
         % All other periods have fixed Q written in comsol mph file.
-        if strcmp(variant, 'FieldExpAll') 
+        if strcmp(variant, 'FieldExpAll') || strcmp(variant, 'FieldExp1m')
             params.Qb = 0.00041 / 2; % (m^3/second)  
-        elseif strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m')
+        elseif strcmp(variant, 'FieldExp1') 
             %  params.Q = 0.03 * 3; % [m^3/second] water injection and production rate
             params.Q = 0.00041; % (cca 25 litre/minute translated in m^3/second)
         else
