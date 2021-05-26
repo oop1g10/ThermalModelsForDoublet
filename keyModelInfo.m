@@ -7,9 +7,15 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
 % Plume length donwstream (0.5 and 2K isotherms) after 30 years
 % Time to stabilize plume length growth downstream
 
+    % Adjust params depending on model method:
+    % If Homo (Simple as analytical solution) model is used, need to use Homo params, 
+    % this will allow to have unique result rows are final result, 
+    % otherwise Homo and Hetero models will have same params for same simulation in Monte Carlo and it will 
+    % be hard to find unique row from table
+    params = paramsHomoAdjust( params, modelMethod, variant ); 
+
     y = 0; % Centered
-    z = params.H/2; % Middle of borheole
-    ro = params.ro;
+    z = params.H/2; % Middle of borehole
     t_list = comsolResultsTab.timeList{1};
     
     %% Temperature at abstraction well at time timeForT
@@ -90,12 +96,6 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     end   
     
     %% Preparation of key Info row
-    % Adjust params depending on model method:
-    % If Homo (Simple as analytical solution) model is used, need to use Homo params, 
-    % this will allow to have unique result rows are final result, 
-    % otherwise Homo and Hetero models will have same params for same simulation in Monte Carlo and it will 
-    % be hard to find unique row from table
-    params = paramsHomoAdjust( params, modelMethod ); 
     keyModelInfoRow = struct2table(params);
     
     keyModelInfoRow.modelMethod = {modelMethod}; % give it as cell to avoid dimension mismatch

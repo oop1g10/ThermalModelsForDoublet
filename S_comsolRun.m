@@ -7,10 +7,19 @@ saveComsolResultMPH = false; % Save model file after computation
 noCalcOnlyParamsSaveMPH = false; % In case of batch runs to use only single Comsol-Matlab LiveLink licence, 
                                 % to set params on mph and save it, do not run Comsol through Matlab
 % Parameters to calculate
-paramsFor_FieldTest = true; % minimum number of params for test model runs
+paramsFor_FieldTest = false; % minimum number of params for test model runs
 paramsFor_standardPlots = false;
 paramsFor_plottb_a_Q_q = false;
 paramsFor_meshConvergence = false;
+% One at a time sensitivity analysis
+paramsFor_q = true;
+paramsFor_aXYZ = true;
+paramsFor_alpha_deg = true;
+paramsFor_cS = true;
+paramsFor_lS = true;
+paramsFor_Ti = true;
+paramsFor_n = true;
+paramsFor_H = true;
 
 [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsConvergence, variant,...
     solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
@@ -108,6 +117,14 @@ if paramsFor_meshConvergence
     % Prepare combinations of all parameters to run model through
     paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
 end
+
+%% One at a time sensitivity analysis 
+% Prepare unique combinations of parameters
+paramsCombinationsTab_oneAtATime = ...
+        standardParamsCombinations( variant, paramsFor_q, paramsFor_aXYZ, paramsFor_alpha_deg, paramsFor_cS, ... 
+                                            paramsFor_lS, paramsFor_Ti, paramsFor_n, paramsFor_H  );
+paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsTab_oneAtATime];
+
 
 % Remove duplicated parameter combinations
 paramsCombinationsTab = unique(paramsCombinationsTab);

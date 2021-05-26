@@ -143,7 +143,7 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
         Q_list = [paramsStd.Q / 5 * 2 , paramsStd.Q / 5 * 3, paramsStd.Q / 5 * 4, paramsStd.Q, ...
                     paramsStd.Q / 5 * 6 ];
     else
-        error('no such variant')
+        Q_list =  [];
     end
     a_list = [1:1:6]; % HALF distance between wells 
     % xy coordinates for observation wells

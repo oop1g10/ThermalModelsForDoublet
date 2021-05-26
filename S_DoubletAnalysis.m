@@ -637,7 +637,7 @@ if plotT_t_well
         paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 482', variant); % finished calib params     
 %     elseif strcmp(variant, 'FieldExp2')
 %         paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 423', variant); % latest best fit params test 2
-    elseif strcmp(variant, 'FieldExp2')
+    elseif strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated')
 %        paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 482_ls39_Ti29', variant); % finished calib params     
         paramsCalib = paramsFromCalib( 'Numerical2: 424', variant); % finished calib params   best is Numerical2: 424  
 

@@ -19,10 +19,10 @@ plot_Tb_mesh_q = true; % plot temperature at borehole wall vs number of elements
     plot_absoluteDiff_1 = true; % ALWAYS SHOULD BE TRUE % use absolute value (PREFFERED to avoid zigzaggy plot lines) for temeprature difference for plot_Tb_mesh_q and plot_TmaxDiff_mesh_q
 plot_RMSE_mesh_q = true; % plot total RMSE vs number of elements in mesh
     plot_MAE_mesh_q = false; % plot total MAE (mean absolute error) vs number of elements in mesh
-plot_TmaxDiff_mesh_q = true; % plot max T difference for all positions and for all times, between models vs number of elements in mesh
+plot_TmaxDiff_mesh_q = false; % plot max T difference for all positions and for all times, between models vs number of elements in mesh
     plot_absoluteDiff_2 = true; % use absolute value (PREFFERED to avoid zigzaggy plot lines) for temeprature difference for plot_Tb_mesh_q and plot_TmaxDiff_mesh_q
 
-plotSave = true;
+plotSave = false;
 plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doubletMeshConvergence_2d_H3000\'; % Folder to export plots
 
 % Load results comsolResultsTab from Comsol calculations
@@ -159,6 +159,7 @@ if plot_Tb_mesh_q
     if plotSave
         plotName = sprintf('convergence_%s_%s_%s', ...
                            plotNamePrefix, meshColumnName, cell2mat(modelMethods));                
+        
         saveFig([plotExportPath plotName])
     end
 

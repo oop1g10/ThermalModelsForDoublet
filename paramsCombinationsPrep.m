@@ -15,15 +15,21 @@ function paramsCombinationsTab = paramsCombinationsPrep( paramsList )
     % parameters, but it is transposed so it is THE OTHER WAY AROUND.
     % Dynamic input as varargin paramsInCells{:} turns array of cells into separate arguments, 
     % values of cells (opened cells = matrices)
-    paramsCombinationsMatrix = combvec( paramsInCells{:} )';
+    % combvec_copy is inbuilt Matlab function from Deep learning toolbox.
+    % here a copy of it is used because on madison computer it is not
+    % installed.
+    paramsCombinationsMatrix = combvec_copy( paramsInCells{:} )';
     
     % Save combinations as table with columns corresponding to parameter
     % names and rows to each combination set
     paramsCombinationsTab = array2table(paramsCombinationsMatrix, 'VariableNames', paramNames);
 
-%     % Specific case for dispersivities: add aY and aZ based on specified proportions to aX.
+    % Specific case for dispersivities: add aY and aZ based on specified proportions to aX.
 %     aXYZ_list = aXYZ_toTest( paramsCombinationsTab.aX' );
-%     paramsCombinationsTab.aY = aXYZ_list(:,2);
-%     paramsCombinationsTab.aZ = aXYZ_list(:,3);
+    paramsCombinationsTab.aY = paramsCombinationsTab.aX;
+    paramsCombinationsTab.aZ = paramsCombinationsTab.aX;
+    
+    % Specific case for Aquifer thickness and well depth: add M same as H.
+    paramsCombinationsTab.M = paramsCombinationsTab.H;
 
 end

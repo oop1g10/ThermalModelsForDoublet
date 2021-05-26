@@ -56,11 +56,12 @@ function paramsCalib = paramsFromCalib(calibVariant, variant)
         elseif strcmp(calibVariant, 'Numerical2: RunCount: 482_ls39_Ti29') % RMSEadj: 1.243685 BEST finished calibration for all tests with zero dispersivity
             bestFitParams = 'q[2.39473e-06] aXYZ[0 0 0] ro[0.0762] H[4.5549] M[4.5549] adeg[233.01] T0[283.64] Ti[302.35] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[671.654] lS[3.98691] n[0.20024] mesh[0.1]';
         
-        % latest best fit for test 2
+        % latest best fit for test 2 (new axrange wider)
         elseif strcmp(calibVariant, 'Numerical2: 424') 
             bestFitParams = 'q[3.32926e-06] aXYZ[1.75351e-05 1.75351e-05 1.75351e-05] ro[0.0762] H[8.84383] M[8.84383] adeg[241.957] T0[283.64] Ti[302.452] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[787.993] lS[1.8614] n[0.254193] mesh[0.1]';
           
-            
+        % switch(calibVariant) % can also use
+
             % calibration when LARGE range for ls thermal conductivity was set
         elseif strcmp(calibVariant, 'Numerical2: RunCount: 539') % RMSEadj: 1.331887 BEST 
             bestFitParams = 'q[1.03334e-06] aXYZ[3.98012e-06 3.98012e-06 3.98012e-06] ro[0.0762] H[8.42753] M[8.42753] adeg[230.303] T0[283.32] Ti[305.047] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[716.163] lS[4.52951] n[0.174094] mesh[0.1]';

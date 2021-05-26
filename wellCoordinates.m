@@ -19,5 +19,11 @@ function wellCoords = wellCoordinates(variant)
         wellCoords.wellName = {'aquifro3'; 'aquifro4'; 'aquifro5'; 'aquifro6'; 'aquifro7'};
         wellCoords.x = [-4.09; -0.04; 4.97; -4.97; -0.51];
         wellCoords.y = [4.86; 1.57; 0.00; 0.00; 3.07];
+    else
+        % To avoid error return out of ceiling coordinates for all variants
+        wellCoords = table;
+%         wellCoords.wellName = {'aquifro'};
+%         wellCoords.x = 0;
+%         wellCoords.y = 0;   
     end
 end

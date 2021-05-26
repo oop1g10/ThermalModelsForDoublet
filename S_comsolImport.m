@@ -8,6 +8,8 @@ if strcmp(variant, 'FieldExpAll')
     results = 'doubletAll';  
 elseif strcmp(variant, 'FieldExp2')
     results = 'doubletTest2'; 
+elseif strcmp(variant, 'FieldExp2Rotated')
+    results = 'doubletTest2Rotated'; 
 elseif strcmp(variant, 'FieldExp1')
    results = 'doubletTest1';
 elseif strcmp(variant, 'FieldExp1m')

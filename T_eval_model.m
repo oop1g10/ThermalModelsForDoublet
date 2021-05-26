@@ -48,15 +48,15 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
     %% For COMSOL
     if isModelNumerical( modelMethod ) % First argument says logic if model method is numerical.
         % If results with "deactivated" fracture are requested (nMILS or nMFLS)
-        params = paramsHomoAdjust( params, modelMethod );        
+        params = paramsHomoAdjust( params, modelMethod, variant );        
         % Parameters from comsol result
         if numel(z_range) == 1 && z_range == params.H/2 ... % if z coordinate is fixed and equals to standard z (mid borehole depth)
                 && ~(numel(y_range) == 1 && y_range == 0) % if y = 0 do not use plan view, use profile view instead because it also covers  Pipe Temperatures
-            fixedCoord = [NaN, NaN, points_Coords(1,3)];% plan data will be used
+            fixedCoord = [NaN, NaN, points_Coords(1,3)]; % plan data will be used
         elseif numel(y_range) == 1 % if y coordinate is fixed
             fixedCoord = [NaN, points_Coords(1,2), NaN]; % profile data will be used
         else
-            error('Please provide only single value for either y range or z range (or for both)!')
+            error('Please provide only SINGLE value for either y range or z range (or for both)!')
         end
         
         % prepare matrices for results        

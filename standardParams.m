@@ -85,26 +85,18 @@ function [ params, mu_w, deltaH, g_const, growthRateOptim, startStepSize, N_Schu
         params.n = 0.1; % porosity of material in aquifer
  end
  
-%  FieldExp 1 = first field experiment, FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).     
-if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m') || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExpAll') 
+    %  FieldExp 1 = first field experiment, FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).     
+    if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m') || strcmp(variant, 'FieldExpAll') 
         deltaH = 0.0028; %0.001; % [m/m] Hydraulic  gradient, = 1 mm/m
     %   params.fe = fe; % "Heat input (W) per whole cylinder source"
         params.ro = 0.0762; %0.07; % borehole well radius [m]
     %    params.H = 30 * 3; %borehole length [m]    
         params.H = 6; %borehole length [m]
         params.M = params.H; % [m] thickness of aquifer, even the model is in 2D it is accounted for and influences model results
-
         params.alpha_deg = 280; % [deg] % angle of gw flow, if = 0 it is parallel to x axis (flows from left to right) if 90 = parallel to y axis
-        if strcmp(variant, 'FieldExp2')
-            % test 2 has different initial temeprature by 0.32 degrees
-            % higher.
-            params.T0 = degC2kelvin(10.17 + 0.32); % according to well 3, undisturbed temperature in aquifer 
-        else
-            params.T0 = degC2kelvin(10.17); % according to well 3, undisturbed temperature in aquifer 
-       end
+        params.T0 = degC2kelvin(10.17); % according to well 3, undisturbed temperature in aquifer 
         params.Ti = degC2kelvin(37.4); % 30 [deg C] % injection temperature
-        params.a = 4.97; % [m] half of distance between two wells
-        
+        params.a = 4.97; % [m] half of distance between two wells        
         % params.Q was used for test 1 for the whole period. 
         % For model with all tests (test 1 and test 2 and both monitoring
         % periods) params.Qb is used only for second subperiod within test 1. with lower value.
@@ -133,8 +125,16 @@ if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m') || strcmp(varia
         params.q = 1E-5;% "Darcy gw velocity (m/s)"
         % natural undisturbed sand porosity taken from https://www.tandfonline.com/doi/abs/10.1080/10641190490900844
         params.n = 0.42; % porosity of material in aquifer  
- end
 
+    % For Test 2 standard parameters are best fit for test 2.
+    elseif strcmp(variant, 'FieldExp2')
+        params = paramsFromCalib('Numerical2: 424', variant);
+        deltaH = 0.0028; %0.001; % [m/m] Hydraulic  gradient, = 1 mm/m       
+        % test 2 has different initial temeprature by 0.32 degrees higher.
+        % params.T0 = degC2kelvin(10.17 + 0.32); % according to well 3, undisturbed temperature in aquifer
+        % It is given in best fit params 'Numerical2: 424'
+    end
+    
     %% Mesh and time step properties
     % increased from original 0.01 because comsol returned error in meshing due to too small heat source in model with fracture.
     params.maxMeshSize = maxMeshSize; %0.01; % "max el size (m) at source cylinder" standard used what is optimal in comsol (e.g. 0.01 m)   

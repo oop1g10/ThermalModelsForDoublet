@@ -10,6 +10,5 @@ function aXYZ_list = aXYZ_toTest( ax_list )
     az_list = ax_list * az_ratioTo_ax; %transversal dispersivity [m] in z direction
     aXYZ_list = [ax_list', ay_list', az_list'];
 
-
 end
 
