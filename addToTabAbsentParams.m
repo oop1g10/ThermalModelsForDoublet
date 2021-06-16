@@ -1,16 +1,17 @@
-function [ comsolResultsTab ] = addToTabAbsentParams( comsolResultsTab )
-%Check if comsolDataFile has new variable for model with pipes: pipe_TinLimitDiff (max limit for T in pipe)
-% if not such parameter is present (i.e. model is without pipes) add this parameter as 1E9 standard number ( meaning no limit is set)        
-    
-    % This function is NOT NEEDED NOW
-    
-    %% example how to use it:
-%     params = standardParams( 'homo' );
-%     % If column pipe_TinLimitDiff does not exist in table    
-%     if ~any(strcmp('pipe_TinLimitDiff', comsolResultsTab.Properties.VariableNames))
-%         % add column with default values for each line
-%         comsolResultsTab.pipe_TinLimitDiff = repmat({params.pipe_TinLimitDiff}, size(comsolResultsTab, 1), 1);
-%     end
-
+function [ comsolResultsTab ] = addToTabAbsentParams( comsolResultsTab, variant )
+%Check if comsolDataFile has variable Q (gw flow) for model. It is needed for analytical model
+% if no such parameter is present, add this parameter      
+        
+    paramsStd = standardParams( variant );
+    % If parameter Q is present in ParamsStd structure but is not in comsol
+    % results table 
+    % Add it
+    if isfield(paramsStd, 'Q')
+        % If column Q (gw flow) does not exist in table    
+        if ~any(strcmp('Q', comsolResultsTab.Properties.VariableNames))
+            % add column with default values for each line
+            comsolResultsTab.Q = repmat({paramsStd.Q}, size(comsolResultsTab, 1), 1);
+        end
+    end
 end
 

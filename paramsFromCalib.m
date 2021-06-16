@@ -16,6 +16,8 @@ function paramsCalib = paramsFromCalib(calibVariant, variant)
             bestFitParams = 'q[1.03207e-05] aXYZ[0.381537 0.381537 0.381537] ro[0.0762] H[2.86124] M[2.86124] adeg[210.207] T0[283.32] Ti[310.55] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[603.676] lS[3.591] n[0.222411] mesh[0.1]';
         elseif strcmp(calibVariant, 'Numerical: q,aX,alpha,cS,lS,n,H RunCount:0488 WIDER ranges cS,H init 431') % yes same init values used here % RMSEadj 3.1
             bestFitParams = 'q[1.50618e-05] aXYZ[0.1954 0.1954 0.1954] ro[0.0762] H[1.45979] M[1.45979] adeg[209.392] T0[283.32] Ti[310.55] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[929.114] lS[1.66504] n[0.322536] mesh[0.1]';
+        elseif strcmp(calibVariant, 'Numerical2: 424') % BEST FIT FOR TEST 2 to be used here for plots (Q par removed)
+            bestFitParams = 'q[3.32926e-06] aXYZ[1.75351e-05 1.75351e-05 1.75351e-05] ro[0.0762] H[8.84383] M[8.84383] adeg[271.215] T0[283.64] Ti[302.452] a[3.14067] rhoW[999.75] cW[4192] rhoS[2600] cS[787.993] lS[1.8614] n[0.254193] mesh[0.1]';
         else
             error('such calibvariant does not exist')
         end
@@ -56,10 +58,10 @@ function paramsCalib = paramsFromCalib(calibVariant, variant)
         elseif strcmp(calibVariant, 'Numerical2: RunCount: 482_ls39_Ti29') % RMSEadj: 1.243685 BEST finished calibration for all tests with zero dispersivity
             bestFitParams = 'q[2.39473e-06] aXYZ[0 0 0] ro[0.0762] H[4.5549] M[4.5549] adeg[233.01] T0[283.64] Ti[302.35] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[671.654] lS[3.98691] n[0.20024] mesh[0.1]';
         
-        % latest best fit for test 2 (new axrange wider)
+        % latest best fit for test 2 (new axrange wider) with COMSOL
         elseif strcmp(calibVariant, 'Numerical2: 424') 
             bestFitParams = 'q[3.32926e-06] aXYZ[1.75351e-05 1.75351e-05 1.75351e-05] ro[0.0762] H[8.84383] M[8.84383] adeg[241.957] T0[283.64] Ti[302.452] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[787.993] lS[1.8614] n[0.254193] mesh[0.1]';
-          
+            
         % switch(calibVariant) % can also use
 
             % calibration when LARGE range for ls thermal conductivity was set
@@ -70,6 +72,16 @@ function paramsCalib = paramsFromCalib(calibVariant, variant)
         
         elseif strcmp(calibVariant, 'Numerical2: RunCount: 572') % RMSEadj: 1.331887 BEST 
             bestFitParams = 'q[1.79335e-06] aXYZ[8.43294e-05 8.43294e-05 8.43294e-05] ro[0.0762] H[7.72487] M[7.72487] adeg[205.09] T0[283.64] Ti[303.01] a[4.97] rhoW[999.75] cW[4192] rhoS[2600] cS[783.264] lS[1.11176] n[0.209682] mesh[0.1]';
+        else
+            error('such calibvariant does not exist')
+        end 
+    elseif strcmp(variant, 'FieldExp2Rotated') %%%%%%%%ROTATED%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      
+        % latest best fit for test 2 (new axrange wider) with COMSOL
+        if strcmp(calibVariant, 'Numerical2: 424') 
+            bestFitParams = 'q[3.32926e-06] aXYZ[1.75351e-05 1.75351e-05 1.75351e-05] ro[0.0762] H[8.84383] M[8.84383] adeg[271.215] T0[283.64] Ti[302.452] a[3.14067] rhoW[999.75] cW[4192] rhoS[2600] cS[787.993] lS[1.8614] n[0.254193] mesh[0.1] Q[0.000407]';
+       % latest best fit for test 2 with Analytical solution Schulz
+        elseif strcmp(calibVariant, 'Analytical: from Init424')  %  RunCount: 2428,
+            bestFitParams = 'q[1.36638e-05] aXYZ[0 0 0] ro[0.0762] H[5.14374] M[5.14374] adeg[240.136] T0[283.64] Ti[302.498] a[3.14067] rhoW[999.75] cW[4192] rhoS[2600] cS[1055.89] lS[2.48064] n[0.269173] mesh[0.1] Q[0.000407]';
         else
             error('such calibvariant does not exist')
         end 

@@ -12,6 +12,10 @@ function [q_list, aXYZ_list, alpha_deg_list, cS_list, lS_list, Ti_list, n_list, 
     
     % Groundwater direction (degrees)
     alpha_deg_list = [160 : 10:  280];
+    if strcmp(variant, 'FieldExp2Rotated')
+        rotateTest2Struct = rotateTest2Info();
+        alpha_deg_list = alpha_deg_list +  round(rotateTest2Struct.rotationAngleDeg, -1);
+    end
     % Thermal capacity
     cS_list = [600 : 50 : 1100];
     % Thermal conductivity

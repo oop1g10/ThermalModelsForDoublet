@@ -18,20 +18,24 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
     % Load results comsolResultsTab from Comsol calculations
     %% 2D
     if model_2dPlanComsol
-        comsolDataFileConvergence = [exportPath  'comsolData_sol1_doubletMeshConvergence_2d.mat'];
+        warning('return comsolDataFileConvergence back to default')
+        comsolDataFileConvergence = [exportPath  'comsolData_sol1_doubletMeshConvergence_0dispersion_6mDepth_2d.mat']; 
+      %  comsolDataFileConvergence = [exportPath  'comsolData_sol1_doubletMeshConvergence_2d.mat'];
 
-        variant =  'paper_Schulz';%
+    %    variant =  'paper_Schulz';%
         % variant = 'Homo'; %
         % comsolDataFile = [folder 'comsolData_sol1_doublet_2d.mat']; 
         % comsolDataFile = [folder 'comsolData_sol1_doubletStdplots4gw_2d.mat'];
         
         % FieldExp 1 = first field experiment, FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).  
-        % variant = 'FieldExp1'; 
+         variant = 'FieldExp1'; 
          comsolDataFile = [exportPath 'comsolData_sol1_doubletTry_2d.mat']; 
  %        variant = 'FieldExp1m'; 
   %       comsolDataFile = [exportPath 'comsolData_sol1_doubletTest1m_2d.mat']; 
-    %     variant = 'FieldExp2'; 
-   %      comsolDataFile = [exportPath 'comsolData_sol1_doubletTest2_2d.mat']; 
+      %   variant = 'FieldExp2'; 
+       %  comsolDataFile = [exportPath 'comsolData_sol1_doubletTest2_2d.mat']; 
+        % variant = 'FieldExp2Rotated'; 
+        % comsolDataFile = [exportPath 'comsolData_sol1_doubletTest2Rotated_2d.mat']; 
 %         variant = 'FieldExpAll'; 
 %         comsolDataFile = [exportPath 'comsolData_sol1_doubletAll_2d.mat']; 
         
@@ -57,7 +61,7 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
     wellTempDataFileImport = [exportPath, wellTempDataFileName]; % place and name where to save results in matfile 
     if strcmp(variant, 'FieldExpAll')
         wellTempDataFileImportCompare = [exportPath, 'wellTempDataTestAll.mat']; % place and name where to save results in matfile 
-    elseif strcmp(variant, 'FieldExp2')
+    elseif strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated')
         wellTempDataFileImportCompare = [exportPath, 'wellTempDataTest2.mat']; % place and name where to save results in matfile 
     elseif strcmp(variant, 'FieldExp1')
         wellTempDataFileImportCompare = [exportPath, 'wellTempDataTest1.mat']; % place and name where to save results in matfile 

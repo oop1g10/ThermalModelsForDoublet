@@ -138,7 +138,7 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     % For test 2 well 6 will be used only to validate the model result with time
     % to thermal breakthrough. RMSE is not calculated for well 6 because it
     % is influenced by heat injection from test 1.
-    if strcmp(variant, 'FieldExp2') 
+    if strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated')
         well_T_comparison = well_T_comparison(~strcmp(well_T_comparison.wellName, 'aquifro6'), :);   
     end
     % Add columns with modelled and measured Temperature and RMSE for each well for comparison times
@@ -174,7 +174,7 @@ function keyModelInfoRow = keyModelInfo( timeForT, timeForT_max, T_plume_list, x
     end     
     % Give larger weight to RMSE adj for well 4 to achieve better
     % calibration for test 2 measurements
-    if strcmp(variant, 'FieldExp2') 
+    if strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated')
         well_T_comparison.RMSEadj(strcmp(well_T_comparison.wellName, 'aquifro4')) = ...
             well_T_comparison.RMSEadj(strcmp(well_T_comparison.wellName, 'aquifro4')) * 5; 
     end

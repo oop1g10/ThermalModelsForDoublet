@@ -8,7 +8,7 @@ function [ params ] = comsolFilename_Info( comsolFilename, variant )
 
     %If some parameter is NOT set in file name - return standard parameter value in params 
     % Get standard model parameters
-    if strcmp(variant, 'FieldExp2')
+    if strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated')
         paramsStd = struct;
     else
         paramsStd = standardParams(variant);

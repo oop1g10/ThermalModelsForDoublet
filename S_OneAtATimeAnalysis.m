@@ -10,19 +10,19 @@ defaultLineWidth = get(groot,'defaultLineLineWidth');
 
 %% Plots selections
 % plots
-plot_Tb_tSS_q = false; % plot % difference of temp at bh wall (delta K) and time to SS for diff gw flows
+plot_Tb_tSS_q = true; % plot % difference of temp at bh wall (delta K) and time to SS for diff gw flows
 plot_RMSEadj = true; %RMSEadj
 
 % For the plots above CHOOSE WHICH PARAMETERS to plot
 % One at a time sensitivity analysis
-paramsFor_q = true;
-paramsFor_aXYZ = true;
+paramsFor_q = false;
+paramsFor_aXYZ = false;
 paramsFor_alpha_deg = true;
-paramsFor_cS = true;
-paramsFor_lS = true;
-paramsFor_Ti = true;
-paramsFor_n = true;
-paramsFor_H = true;
+paramsFor_cS = false;
+paramsFor_lS = false;
+paramsFor_Ti = false;
+paramsFor_n = false;
+paramsFor_H = false;
 
 %% Plot settings
 plot_tSS_OnSamePlot = false; % if true per each plot there will be 4 lines: 2 for Tb or Xplume AND 2 lines for tSS times to stabilize them (relative diff) 
@@ -39,15 +39,16 @@ plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_test2_oneAtA
 % For one at a time sensitivity analysis the model methods are both
 % numerical, first is with standard best fit parameters, the second is with
 % param set from one at a time params set
-modelMethods = {'nDoublet2Dstd', 'nDoublet2D'};
+% modelMethods = {'nDoublet2Dstd', 'nDoublet2D'};
+modelMethods = {'nDoublet2Dstd', 'Schulz'};
 
 fprintf('methodMesh: %s\n', methodMesh);
 
 load(comsolDataFile)
         
-modelMethod = modelMethods{2}; % plot for one method to be used
+modelMethod = modelMethods{1}; % plot for one method to be used
 % Add missing columns to loaded result   
-comsolResultsTab = addToTabAbsentParams( comsolResultsTab );
+comsolResultsTab = addToTabAbsentParams( comsolResultsTab, variant );
 
 modelTitle = [modelMethod '_' solution '_' methodMesh]; %text for plot titles and names to save the figures
 plotTitle = modelTitle; plotTitle(plotTitle == '_') = '-'; %replace _ with - in plot title not to print as subscript

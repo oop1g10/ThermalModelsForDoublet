@@ -11,7 +11,9 @@ elseif strcmp(variant, 'FieldExp2')
 elseif strcmp(variant, 'FieldExp2Rotated')
     results = 'doubletTest2Rotated'; 
 elseif strcmp(variant, 'FieldExp1')
-   results = 'doubletTest1';
+    warning('change results name to default')
+   % results = 'doubletTry';
+   results = 'doubletMeshConvergence_0dispersion_6mDepth';
 elseif strcmp(variant, 'FieldExp1m')
    results = 'doubletTest1m'; % field test 1 and monitoring
 else

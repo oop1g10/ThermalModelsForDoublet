@@ -4,13 +4,13 @@ clear all
 
 %% Decide which plots to generate
 plotT_q = false; %+ T change vs time at different GW flows
-plotTxy_stream_tb = false; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
+plotTxy_stream_tb = true; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
     plotTxy_stream_tb_Txy = true; % plot isotherms
     plotTxy_stream_tb_tb = true; % plot time to breakthrough
     plotTxy_stream_tb_stream = true; % plot streamlines
         plotTxy_stream_tb_stream_withLabels = false; % if to plot hydraulic pressure labels
-    plotTxy_stream_tb_param = true; % Plot for set parameters
-plotTxy_q = false; %+ How groundwater velocity influences plume development in x&y direction (plan view)
+    plotTxy_stream_tb_param = false; % Plot for set parameters
+plotTxy_q = false; % ADJUSTED %%%%% + How groundwater velocity influences plume development in x&y direction (plan view)
 % for 3D  only
 plotTz_q_x = false; %+ Temperature at different x versus depth (z dimention) for different GW flows
 
@@ -27,7 +27,7 @@ plotTb_axy_q = false; %+ Temperature at borehole wall after 30 years vs dispersi
 plotXt_q_fe = false; % TODO Plume extent longitudinal (X) after set time (t) vs groundwater flow (q) for different heat input (fe)
 
 % Model calibration plots %%%%%%%%%%%%%%%%%%%%%%%%
-plotT_t_well = true; %+ T change vs time at different wells of field site for modelled and measured results
+plotT_t_well = false; %+ T change vs time at different wells of field site for modelled and measured results
 
 
 %% Save the plots
@@ -46,9 +46,19 @@ fprintf('methodMesh: %s\n', methodMesh);
     T_plume_list, ~, x_Tlist, ~, Q_list, a_list, coord_list_ObsWells, measuredWellDepth_range ] = ...
     standardRangesToCompare( variant );
 
+% warning('return variant from string to variable, it was changed to retieve z value')
+% % take list and q lift from test 1 for plan view figure
+% [ ~, q_list, ~, x_range, y_range, z_range, Mt, y, z, ~, timeTbh, timeForT_max,...
+%     T_plume_list, ~, x_Tlist, ~, Q_list, a_list, coord_list_ObsWells, measuredWellDepth_range ] = ...
+%     standardRangesToCompare( 'FieldExp1' );
+% % take z range from test 2
+% [ t_list, ~, ~, x_range, y_range, z_range, Mt, y, z, ~, timeTbh, timeForT_max,...
+%     T_plume_list, ~, x_Tlist, ~, Q_list, a_list, coord_list_ObsWells, measuredWellDepth_range ] = ...
+%     standardRangesToCompare( 'FieldExp2' );
+
 q_max = max(q_list); %Specific flux (Darcy flux) [m s-1] % maximm required Darcy velocity
 modelMethodsPlot = [modelMethods(1), modelMethods(2)]; % 1 = Schulz/Homo; 2 = Comsol 2D
-modelMethodPlot = modelMethods{2}; % Method of model calculation
+modelMethodPlot = modelMethods{1}; % Method of model calculation
 % NOTE selected plot support comparison of two models some only one model method
 % Model methods for which comparison plot should be generated
 % First method is full line for analytical model, 
@@ -57,9 +67,8 @@ plotTitle = modelMethodPlot; % plotTitle
 
 %% Load previously saved workspace variables with comsol data in comsolResultsTab
 load(comsolDataFile)
-
 % If needed ONLY: Add missing columns to loaded result   
-% comsolResultsTab = addToTabAbsentParams( comsolResultsTab );
+comsolResultsTab = addToTabAbsentParams( comsolResultsTab, variant );
 
 %% Power calculation
 % %% Calculate which power is needed for 1 K change for the set Q
@@ -137,23 +146,24 @@ if plotTxy_stream_tb
     plotNamePrefix = 'Txy_stream_tb'; % plot name to save the plot with relevant name
     % times for results    1.9481 years col 94 and 5.3348 yrs column 101 in time list from comsol
     % t_list_plotTxy_q = 168238080; % [6.143644800000002e+07, 168238080]; % time in seconds        
-    t_list_plotTxy_q = [t_list(44), timeTbh]; %  around 14 days as calc in numerical model %t_list(16) ; % t_list(15); % = 9.5 days %    10 / secondsToDays(1); % seconds from days
+    t_list_plotTxy_q = t_list(25); % = 1 day % [t_list(44), timeTbh]; %  around 14 days as calc in numerical model %t_list(16) ; % t_list(15); % = 9.5 days %    10 / secondsToDays(1); % seconds from days
     % preassign 4 D matrices for T to save the results
-    Txy_stream_tb = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
+    q_listSpec = paramsStd.q;
+    Txy_stream_tb = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_listSpec));
     % same for tb ( which is based on I phi)
-    t_b_mesh = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
+    t_b_mesh = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_listSpec));
     % same for phi (hydraulic potential)
-    phi_xy_mesh = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
+    phi_xy_mesh = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_listSpec));
     % same for groundwater velocities, parts of the vector [ v_x, v_y ],
     % both v_x and v_y are calculated in all mesh points.
-    v_x = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
-    v_y = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_list));
+    v_x = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_listSpec));
+    v_y = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_listSpec));
     % If only one parameter should be plotted
     if plotTxy_stream_tb_param
         % best fit calibrated params
         paramsUse = paramsFromCalib('Numerical: q,aX,alpha,cS,lS,n,H RunCount:0488 WIDER ranges cS,H init 431', variant);
        % paramsUse = paramsStd; % Params before calibration
-        q_list = paramsUse.q;
+        q_listSpec = paramsUse.q;
     else
         paramsUse = paramsStd;
     end
@@ -162,14 +172,14 @@ if plotTxy_stream_tb
     i = 0;
     for it = 1:numel(t_list_plotTxy_q)
         % prepare matrices for results
-        for iq = 1:numel(q_list)
+        for iq = 1:numel(q_listSpec)
             % Show progress info bar
             i = i + 1;
-            waitInfo = sprintf('v_D = %.3f m/day',   q_list(iq) * daysToSeconds(1) );
-            waitbar(i / (numel(t_list_plotTxy_q) * numel(q_list)), hWait, waitInfo); %show progress
+            waitInfo = sprintf('v_D = %.3f m/day',   q_listSpec(iq) * daysToSeconds(1) );
+            waitbar(i / (numel(t_list_plotTxy_q) * numel(q_listSpec)), hWait, waitInfo); %show progress
 
             params = paramsUse;
-            params.q = q_list(iq);
+            params.q = q_listSpec(iq);
             zUse = params.H/2;
             
             %% Temperature, time to breakthrough, streamlines and hydraulic potential for plot
@@ -199,13 +209,13 @@ if plotTxy_stream_tb
 
     %% Plot PLAN VIEW streamlines, hydraulic potential,  isotherms and times to thermal breakthrough
 %     T_isotherm = T_plume_list ; % [11 15 19]; % [-14, - 10, -5, -1]; % temperature for limit of plume on plot display (Kelvin)
-    T_isotherm = [1, 5, 10, 20, 25];
-    tb_list = [ 1, 2, 5, 10, 25, 50, 100] / secondsToDays(1); % seconds
+    T_isotherm = [1, 10];
+    tb_list = [ 1, 2, 5, 10] / secondsToDays(1); % seconds
 
-    for iq = 1:numel(q_list)       
+    for iq = 1:numel(q_listSpec)       
         for it = 1 : numel(t_list_plotTxy_q)
             % prepare legend
-            legendTexts_q_plotTxy_stream_tb{1} = sprintf('v_D = %.3f m/day', q_list(iq) * daysToSeconds(1)); % legend for list of gw velocity [m/day]
+            legendTexts_q_plotTxy_stream_tb{1} = sprintf('v_D = %.3f m/day', q_listSpec(iq) * daysToSeconds(1)); % legend for list of gw velocity [m/day]
             
             % Create the plot streamlines, hydraulic potential,  isotherms and times to thermal breakthrough
             plotTxy_stream_tb_fun( Txy_stream_tb(:,:,it, iq), legendTexts_q_plotTxy_stream_tb, t_list_plotTxy_q(it), ...
@@ -216,12 +226,12 @@ if plotTxy_stream_tb
             if plotSave        
                 if secondsToYears(t_list_plotTxy_q(it)) >= 1
                     plotName = sprintf('%s_q%.3fmd-1_z%dm_a[%.1f %.1f %.1f]_t%.0fy_%s', ...
-                        plotNamePrefix, q_list(iq) * daysToSeconds(1), ...
+                        plotNamePrefix, q_listSpec(iq) * daysToSeconds(1), ...
                         z, params.aX, params.aY, params.aZ, ...
                         secondsToYears(t_list_plotTxy_q(it)), modelMethodPlot);
                 else
                     plotName = sprintf('%s_q%.3fmd-1_z%dm_a[%.1f %.1f %.1f]_t%.0fdays_%s', ...
-                        plotNamePrefix, q_list(iq) * daysToSeconds(1), ...
+                        plotNamePrefix, q_listSpec(iq) * daysToSeconds(1), ...
                         z, params.aX, params.aY, params.aZ, ...
                         secondsToDays(t_list_plotTxy_q(it)), modelMethodPlot);
                 end
@@ -239,16 +249,30 @@ if plotTxy_q
     plotNamePrefix = 'Txy_q'; % plot name to save the plot with relevant name
     varplot = variant;
     % t_list_plotTxy_q = [daysToSeconds(5*365)]; % time in seconds
-    t_list_plotTxy_q = [8.196595200000000e+05, 2592000]; % [seconds] equaling to 9.5, 30 days   
+  %  t_list_plotTxy_q = [8.196595200000000e+05, 2592000]; % [seconds] equaling to 9.5, 30 days  
+    % in 2 weeks
+    t_list = comsolResultsTab.timeList{1,1}(67);
+    t_list_plotTxy_q = t_list; % secondsToDays(t_list); %in seconds, equals to 2 weeks 
+    
     for it = 1:numel(t_list_plotTxy_q)
         % prepare matrices for results
+        [ ~, q_list, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~ ] = ...
+                standardRangesToCompare( variant );
         Txy_q = nan(Mt, Mt, numel(q_list)); % temperature series
         % pre-allocate empty strings to legend text 
         % in case not all q are filled it will be working.
         legendTexts_q = repmat({''},1,numel(q_list)); % OLD version: legendTexts_q = cell(1, numel(q_list));        
         for i = 1:numel(q_list)
-            params = paramsStd;
+            % params = paramsStd;
+            warning('return variant from string to variable')
+            params = paramsFromCalib('Numerical2: 424', 'FieldExp2');
             params.q = q_list(i);
+            params.aX = 0; 
+            params.aY = 0; 
+            params.aZ = 0; 
+            params.alpha_deg = 271.215; % from Test 2 rotated
+            params.a = 3.14067; % from Test 2 rotated
+            params.Q = 0.000407; % injection flow rate
             % Calculate temperature series for current q
             [~, ~, Txy_q(:, :, i), Xmesh, Ymesh, ~ ] = ...          
                T_eval_model(modelMethodPlot, x_range, y_range, z, ...
@@ -258,7 +282,7 @@ if plotTxy_q
         end
 
         %% Plot MFLS with physical units PLAN VIEW
-        T_isotherm = [5 9]; % [-1, -14]; % temperature for limit of plume on plot display (Kelvin)
+        T_isotherm = [1 10]; % [-1, -14]; % temperature for limit of plume on plot display (Kelvin)
         plotTxy_q_fun( Txy_q, legendTexts_q, t_list_plotTxy_q(it), T_isotherm, Xmesh, Ymesh, plotTitle )
 
         if plotSave        
@@ -639,7 +663,10 @@ if plotT_t_well
 %         paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 423', variant); % latest best fit params test 2
     elseif strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated')
 %        paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 482_ls39_Ti29', variant); % finished calib params     
+% INITIAL valias for analytical solution fitting        
         paramsCalib = paramsFromCalib( 'Numerical2: 424', variant); % finished calib params   best is Numerical2: 424  
+% FINAL calibrated values after analytical solution fitting strcmp(calibVariant, 'Analytical: from Init424')
+     %  paramsCalib = paramsFromCalib( 'Analytical: from Init424', variant); % finished calib params   best is Numerical2: 424  
 
 %         paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 539', variant); % latest best fit params test 2 with dispersivity       
     elseif strcmp(variant, 'FieldExp1')

@@ -127,8 +127,10 @@ function [ params, mu_w, deltaH, g_const, growthRateOptim, startStepSize, N_Schu
         params.n = 0.42; % porosity of material in aquifer  
 
     % For Test 2 standard parameters are best fit for test 2.
-    elseif strcmp(variant, 'FieldExp2')
+    elseif strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated')
         params = paramsFromCalib('Numerical2: 424', variant);
+%         warning('best fit analytical params are used')
+%         params = paramsFromCalib('Analytical: from Init424', variant);
         deltaH = 0.0028; %0.001; % [m/m] Hydraulic  gradient, = 1 mm/m       
         % test 2 has different initial temeprature by 0.32 degrees higher.
         % params.T0 = degC2kelvin(10.17 + 0.32); % according to well 3, undisturbed temperature in aquifer

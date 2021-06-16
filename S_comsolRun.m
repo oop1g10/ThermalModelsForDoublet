@@ -10,16 +10,16 @@ noCalcOnlyParamsSaveMPH = false; % In case of batch runs to use only single Coms
 paramsFor_FieldTest = false; % minimum number of params for test model runs
 paramsFor_standardPlots = false;
 paramsFor_plottb_a_Q_q = false;
-paramsFor_meshConvergence = false;
+paramsFor_meshConvergence = true;
 % One at a time sensitivity analysis
-paramsFor_q = true;
-paramsFor_aXYZ = true;
-paramsFor_alpha_deg = true;
-paramsFor_cS = true;
-paramsFor_lS = true;
-paramsFor_Ti = true;
-paramsFor_n = true;
-paramsFor_H = true;
+paramsFor_q = false;
+paramsFor_aXYZ = false;
+paramsFor_alpha_deg = false;
+paramsFor_cS = false;
+paramsFor_lS = false;
+paramsFor_Ti = false;
+paramsFor_n = false;
+paramsFor_H = false;
 
 [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsConvergence, variant,...
     solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
@@ -65,10 +65,22 @@ if paramsFor_FieldTest
     paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
     
     % Calculate numerical model with parameters of calibrated analytical model
-    paramsCalib = paramsFromCalib('Numerical2: RunCount:558 WIDER ranges init 431. zerodisp', variant);
+    % paramsCalib = paramsFromCalib('Numerical2: RunCount:558 WIDER ranges init 431. zerodisp', variant);
+    paramsCalib = paramsFromCalib('Numerical2: 424', variant);
     paramsList = paramsCalib;
-    paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
+%     paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
 
+%     paramsCalib = paramsFromCalib('Analytical: from Init424', variant);
+%     paramsList = paramsCalib;
+    
+    % List of q (gw velocity)
+    paramsList.q = q_list; % add zero groundwater velocity as first in list    
+    % List of aXYZ (aquifer dispersivities in 3D)
+    aXYZ_list = aXYZ_toTest( [0 2] ); % longitudinal dispersivity [m]
+    paramsList.aX = aXYZ_list(:,1)'; 
+    paramsList.aY = aXYZ_list(:,2)'; 
+    paramsList.aZ = aXYZ_list(:,3)';
+    paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
 end
 if paramsFor_standardPlots
     paramsList = paramsStd;
@@ -78,7 +90,7 @@ if paramsFor_standardPlots
     aXYZ_list = aXYZ_toTest( [0 2] ); % longitudinal dispersivity [m]
     paramsList.aX = aXYZ_list(:,1)'; 
     paramsList.aY = aXYZ_list(:,2)'; 
-    paramsList.aZ = aXYZ_list(:,3)'; 
+    paramsList.aZ = aXYZ_list(:,3)';
     % Prepare combinations of all parameters to run model through
     paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
 end
@@ -97,7 +109,7 @@ if paramsFor_plottb_a_Q_q
 end
 if paramsFor_meshConvergence
     paramsList = paramsStd;
-    [ ~, q_list, aXYZ_list, ~, ~, ~, ~, ~, ~, ~ ] = standardRangesToCompare( paramsStd.H );
+    [ ~, q_list, aXYZ_list, ~, ~, ~, ~, ~, ~, ~ ] = standardRangesToCompare( variant );
     if strcmp(methodMesh, '2d')
         paramsList.maxMeshSize = [0.05 0.04 0.03 0.02 0.015 0.012 0.011 0.01 0.009 0.008 0.007 0.006 0.0055 0.005 0.0045 0.004]; % max mesh size at source [m] optimal = 0.01
     else % 3D
@@ -109,11 +121,11 @@ if paramsFor_meshConvergence
  %       paramsList.maxMeshSize = [ 0.3 0.25 0.2 0.15 0.1 0.07 0.06 0.05 0.04 0.039 ]; % max mesh size at source [m] handmade optimal = 0.04        
         % WARNING maxMeshSize smaller than 0.039 cannot be computed due to lack of memory on my comp and on Iridis
     end
-    % Better do mesh convergence with nonzero groundwater flow and non zero dispersivity
-    paramsList.q = q_list; %q_list(3); % non zero groundwater velocity
-    paramsList.aX = aXYZ_list(2,1); % non zero ax 
-    paramsList.aY = aXYZ_list(2,2); 
-    paramsList.aZ = aXYZ_list(2,3); 
+%     % Better do mesh convergence with nonzero groundwater flow and non zero dispersivity
+%     paramsList.q = q_list; %q_list(3); % non zero groundwater velocity
+%     paramsList.aX = aXYZ_list(2,1); % non zero ax 
+%     paramsList.aY = aXYZ_list(2,2); 
+%     paramsList.aZ = aXYZ_list(2,3); 
     % Prepare combinations of all parameters to run model through
     paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
 end

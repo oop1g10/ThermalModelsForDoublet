@@ -15,7 +15,7 @@ performLoadFiles = false; % Import txt files as results table from folder
     withoutAnalytical_OnlyNumerical = false; % True for testing only. Not to wait for long analytical calculations
     
 performMcat = true;
-    modelMethodToPlot = 2; % 2 % means: 1 - analytical, 2 - numerical
+    modelMethodToPlot = 1; % 2 % means: 1 - analytical, 2 - numerical
     plotHistogramMC = false; % plot histogram of MC results for Tb to see the outliers
     plotXYvar_percentiles_MC = false; % option to plot difference between Homo and Hetero models (without/with fracture)
         plotXYvar_percentiles_MC_lines = true; % to switch on/off ploting of percentile lines if more fixed values (rows) exist
@@ -25,14 +25,14 @@ performMcat = true;
         useSubplotDims = []; %to plot individual figures, not as subplots
         % useSubplotDims = [3,3]; %to plot 3 by 3 as subplots
         figSizeSubplots = [2 2]; % Large to contain subplots
-        yVarName = 'T_bh'; % temperature change at borehole wall after 30 years
+        yVarName = 't_b_aquifro5'; % 'T_bh'; % temperature change at borehole wall after 30 years
         % yVarName = 'T_bh_Diff'; % temperature change at borehole wall after 30 years difference between Homo and fracture models
         % yVarName = 'T_bh_RelDiff'; % relative difference
 
         % For this plot above CHOOSE WHICH PARAMETERS to plot
         paramsFor_q = false;
         paramsFor_aX = false;
-    plotSave = true; % save this option plot
+    plotSave = false; % save this option plot
 
 %% Folder settings
 addpath('.\MCAT5.1') % Only for PC to plot MCAT analysis

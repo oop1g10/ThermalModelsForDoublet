@@ -17,7 +17,8 @@ meshColumnName = 'maxMeshSize'; % select from 'elementsCountComsol' or 'maxMeshS
 
 plot_Tb_mesh_q = true; % plot temperature at borehole wall vs number of elements in mesh
     plot_absoluteDiff_1 = true; % ALWAYS SHOULD BE TRUE % use absolute value (PREFFERED to avoid zigzaggy plot lines) for temeprature difference for plot_Tb_mesh_q and plot_TmaxDiff_mesh_q
-plot_RMSE_mesh_q = true; % plot total RMSE vs number of elements in mesh
+    plot_relativeDiff = true;
+plot_RMSE_mesh_q = false; % plot total RMSE vs number of elements in mesh
     plot_MAE_mesh_q = false; % plot total MAE (mean absolute error) vs number of elements in mesh
 plot_TmaxDiff_mesh_q = false; % plot max T difference for all positions and for all times, between models vs number of elements in mesh
     plot_absoluteDiff_2 = true; % use absolute value (PREFFERED to avoid zigzaggy plot lines) for temeprature difference for plot_Tb_mesh_q and plot_TmaxDiff_mesh_q
@@ -31,7 +32,7 @@ plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doubletMeshConvergence_
 load(comsolDataFileConvergence)
 % Add missing columns to loaded result   
 % IT IS NOT NEEDED NOW!!!!!, just in case it is needed, do it here.
-comsolResultsTab = addToTabAbsentParams( comsolResultsTab );
+comsolResultsTab = addToTabAbsentParams( comsolResultsTab, variant );
 
 modelMethods = modelMethodsConvergence;
 
@@ -101,19 +102,31 @@ if plot_Tb_mesh_q
     plotNamePrefix = 'Tb_mesh_q'; % plot name to save the plot with relevant name
     %Get values for plot
     y_T_bh_Diff_q = nan(numel(paramsList.q), numel(paramsList.maxMeshSize));
-    y_T_bh_RelDiffPercent_q = nan(numel(paramsList.q), numel(paramsList.maxMeshSize));
-    legendTexts_q = cell(length(paramsList.q)*2,1); % text for legends on plot
+    if plot_relativeDiff
+        y_T_bh_RelDiffPercent_q = nan(numel(paramsList.q), numel(paramsList.maxMeshSize));
+    end
+    legendTexts_q = cell(length(paramsList.q),1); % text for legends on plot    
+    if plot_relativeDiff
+        legendTexts_q = cell(length(paramsList.q)*2,1); % text for legends on plot
+    end
     for iq = 1 : numel(paramsList.q)
         rows_q = comparativeStatsTab.q == paramsList.q(iq);
         y_T_bh_Diff_q(iq,:) = comparativeStatsTab.T_bh_Diff(rows_q);
+     if plot_relativeDiff     
         y_T_bh_RelDiffPercent_q(iq,:) = comparativeStatsTab.T_bh_RelDiff(rows_q) * 100;
+     end
+     
         legendTexts_q{iq} = sprintf('v_D = %.3f m/day, difference', paramsList.q(iq)*daysToSeconds(1)); % darcy velocity in m/days from m/sec
-        legendTexts_q{iq + numel(paramsList.q)} = sprintf('v_D = %.3f m/day, relative %% diff.', paramsList.q(iq)*daysToSeconds(1)); % darcy velocity in m/days from m/sec
+     if plot_relativeDiff     
+        legendTexts_q{iq + numel(paramsList.q)} = sprintf('v_D = %.3f m/day, relative %% diff.', paramsList.q(iq)*daysToSeconds(1)); % darcy velocity in m/days from m/sec 
+     end
     end
     % If requested, use absolute values so plots are not noisy
     if plot_absoluteDiff_1
         y_T_bh_Diff_q = abs(y_T_bh_Diff_q);
-        y_T_bh_RelDiffPercent_q = abs(y_T_bh_RelDiffPercent_q);
+       if plot_relativeDiff     
+            y_T_bh_RelDiffPercent_q = abs(y_T_bh_RelDiffPercent_q);
+        end
     end
     % Choose prefered x axis values (element number or Comsol meshing size parameter)
     x_meshSize = comparativeStatsTab.(meshColumnName)(rows_q)';
@@ -135,23 +148,26 @@ if plot_Tb_mesh_q
 
     xlabel(xlabelPlot);
     ylabel('T_{bh} difference between models after 30 years (K)');
+   
     
-    yyaxis right
-    axisObj = gca;
-    axisObj.YColor = blackColor;
-    for iq = 1 : numel(paramsList.q)
-        plot(x_meshSize, y_T_bh_RelDiffPercent_q(iq,:), 'Color', colors(iq,:), 'LineStyle', '--')
+    if plot_relativeDiff     
+        yyaxis right
+        axisObj = gca;
+        axisObj.YColor = blackColor;
+        for iq = 1 : numel(paramsList.q)
+            plot(x_meshSize, y_T_bh_RelDiffPercent_q(iq,:), 'Color', colors(iq,:), 'LineStyle', '--')
+        end
+        ylabel('Temperature change relative % difference');
     end
-    ylabel('Temperature change relative % difference');
     
     % Plot line for selected optimal mesh size
     hold on
     axisObj = gca;
     plot([x_meshSizeOptimal, x_meshSizeOptimal], [axisObj.YLim(1), axisObj.YLim(2)], ...
-        'Color', 'k', 'LineStyle', ':' )
+                'Color', 'k', 'LineStyle', ':' )
     legendTexts_q{end+1} = 'Optimal mesh size';
-
-    title('Comsol vs Analytical model')
+    
+    title('Comsol vs Analytical model (analytical - numerical)')
     if showLegend
         legend(legendTexts_q, 'Location', 'southoutside') %'NorthEast')
     end

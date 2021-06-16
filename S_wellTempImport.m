@@ -80,7 +80,7 @@ clear wellTempTabAll
 % Prepare times that belong to test 1 test period and are also calculated
 % by numerical model.
 % t = [1, 2, 4, 8]; % (sec)
-if strcmp(variant, 'FieldExp2')    
+if strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated')  
     timeTestStart = datetime('2020-10-01 14:29:06','InputFormat','yyyy-MM-dd HH:mm:ss');
 else
     timeTestStart = datetime('2020-09-14 15:07:30','InputFormat','yyyy-MM-dd HH:mm:ss');

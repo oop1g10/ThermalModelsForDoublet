@@ -32,7 +32,9 @@ elseif strcmp(methodMesh, '2d')
     if  strcmp(variant, 'FieldExpAll')
         comsolFile = [comsolPath 'doublet_2d_AllTests_Matlab'];        
     elseif strcmp(variant, 'FieldExp2')
-        comsolFile = [comsolPath 'doublet_2d_Test2_Matlab'];        
+        comsolFile = [comsolPath 'doublet_2d_Test2_Matlab'];  
+    elseif strcmp(variant, 'FieldExp2Rotated')
+        comsolFile = [comsolPath 'doublet_2d_Test2Rotated_Matlab'];  
     elseif strcmp(variant, 'FieldExp1')
         comsolFile = [comsolPath 'doublet_2d_Matlab'];     
     elseif strcmp(variant, 'FieldExp1m')
