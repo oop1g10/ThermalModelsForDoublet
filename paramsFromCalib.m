@@ -97,6 +97,13 @@ function paramsCalib = paramsFromCalib(calibVariant, variant)
         else
             error('such calibvariant does not exist')   
         end
+        
+    elseif strcmp(variant, 'Becancour') 
+        if strcmp(calibVariant, 'Becancour_litpars') % Parameter from literature for Becancour project
+            bestFitParams = 'q[2.39473e-06] aXYZ[0 0 0] ro[0.0762] H[4.5549] M[4.5549] adeg[233.01] T0[283.32] Ti[310.55] a[4.97] Qb[0.000408806] rhoW[999.75] cW[4192] rhoS[2600] cS[671.654] lS[3.98691] n[0.20024] mesh[0.1]';
+        else
+            error('such calibvariant does not exist')   
+        end        
     end
     paramsCalib = comsolFilename_Info( ['plan sol1 0001 ', bestFitParams, '.txt'], variant );
 end

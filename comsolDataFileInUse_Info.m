@@ -18,9 +18,9 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
     % Load results comsolResultsTab from Comsol calculations
     %% 2D
     if model_2dPlanComsol
-        warning('return comsolDataFileConvergence back to default')
-        comsolDataFileConvergence = [exportPath  'comsolData_sol1_doubletMeshConvergence_0dispersion_6mDepth_2d.mat']; 
-      %  comsolDataFileConvergence = [exportPath  'comsolData_sol1_doubletMeshConvergence_2d.mat'];
+       % warning('return comsolDataFileConvergence back to default')
+      %  comsolDataFileConvergence = [exportPath  'comsolData_sol1_doubletMeshConvergence_0dispersion_6mDepth_2d.mat']; 
+        comsolDataFileConvergence = [exportPath  'comsolData_sol1_doubletMeshConvergenceQ3HM3000_2d.mat'];
 
     %    variant =  'paper_Schulz';%
         % variant = 'Homo'; %

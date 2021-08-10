@@ -111,7 +111,8 @@ if paramsFor_meshConvergence
     paramsList = paramsStd;
     [ ~, q_list, aXYZ_list, ~, ~, ~, ~, ~, ~, ~ ] = standardRangesToCompare( variant );
     if strcmp(methodMesh, '2d')
-        paramsList.maxMeshSize = [0.05 0.04 0.03 0.02 0.015 0.012 0.011 0.01 0.009 0.008 0.007 0.006 0.0055 0.005 0.0045 0.004]; % max mesh size at source [m] optimal = 0.01
+        paramsList.maxMeshSize = [ 0.02 0.03 0.04 0.05 0.07 0.1 0.13 0.16 0.2 0.25 0.3]; % max mesh size at source [m] optimal = 0.01
+      %  paramsList.maxMeshSize = [0.05 0.04 0.03 0.02 0.015 0.012 0.011 0.01 0.009 0.008 0.007 0.006 0.0055 0.005 0.0045 0.004]; % max mesh size at source [m] optimal = 0.01
     else % 3D
         %paramsList.maxMeshSize = [0.08 0.07 0.06]; % max mesh size at source [m] handmade optimal = 0.04        
        paramsList.maxMeshSize = [ 0.039 0.040 0.041 0.044 0.045 0.046 0.047 0.048 0.049 0.05 0.06 0.07 0.08 ...

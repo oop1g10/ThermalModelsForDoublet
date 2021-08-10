@@ -24,7 +24,8 @@ plot_TmaxDiff_mesh_q = false; % plot max T difference for all positions and for 
     plot_absoluteDiff_2 = true; % use absolute value (PREFFERED to avoid zigzaggy plot lines) for temeprature difference for plot_Tb_mesh_q and plot_TmaxDiff_mesh_q
 
 plotSave = false;
-plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doubletMeshConvergence_2d_H3000\'; % Folder to export plots
+%plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doubletMeshConvergence_2d_H3000\'; % Folder to export plots
+plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doubletMeshConvergence_2d_DEEP\'; % Folder to export plots
 
 % Load results comsolResultsTab from Comsol calculations
 [~, comsolDataFileConvergence, ~, modelMethodsConvergence, variant,~,~,~,~ ] = ...
