@@ -37,7 +37,7 @@ function [T_diff, t_b] = T_Schulz( x, y, t, v_u, K, n, Cw, Cs, l_s, ...
     % hydraulic conductivity cannot be zero, so water can flow from injection well.
     % any non zero number is good for K, since it does not effect the model result.
     if v_u == 0
-        K = 1; % hydraulic conductivity which does not infleunce the results
+        K = 1.81E-06 * 100; % m/s 0 hydraulic conductivity which does not infleunce the results
     end
 
     U = @(value) (value >= 0) * 1; % to convert logical output to number need to * 1. 

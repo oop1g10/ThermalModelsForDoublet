@@ -1,11 +1,9 @@
-function [ xRange, yRange, zRange, logRangeEnd ] = comsol_xyzRanges( comsolResultsTab )
+function [ xRange, yRange, zRange ] = comsol_xyzRanges( comsolResultsTab )
 % Take node coordinates from comsol results to determine possible x and y range
 % in plots. Taken from first results rows as all result should have same
 % geometry.
 
-    % logRangeEnd - Threshhold from where log method ends and linear method starts for list generation 
-    % (due to optimal Comsol meshing), for example 50 m, needed for 'rangeToList' function
-    logRangeEnd = 50; %m
+
 
     % If comsolResultsTab is empty then return empty ranges  
     if isempty(comsolResultsTab)

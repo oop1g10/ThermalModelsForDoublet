@@ -14,6 +14,8 @@ elseif strcmp(variant, 'FieldExp1')
   % results = 'doubletTry';
    % results = 'doubletMeshConvergence_0dispersion_6mDepth';
    results = 'doubletMeshConvergenceQ3HM3000';
+elseif strcmp(variant,'Becancour') 
+   results = 'doubletBecancour';   
 elseif strcmp(variant, 'FieldExp1m')
    results = 'doubletTest1m'; % field test 1 and monitoring
 else

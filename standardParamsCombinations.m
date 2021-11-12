@@ -1,12 +1,14 @@
 function paramsCombinationsTab = ...
         standardParamsCombinations( variant, paramsFor_q, paramsFor_aXYZ, paramsFor_alpha_deg, paramsFor_cS, ... 
-                                            paramsFor_lS, paramsFor_Ti, paramsFor_n, paramsFor_H  )
+                                            paramsFor_lS, paramsFor_Ti, paramsFor_n, paramsFor_H, ...
+                                            paramsFor_Q, paramsFor_a   )
 % Prepare unique combinations of parameters 
     % Standard parameters 
     paramsStd = standardParams(variant);
     
     % Standard parameters lists for analysis
-    [q_list, aXYZ_list, alpha_deg_list, cS_list, lS_list, Ti_list, n_list, H_list ] = ...
+    [q_list, aXYZ_list, alpha_deg_list, cS_list, lS_list, Ti_list, n_list, H_list, ...
+                 Q_list, a_list] = ...
             standardRangesToCompare_oneAtATime(variant);
     
     % For each parameter (while other params fixed) prepare combinations
@@ -60,6 +62,20 @@ function paramsCombinationsTab = ...
         paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
     end
         
+   if paramsFor_Q
+        paramsList = paramsStd;
+        paramsList.Q = Q_list;
+        % Prepare combinations of all parameters to run model through
+        paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
+   end
+    
+    if paramsFor_a
+        paramsList = paramsStd;
+        paramsList.a = a_list;
+        % Prepare combinations of all parameters to run model through
+        paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsPrep(paramsList)];
+    end
+   
     % Remove duplicated parameter combinations
     paramsCombinationsTab = unique(paramsCombinationsTab);
 

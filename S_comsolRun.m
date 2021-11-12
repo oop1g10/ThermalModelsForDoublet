@@ -6,7 +6,7 @@ runOnIridisLinux = isunix(); % Automatically puts true if computed on Iridis Lin
 saveComsolResultMPH = false; % Save model file after computation
 noCalcOnlyParamsSaveMPH = false; % In case of batch runs to use only single Comsol-Matlab LiveLink licence, 
                                 % to set params on mph and save it, do not run Comsol through Matlab
-% Parameters to calculate
+%% Parameters to calculate
 paramsFor_FieldTest = false; % minimum number of params for test model runs
 paramsFor_standardPlots = false;
 paramsFor_plottb_a_Q_q = false;
@@ -20,6 +20,8 @@ paramsFor_lS = false;
 paramsFor_Ti = false;
 paramsFor_n = false;
 paramsFor_H = false;
+paramsFor_Q = false; 
+paramsFor_a = false;
 
 [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsConvergence, variant,...
     solution, methodMesh, ~, ~ ] = comsolDataFileInUse_Info( );
@@ -135,7 +137,8 @@ end
 % Prepare unique combinations of parameters
 paramsCombinationsTab_oneAtATime = ...
         standardParamsCombinations( variant, paramsFor_q, paramsFor_aXYZ, paramsFor_alpha_deg, paramsFor_cS, ... 
-                                            paramsFor_lS, paramsFor_Ti, paramsFor_n, paramsFor_H  );
+                                            paramsFor_lS, paramsFor_Ti, paramsFor_n, paramsFor_H, ...
+                                            paramsFor_Q, paramsFor_a );
 paramsCombinationsTab = [paramsCombinationsTab; paramsCombinationsTab_oneAtATime];
 
 

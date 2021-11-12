@@ -26,10 +26,13 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
         % variant = 'Homo'; %
         % comsolDataFile = [folder 'comsolData_sol1_doublet_2d.mat']; 
         % comsolDataFile = [folder 'comsolData_sol1_doubletStdplots4gw_2d.mat'];
-        
         % FieldExp 1 = first field experiment, FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).  
-         variant = 'FieldExp1'; 
-         comsolDataFile = [exportPath 'comsolData_sol1_doubletTry_2d.mat']; 
+        % variant = 'FieldExp1'; 
+        % comsolDataFile = [exportPath 'comsolData_sol1_doubletTry_2d.mat']; 
+
+         variant = 'Becancour';
+         comsolDataFile = [exportPath 'comsolData_sol1_doubletBecancour_2d.mat'];
+
  %        variant = 'FieldExp1m'; 
   %       comsolDataFile = [exportPath 'comsolData_sol1_doubletTest1m_2d.mat']; 
       %   variant = 'FieldExp2'; 
@@ -68,7 +71,11 @@ function [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsC
     elseif strcmp(variant, 'FieldExp1m')
         wellTempDataFileImportCompare = [exportPath, 'wellTempDataTest1m.mat']; % place and name where to save results in matfile 
     else 
-        warning('no such variant for well temperature measurements')
+        % Becancour project does not have field measurements. No warming
+        % needed
+        if ~strcmp(variant, 'Becancour')
+            warning('no such variant for well temperature measurements')
+        end
         % No measurements exist for this case but it is returned to avoid
         % errors!!!!!!!!!!!!!
         wellTempDataFileImportCompare = [exportPath, 'wellTempDataTestAll.mat']; % place and name where to save results in matfile 

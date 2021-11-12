@@ -86,7 +86,7 @@ else
     timeTestStart = datetime('2020-09-14 15:07:30','InputFormat','yyyy-MM-dd HH:mm:ss');
 end
 % end time for period for test 1 and for all periods (test 1 and test 2 and monitoring)
-if strcmp(variant, 'FieldExp1')
+if strcmp(variant, 'FieldExp1')  || strcmp(variant,'Becancour') 
     timeTestFinish = datetime('2020-09-18 11:53:00','InputFormat','yyyy-MM-dd HH:mm:ss');
 elseif strcmp(variant, 'FieldExp1m')
 % test 1 new verion:    test1 + monitoring
@@ -144,7 +144,7 @@ wellTempTabTest = wellTempTabTest(indexListMeasured~=0, :);
 
 % Measurements for well 2 after the temperature peak time are not considered for
 % calibration
-if strcmp(variant, 'FieldExp1')
+if strcmp(variant, 'FieldExp1')  || strcmp(variant,'Becancour') 
     % Injection of water and well temperature started to reduce from 16/09,
     % in the morning 6 am, or from approximately from 1 am
     % so data after this time is ignored for parameter calibration 

@@ -1,13 +1,13 @@
 function paramsPlotTab = paramsPlotTabPrep( variant, ...
     paramsFor_q, paramsFor_aXYZ, paramsFor_alpha_deg, paramsFor_cS, paramsFor_lS, ...
-    paramsFor_Ti, paramsFor_n, paramsFor_H)
+    paramsFor_Ti, paramsFor_n, paramsFor_H, paramsFor_Q, paramsFor_a)
 
 % Prepare table for parameters for plot    
     paramsPlotTab = table;
     paramsPlotRow = table;
     
     % Standard parameters lists for analysis
-    [q_list, aXYZ_list, alpha_deg_list, cS_list, lS_list, Ti_list, n_list, H_list ] = ...
+    [q_list, aXYZ_list, alpha_deg_list, cS_list, lS_list, Ti_list, n_list, H_list, Q_list, a_list ] = ...
           standardRangesToCompare_oneAtATime(variant);
     
     if paramsFor_q
@@ -73,7 +73,29 @@ function paramsPlotTab = paramsPlotTabPrep( variant, ...
         paramsPlotRow.useSemiLogX = false; % Add row in table to say if to use semilog on x axis, logic
         paramsPlotRow.xLabel = {'Thickness of aquifer (m)'};
         paramsPlotTab = [paramsPlotTab; paramsPlotRow]; % Add row to table
+    end  
+    
+    if paramsFor_Q
+        paramsPlotRow.paramName = {'Q'};
+        paramsPlotRow.paramValue_list = {Q_list};
+        paramsPlotRow.xUnitCoef = 1; % Coefficient to convert parameter values to x axis units
+        paramsPlotRow.xUnitShift = 0;
+        paramsPlotRow.useSemiLogX = false; % Add row in table to say if to use semilog on x axis, logic
+        paramsPlotRow.xLabel = {'Flowrate of injected water (m cub. per second)'};
+        paramsPlotTab = [paramsPlotTab; paramsPlotRow]; % Add row to table
     end    
+
+    
+    if paramsFor_a
+        paramsPlotRow.paramName = {'a'};
+        paramsPlotRow.paramValue_list = {a_list};
+        paramsPlotRow.xUnitCoef = 1; % Coefficient to convert parameter values to x axis units
+        paramsPlotRow.xUnitShift = 0;
+        paramsPlotRow.useSemiLogX = false; % Add row in table to say if to use semilog on x axis, logic
+        paramsPlotRow.xLabel = {'Half distance between injection and pumping wells (m)'};
+        paramsPlotTab = [paramsPlotTab; paramsPlotRow]; % Add row to table
+    end    
+
     if paramsFor_Ti
         paramsPlotRow.paramName = {'Ti'};
         paramsPlotRow.paramValue_list = {Ti_list};

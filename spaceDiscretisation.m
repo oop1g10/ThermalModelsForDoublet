@@ -10,11 +10,11 @@ function [ points_Coords, Xmesh, Ymesh, Zmesh, x_list, y_list, z_list ] = ...
 
     % Log range splitting support
     % (hybrid log and linear ranges)
-    [ ~, ~, ~, ~, growthRateOptim, startStepSize ] = standardParams( variant );
+    [ ~, ~, ~, ~, growthRateOptim, startStepSize, ~, logRangeEnd ] = standardParams( variant );
     %% Take node coordinates from comsol results to determine possible x and y range
     % in plots. Taken from first results rows as all result should have same
     % geometry.
-    [ xRangeLimits, yRangeLimits, zRangeLimits, logRangeEnd ] = comsol_xyzRanges( comsolResultsTab );
+    [ xRangeLimits, yRangeLimits, zRangeLimits ] = comsol_xyzRanges( comsolResultsTab );
     
     % Note +/- 1 meter at boundaries of domain are used below, because the interpolation at
     % boundary edge gives error (for Comsol model), maybe no elements for interpolation at

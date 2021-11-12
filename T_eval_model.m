@@ -152,7 +152,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
         end    
     
     %% For analytical solution
-    elseif strcmp(modelMethod, 'Schulz')
+    elseif strcmp(modelMethod, 'Schulz') || strcmp(modelMethod, 'SchulzStd')
         % Element count in mesh and comsolResultsRow are not relevant for analytical models
         elementsCountComsol = NaN; 
         comsolResultsRow = [];
@@ -203,7 +203,7 @@ function [T_points_t, points_Coords, T_mesh, Xmesh, Ymesh, Zmesh, ...
                     % NO 3D model is yet implemented !!!!!!!!!!!!!!!                   
 %                     T_mesh = T_MFLS_anisotropic(Xmesh,Ymesh,Zmesh, params.H, params.lm, params.q, ...
 %                                                 params.Cw, params.Cm, t_list(it), params.fe, aXYZ);
-                elseif strcmp(modelMethod, 'Schulz')                    
+                elseif strcmp(modelMethod, 'Schulz') || strcmp(modelMethod, 'SchulzStd')                   
                     if true % numel(z_range) == 1 % PLAN view   if z coordinate is fixed     
                         % If requested Temperature or time to breakthrough then return it
                         if contains(evalTask, 'T') || contains(evalTask, 't_b') 

@@ -3,8 +3,8 @@
 clear all
 
 %% Decide which plots to generate
-plotT_q = false; %+ T change vs time at different GW flows
-plotTxy_stream_tb = true; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
+plotT_q = true; %+ T change vs time at different GW flows
+plotTxy_stream_tb = false; % Plot streamlines, hydraulic potential, isotherms and times to thermal breakthrough
     plotTxy_stream_tb_Txy = true; % plot isotherms
     plotTxy_stream_tb_tb = true; % plot time to breakthrough
     plotTxy_stream_tb_stream = true; % plot streamlines
@@ -32,7 +32,8 @@ plotT_t_well = false; %+ T change vs time at different wells of field site for m
 
 %% Save the plots
 plotSave = false;
-plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_fieldtest\';
+% plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_fieldtest\';
+plotExportPath = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_Becancour\';
 plotExportPathCalib = 'C:\Users\Asus\OneDrive\INRS\COMSOLfigs\doublet_2d_fieldtestCalib\';
 
 [comsolDataFile, comsolDataFileConvergence, modelMethods, modelMethodsConvergence, variant,...
@@ -86,10 +87,16 @@ comsolResultsTab = addToTabAbsentParams( comsolResultsTab, variant );
 %% Extract data for plot T change at different GW flows
 % Point where temperature will be analyzed
 if plotT_q
-    plotNamePrefix = 'T_q'; % plot name to save the plot with relevant name
-    x_list = x_Tlist; % [m] X coordinates, distance from heat source, to plot
+    plotNamePrefix = 'T_q'; % plot name to save the plot with relevant name    
+    x_list = x_Tlist; % [m] X coordinates, distance from heat source, to plot  
+    warning('test x list')
+    % x_list = -999.9396 + [1, 10, 50, 100, 1000];
+    warning('x_list changed')
+    x_list = -899.94;
     Mt_T_q = 1; % calculation only in one point
-    
+    calibVariant = 'Becancour_litpars';
+    paramsStd = paramsFromCalib(calibVariant, variant);
+    warning("paramsStd are changed for plotT_q check other plots are not affected");
     % bestFitParams = 'q[2.8128e-05] aXYZ[1.97503 1.97503 1.97503] ro[0.0762] H[6] M[6] adeg[278.74] T0[283.15] Ti[310.55] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[800.026] lS[1.90001] n[0.599998] mesh[0.1]';
     % trial params set with lower inj temeprature
     % bestFitParams = 'q[2.8128e-05] aXYZ[1.97503 1.97503 1.97503] ro[0.0762] H[6] M[6] adeg[278.74] T0[283.15] Ti[287.6] a[4.97] Q[0.00041] rhoW[999.75] cW[4192] rhoS[2600] cS[800.026] lS[1.90001] n[0.599998] mesh[0.1]';
@@ -146,7 +153,7 @@ if plotTxy_stream_tb
     plotNamePrefix = 'Txy_stream_tb'; % plot name to save the plot with relevant name
     % times for results    1.9481 years col 94 and 5.3348 yrs column 101 in time list from comsol
     % t_list_plotTxy_q = 168238080; % [6.143644800000002e+07, 168238080]; % time in seconds        
-    t_list_plotTxy_q = t_list(25); % = 1 day % [t_list(44), timeTbh]; %  around 14 days as calc in numerical model %t_list(16) ; % t_list(15); % = 9.5 days %    10 / secondsToDays(1); % seconds from days
+    t_list_plotTxy_q = timeTbh; %t_list(25); % = 1 day % [t_list(44), timeTbh]; %  around 14 days as calc in numerical model %t_list(16) ; % t_list(15); % = 9.5 days %    10 / secondsToDays(1); % seconds from days
     % preassign 4 D matrices for T to save the results
     q_listSpec = paramsStd.q;
     Txy_stream_tb = nan(Mt, Mt, numel(t_list_plotTxy_q), numel(q_listSpec));
@@ -209,8 +216,9 @@ if plotTxy_stream_tb
 
     %% Plot PLAN VIEW streamlines, hydraulic potential,  isotherms and times to thermal breakthrough
 %     T_isotherm = T_plume_list ; % [11 15 19]; % [-14, - 10, -5, -1]; % temperature for limit of plume on plot display (Kelvin)
-    T_isotherm = [1, 10];
-    tb_list = [ 1, 2, 5, 10] / secondsToDays(1); % seconds
+    T_isotherm = [-10, -25];
+    % tb_list = [ 1, 2, 5, 10] / secondsToDays(1); % seconds
+    tb_list = [ 25 * 365, 100 * 365, 200 * 365] / secondsToDays(1); % seconds
 
     for iq = 1:numel(q_listSpec)       
         for it = 1 : numel(t_list_plotTxy_q)
@@ -669,7 +677,7 @@ if plotT_t_well
      %  paramsCalib = paramsFromCalib( 'Analytical: from Init424', variant); % finished calib params   best is Numerical2: 424  
 
 %         paramsCalib = paramsFromCalib( 'Numerical2: RunCount: 539', variant); % latest best fit params test 2 with dispersivity       
-    elseif strcmp(variant, 'FieldExp1')
+    elseif strcmp(variant, 'FieldExp1') || strcmp(variant,'Becancour') 
         paramsCalib = paramsFromCalib( 'Numerical: q,aX,alpha,cS,lS,n,H RunCount:558 diff T0,lS,n WIDER ranges init 431', variant); % best fit params test 1       
     elseif strcmp(variant, 'FieldExp1m') % field test 1 and monitoring 1
         paramsCalib = paramsFromCalib( 'Numerical: 0458', variant); % best fit params test 1 with monitoring   Numerical: 0458     

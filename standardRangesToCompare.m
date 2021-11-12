@@ -16,7 +16,8 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     
     %  FieldExp 1 = first field experiment; FieldExpAll = all experiments (4 steps: Test1, monitoring1, Test2, monitoring2).
     if  strcmp(variant, 'Homo') || strcmp(variant, 'FieldExp1')  || strcmp(variant, 'FieldExp1m') ...
-            || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated') || strcmp(variant, 'FieldExpAll')
+            || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated') || strcmp(variant, 'FieldExpAll') ...
+            || strcmp(variant, 'Becancour')
         % build time list full from comsol
         if strcmp(variant, 'FieldExpAll')
             % For field experiment use full list of all calculated times in
@@ -49,7 +50,15 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
             % days       
             t_list = daysToSeconds(round(t_list_days, 5, 'significant')); % seconds
             t_max = secondsToDays(max(t_list)); % maximum simulation time [days]
-            timeTbh =  daysToSeconds(3.0007); % 14.5 days in seconds in new time list for all field tests.
+            timeTbh =  daysToSeconds(3.0007); % 14.5 days in seconds in new time list for all field tests. 
+        elseif strcmp(variant, 'Becancour')
+            t_max = 200 * 365; % maximum simulation time [days]
+            timeStep = 0.25/8; % 0.25
+            t_list_days = 10.^[-3 : timeStep : 5] / 1e5 * t_max; % days
+            t_list = daysToSeconds(round(t_list_days, 5, 'significant')); % seconds
+            % Times and isotherms for comparative statistics (key info comparison)
+            % timeTbh = daysToSeconds(15); % time to calculate temperature at specified location (or well), [seconds]
+            timeTbh = daysToSeconds(365 * 50); % it is for test 1 = 14.5 days in seconds; % seconds, equals to 14.6 days
         else
             t_max = 300 * 365; % maximum simulation time [days]
             % For field experiment use full list of all calculated times in comsol
@@ -65,11 +74,16 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
             % Times and isotherms for comparative statistics (key info comparison)
             % timeTbh = daysToSeconds(15); % time to calculate temperature at specified location (or well), [seconds]
             timeTbh = 1261612.8; % it is for test 1 = 14.5 days in seconds; % seconds, equals to 14.6 days
+            
         end
         timeTbh_max = daysToSeconds(t_max); % time to calc max temperature at specified location, [seconds]
         % Difference of temperature, deg C, to find plume (isotherm) extent
-        % warning('T_plume_list = only 1 value')
-        T_plume_list = [1 3 5 7];
+        if strcmp(variant, 'Becancour')
+            T_plume_list = [-1 -2];
+        else
+            % warning('T_plume_list = only 1 value')
+            T_plume_list = [1 3 5 7];
+        end
         % Difference of temperature, deg C, to find plume (isotherm) extent for Monte Carlo analysis
         T_plume_listMC = T_plume_list;
         % [m] X coordinates, distance from injection well for temperature evaluation, to plot
@@ -103,13 +117,17 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     % Calculate time series for different q (gw velocity)
     if strcmp(variant, 'FieldExp1') || strcmp(variant, 'FieldExp1m') ...
             || strcmp(variant, 'FieldExp2') || strcmp(variant, 'FieldExp2Rotated') || strcmp(variant, 'FieldExpAll')
-        q_max = paramsStd.q * 10; % Specific flux (Darcy flux) [m s-1] 
+        q_max = paramsStd.q * 10; % Specific flux (Darcy flux) [m s-1] ] 
     else
         q_max = 1 / daysToSeconds(1); % Specific flux (Darcy flux) [m s-1] which equals to 1 m/day        
     end
     q_range = [q_max / 1000, q_max];
     q_list = logspace(log10(q_range(1)), log10(q_range(2)),4); %Specific flux (Darcy flux) [m s-1]
     q_list = [0, q_list]; % add zero groundwater velocity as first in list
+    
+    if strcmp(variant, 'Becancour') 
+        q_list = [0]; % zero groundwater velocity
+    end
     
     % List of aXYZ (aquifer dispersivities in 3D)
     ax_list = [0 2]; % longitudinal dispersivity [m]
@@ -145,6 +163,9 @@ function [ t_list, q_list, aXYZ_list, x_range, y_range, z_range, Mt, y, z, ...
     elseif strcmp(variant, 'FieldExp1')
         Q_list = [paramsStd.Q / 5 * 2 , paramsStd.Q / 5 * 3, paramsStd.Q / 5 * 4, paramsStd.Q, ...
                     paramsStd.Q / 5 * 6 ];
+    elseif strcmp(variant, 'Becancour') 
+        Q_list = [paramsStd.Q / 5 * 2 , paramsStd.Q / 5 * 3, paramsStd.Q / 5 * 4, paramsStd.Q, ...
+            paramsStd.Q / 5 * 6 ];
     else
         Q_list =  [];
     end

@@ -82,11 +82,16 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
 
             lineWidthfactor = 1.5;         %1;
             T_q_line = T_q(i,:);
-            t_list_line = t_list;
-
+            t_list_line = t_list;          
         end
        % semilogx
-        plot(secondsToDays(t_list_line), T_q_line, ...
+        if max(secondsToYears(t_list_line) > 2)
+            timeToPlot = secondsToYears(t_list_line);
+        else
+            timeToPlot = secondsToDays(t_list_line);
+        end
+        
+        plot(timeToPlot, T_q_line, ...
             'Color', colors(i,:), 'LineStyle', lineStyle, 'Marker', markerStyle, 'LineWidth', ...
                 1.001*defaultLineWidth*lineWidthfactor); %Circle points were too thin (probably bug), using 1.001 fixes it
         hold on
@@ -101,8 +106,12 @@ function plotT_q_fun( t_list, T_q, xCoord, aXYZ, legendTexts_q, q_colorOrder, ti
     % Start minimum y axis from zero
     % axisObj.YLim(1) = 0;
     % axisObj.YLim(2) = 25;
+    if max(secondsToYears(t_list_line) > 2)
+        xlabel('Time (years)');        
+    else       
+        xlabel('Time (days)');
+    end
 
-    xlabel('Time (days)');
     ylabel('Temperature change (K)');   
     
     % %legend(legendTexts_q, 'Location', 'NorthWest')

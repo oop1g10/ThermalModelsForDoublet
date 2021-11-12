@@ -110,6 +110,10 @@ function plotOneParamChg( plotNamePrefix, q_colorOrder, paramName, paramValues, 
         % analysis versus model with standard parameter set.
         if strcmp(comparativeStatsTab.modelMethod(1), 'nDoublet2D_vs_nDoublet2Dstd')
             baseModeltoCompare = 'nDoublet2Dstd';  
+        elseif strcmp(comparativeStatsTab.modelMethod(1), 'Schulz_vs_SchulzStd')
+            baseModeltoCompare = 'SchulzStd'; 
+        else
+            error(['This model methods comparison is not supported: ' comparativeStatsTab.modelMethod(1)])
         end
         
         if ~isempty(y1Name) && ~isempty(y2Name) && strcmp(y1Name, y2Name) % if both y1 and y2 are for Tb or XPlume (i.e. when plot for 2 different fracture distances is required)
@@ -174,7 +178,7 @@ function plotOneParamChg( plotNamePrefix, q_colorOrder, paramName, paramValues, 
         hold on
     end
     
-    legend(legendTexts, 'Location', 'SouthOutside')
+    legend(legendTexts, 'Location', 'SouthOutside' )
    
     %legend(legendTexts_q{(numel(q_list))+1 : end}, 'Location', 'SouthOutside')
     xlabel(xLabel);

@@ -17,7 +17,7 @@ performLoadFiles = false; % Import txt files as results table from folder
 performMcat = true;
     modelMethodToPlot = 1; % 2 % means: 1 - analytical, 2 - numerical
     plotHistogramMC = false; % plot histogram of MC results for Tb to see the outliers
-    plotXYvar_percentiles_MC = false; % option to plot difference between Homo and Hetero models (without/with fracture)
+    plotXYvar_percentiles_MC = false; % option to plot difference between Homo and Hetero models
         plotXYvar_percentiles_MC_lines = true; % to switch on/off ploting of percentile lines if more fixed values (rows) exist
         % Set figure size for poster
         figSize = [0.73 1.35]; % correct width for 3 subplots for journal Alternative energy,
@@ -186,32 +186,32 @@ if performMcat
     % IDEA: Can add new params as param ratios
     
     % Prepare table with stats
-    statsNames = {'T_bh', ... % temperature at abstraction well after 15 days %                   'timeSS_Tbh', ...
+    statsNames = {'T_bh', ... % temperature at abstraction well (after specified time, e.g. after 15 days) %                   'timeSS_Tbh', ...
                   't_b_aquifro2', ... % time to breakthrough for well number
                   't_b_aquifro3', ... % time to breakthrough for well number
                   't_b_aquifro4', ... % time to breakthrough for well number
                   't_b_aquifro5', ... % time to breakthrough for well number
                   't_b_aquifro6', ... % time to breakthrough for well number                  
-                  't_b_aquifro2_RelDiff', ... % time to breakthrough for well number
-                  't_b_aquifro3_RelDiff', ... % time to breakthrough for well number
-                  't_b_aquifro4_RelDiff', ... % time to breakthrough for well number
-                  't_b_aquifro5_RelDiff', ... % time to breakthrough for well number
-                  't_b_aquifro6_RelDiff', ... % time to breakthrough for well number                 
-                  'T_x', ...
-                  'xPlume'... % T_plume_listMC =  [1 3 5 7]; extention of plume on x axis after 14.6 days
-                  'xPlumeSS'...
-                  'plumeLength'... % reached length of plume in xy space after 14.6 days
-                  'plumeLengthSS'...
+                  't_b_aquifro2_RelDiff', ... % relative difference between analytical and numerical models for time to breakthrough for well number
+                  't_b_aquifro3_RelDiff', ... % rel dif .....time to breakthrough for well number
+                  't_b_aquifro4_RelDiff', ... % rel dif .........time to breakthrough for well number
+                  't_b_aquifro5_RelDiff', ... % rel dif ..........time to breakthrough for well number
+                  't_b_aquifro6_RelDiff', ... % rel dif ............time to breakthrough for well number                 
+                  'T_x', ... % Temperature change at defined distance from injection well along x axis.
+                  'xPlume'... % T_plume_listMC =  [1 3 5 7] deg C; extention of thermal plume on x axis after 14.6 days
+                  'xPlumeSS'...length of thermal plume at steady state for predefined isotherms (1 3 5 7)
+                  'plumeLength'... % reached length of plume in xy space after 14.6 days (or other preset time)
+                  'plumeLengthSS'... % same but for steady state 
                   'timeSS_xPlume'... % time to stabilise longitudinal thermal plume of 2 Kelvin temperature change
-                  'RMSEadj'...                    
-                  'T_bh_Diff' ...
-                  'T_bh_RelDiff', ...
-                  'timeSS_Tbh_Diff', ...
-                  'timeSS_Tbh_RelDiff', ...
-                  'plumeLength_Diff'...
-                  'plumeLength_RelDiff'...
-                  'RMSEadj_Diff'...
-                  'RMSEadj_RelDiff'};
+                  'RMSEadj'...     % Root mean square error adjusted for potential temperature differences at each well.                
+                  'T_bh_Diff' ... % difference between analytical and numerical model in temeprature difference after defined time (2 weeks) 
+                  'T_bh_RelDiff', ...% relative difference in T bh Diff
+                  'timeSS_Tbh_Diff', ...difference between models in time to stabilise temperature change at the injection well
+                  'timeSS_Tbh_RelDiff', ... relative diff.
+                  'plumeLength_Diff'... difference between models in length of isotherms
+                  'plumeLength_RelDiff'... relative difference
+                  'RMSEadj_Diff'...room mean square error difference between models
+                  'RMSEadj_RelDiff'}; % relaive difference. 
         
     % Some column names have several values, create separate numbered
     % columns for each value. for example T_x will be T_x_1, T_x_2 etc.

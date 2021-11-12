@@ -1,4 +1,4 @@
-function [ params, mu_w, deltaH, g_const, growthRateOptim, startStepSize, N_Schulz_streamline] = ...
+function [ params, mu_w, deltaH, g_const, growthRateOptim, startStepSize, N_Schulz_streamline, logRangeEnd] = ...
         standardParams( variant )
 %Return standard default parameters for models
 % params = copy of parameters with added few (specific for Comsol) for
@@ -137,18 +137,77 @@ function [ params, mu_w, deltaH, g_const, growthRateOptim, startStepSize, N_Schu
         % It is given in best fit params 'Numerical2: 424'
     end
     
-    %% Mesh and time step properties
-    % increased from original 0.01 because comsol returned error in meshing due to too small heat source in model with fracture.
-    params.maxMeshSize = maxMeshSize; %0.01; % "max el size (m) at source cylinder" standard used what is optimal in comsol (e.g. 0.01 m)   
-    
-    %% General constants and fixed parameters needed to calculate Reynolds numbers for qInfo (local q for aquifer and fracture)
-    mu_w = 0.001324801; %[Pa*s] or [kg/s/m], dynamic viscosity of water at 10 deg C
-    g_const =  9.8067; % m/s^2 acceleration due to Earth gravity
-    growthRateOptim = 1.2; % [-] orig: 1.1; % mesh growth rate  
-    startStepSize = 0.5; % [m] initial step to calculate coordinate points for plotting
-    
-    %% Specific for Schulz model ansol
-    N_Schulz_streamline = 600; % number of points x and y to calculate on the streamline 
+    if ~strcmp(variant,'Becancour') 
+        %% Mesh and time step properties
+        % increased from original 0.01 because comsol returned error in meshing due to too small heat source in model with fracture.
+        params.maxMeshSize = maxMeshSize; %0.01; % "max el size (m) at source cylinder" standard used what is optimal in comsol (e.g. 0.01 m)   
 
+        %% General constants and fixed parameters needed to calculate Reynolds numbers for qInfo (local q for aquifer and fracture)
+        mu_w = 0.001324801; %[Pa*s] or [kg/s/m], dynamic viscosity of water at 10 deg C
+        g_const =  9.8067; % m/s^2 acceleration due to Earth gravity
+        growthRateOptim = 1.2; % [-] orig: 1.1; % mesh growth rate  
+        startStepSize = 0.5; % [m] initial step to calculate coordinate points for plotting
+
+        % logRangeEnd - Threshhold from where log method ends and linear method starts for list generation 
+        % (due to optimal Comsol meshing), for example 50 m, needed for 'rangeToList' function
+        logRangeEnd = 50; %m
+
+        %% Specific for Schulz model ansol
+        N_Schulz_streamline = 600; % number of points x and y to calculate on the streamline 
+    end
+    
+    %% Becancour project parameters
+    
+    if  strcmp(variant,'Becancour') 
+        
+        deltaH = 0; % [m/m] Hydraulic  gradient, = 1 mm/m
+        params.ro = 0.0604; % borehole well radius [m]
+        params.H = 138; %borehole length [m]
+        params.M = params.H; % [m] thickness of aquifer, even the model is in 2D it is accounted for and influences model results
+        params.alpha_deg = 0; % [deg] % angle of gw flow, if = 0 it is parallel to x axis (flows from left to right) if 90 = parallel to y axis
+        params.T0 = degC2kelvin(35); % according to well 3, undisturbed temperature in aquifer 
+        params.Ti = degC2kelvin(0); %  [deg C] % injection temperature
+        params.a = 1000; % [m] half of distance between two wells        
+        % params.Q was used for test 1 for the whole period. 
+        % For model with all tests (test 1 and test 2 and both monitoring
+        % periods) params.Qb is used only for second subperiod within test 1. with lower value.
+        % All other periods have fixed Q written in comsol mph file.
+       params.Q = 0.005787037; % (m^3/second)
+       
+               %% Aquifer properties      
+        % aXYZ  %longitudinal (x) and transverse (y,z) thermal dispersivities [m] 
+        aXYZ = [0 0 0];
+        params.aX = aXYZ(1); % "Dispersivity in X direction (m)"
+        params.aY = aXYZ(2); % "Dispersivity in Y direction (m)"
+        params.aZ = aXYZ(3); % "Dispersivity in Z direction (m)"
+
+        params.rhoW = 994.06; % kg/m^3 density of water
+        params.cW = 4180; % J/kg/K specific heat capacity of solid
+        params.rhoS = 2700; % kg/m^3 density of solid
+        params.cS = 603.676; % J/kg/K specific heat capacity of solid
+        params.lS = 2.7; % [W/m/K ] thermal conductivity of solid in aquifer matrix [W m-1 K-1]
+        params.q = 0;% "Darcy gw velocity (m/s)"
+        % natural undisturbed sand porosity taken from https://www.tandfonline.com/doi/abs/10.1080/10641190490900844
+        params.n = 0.06; % porosity of material in aquifer  
+        
+        %% Mesh and time step properties
+        % increased from original 0.01 because comsol returned error in meshing due to too small heat source in model with fracture.
+        params.maxMeshSize = maxMeshSize; %0.01; % "max el size (m) at source cylinder" standard used what is optimal in comsol (e.g. 0.01 m)   
+
+        %% General constants and fixed parameters needed to calculate Reynolds numbers for qInfo (local q for aquifer and fracture)
+        mu_w = 0.0007198; %[Pa*s] or [kg/s/m], dynamic viscosity of water at 35 deg C
+        % https://www.engineeringtoolbox.com/water-dynamic-kinematic-viscosity-d_596.html?vA=35&units=C#
+        
+        g_const =  9.8067; % m/s^2 acceleration due to Earth gravity
+        growthRateOptim = 1.2; % [-] orig: 1.1; % mesh growth rate  
+        startStepSize = 0.5 * 200; % [m] initial step to calculate coordinate points for plotting
+            % logRangeEnd - Threshhold from where log method ends and linear method starts for list generation 
+        % (due to optimal Comsol meshing), for example 50 m, needed for 'rangeToList' function
+        logRangeEnd = 50 * 200; %m
+
+        %% Specific for Schulz model ansol
+        N_Schulz_streamline = 600; % number of points x and y to calculate on the streamline 
+
+    end
 end
 

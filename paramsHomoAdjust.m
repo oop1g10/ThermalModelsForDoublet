@@ -6,7 +6,7 @@ function [ paramsOut ] = paramsHomoAdjust( paramsIn, modelMethod, variant )
     % For model with standard parameters ignore all changes in parameters
     % (in one at a time sensitivity analysis for example) and return
     % standard parameters set
-    if strcmp(modelMethod, 'nDoublet2Dstd')
+    if strcmp(modelMethod, 'nDoublet2Dstd') || strcmp(modelMethod, 'SchulzStd')
         paramsOut = standardParams( variant );       
     end
 end

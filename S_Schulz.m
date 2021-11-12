@@ -12,7 +12,7 @@ M = 30;% m
 %M = 35; % 30; % m
 Q = 0.03; %0.03 ; %   % injected volume flow rate m^3/second
 t = 5 * 365*24*60*60; % seconds
-a = 400/2 ;% (m) half of distance between two wells
+a = 400/2; % (m) half of distance between two wells
 % Definitions inputs for Temperature calc
 n = 0.1; % porosity (-)
 %n = 0.27; % 0.1; % porosity (-)
@@ -47,13 +47,11 @@ y_0 =  [50]; %[-600:5:600];
                         alpha_deg, M, Q, a, modelBoundary, N, rw );    
 kelvin2DegC(T_tphi)
 secondsToYears(t_b)   
-(T_tphi(2) - T0) / (Ti - T0) 
+(T_tphi(2) - T0) / (Ti - T0); 
 
 % calculate groundwater velocities in x and y direction (in 2D to plot streamlines
 [ v_x_test, v_y_test ] = schulz_velocity( 0, 0, v_u, alpha_deg, M, Q, a );
-v_test = sqrt(v_x_test.^2 + v_y_test.^2)
-
-
+v_test = sqrt(v_x_test.^2 + v_y_test.^2);
 
 %% Temperature calc
 if plotT

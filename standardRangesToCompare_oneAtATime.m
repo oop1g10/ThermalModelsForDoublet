@@ -1,4 +1,5 @@
-function [q_list, aXYZ_list, alpha_deg_list, cS_list, lS_list, Ti_list, n_list, H_list ] = ...
+function [q_list, aXYZ_list, alpha_deg_list, cS_list, lS_list, Ti_list, n_list, H_list, ...
+                Q_list, a_list] = ...
       standardRangesToCompare_oneAtATime(variant)
 
     % Groundwater velocity
@@ -26,6 +27,27 @@ function [q_list, aXYZ_list, alpha_deg_list, cS_list, lS_list, Ti_list, n_list, 
     n_list = [0.1 : 0.025 : 0.4];
     % Aquifer thickness
     H_list = [1 : 1 : 12];
+    
+    if strcmp(variant, 'Becancour')
+    % List of aXYZ (aquifer dispersivities in 3D)
+    ax_list = [0, 0.5, 1, 1.5, 2, 2.5]; % longitudinal dispersivity [m]
+    aXYZ_list = aXYZ_toTest( ax_list ); 
+    
+    % Aquifer thickness
+    H_list = sort([138, 200, 100, 50, 300, 400, 25]);
+    
+    % Thermal conductivity
+    lS_list = sort([2.7, 2.6, 2.5, 3, 2.8, 2.4, 2.2, 2]);
+    
+    % Flow rate in injection well m3/sec
+    Q_list = [0.005787037, 0.004, 0.007, 0.009, 0.011, 0.015, 0.020, 0.05, 0.07, 0.1];
+    
+    % Half distance between wells
+    a_list = sort([1500, 1000, 800, 600, 400, 200]./2);
+    else
+         Q_list = [];
+         a_list = [];        
+    end
     
 end
 
